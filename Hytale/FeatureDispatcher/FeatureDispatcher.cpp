@@ -31,6 +31,19 @@ void FeatureDispatcher::initFeatures() {
 	Menu::mainComponent->AddChild(std::make_unique<Tab>("Visuals", 410, 200));
 }
 
+float FeatureDispatcher::GetFeatureFloatValue(const std::string& name) {
+	for (auto& feature : features) {
+		if (feature->GetName() == name) {
+			Feature* f = feature.get();
+			Speed* speed = dynamic_cast<Speed*>(f);
+			if (speed != nullptr) {
+				return speed->GetSpeed();
+			}
+		}
+	}
+	return 0.f;
+}
+
 void FeatureDispatcher::DispatchEvent(Event& event) {
 	for (auto& feature : features) {
 		if (!feature->CanExecute() || !feature->IsActive()) {
@@ -52,9 +65,10 @@ void FeatureDispatcher::DispatchEvent(Event& event) {
 	}
 }
 
+/*
 void FeatureDispatcher::TickAll() {
 	for (auto& feature : features) {
 		if (feature->CanExecute() && feature->IsActive())
 			feature->OnTick();
 	}
-}
+}*/

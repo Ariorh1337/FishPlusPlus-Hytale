@@ -7,37 +7,42 @@
 
 #include "Math/Vector3.h"
 
+#include "../Features/Speed.h"
+
 namespace Hooks {
 
-	typedef __int64(__fastcall* DoMoveCycle)(__int64 thisptr, Vector3* offset);
+	typedef uint64_t(__fastcall* DoMoveCycle)(DefaultMovementController* dmc, Vector3* offset);
 	inline static DoMoveCycle oDoMoveCycle = nullptr;
 
-	typedef __int64(__fastcall* SetUniformBuffers)(__int64 thisptr);
+	typedef uint64_t(__fastcall* SetUniformBuffers)(uint64_t thisptr);
 	inline static SetUniformBuffers oSetUniformBuffers = nullptr;
 
-	typedef __int64(__fastcall* HandleScreenShotting)(__int64 thisptr);
+	typedef uint64_t(__fastcall* HandleScreenShotting)(App* app);
 	inline static HandleScreenShotting oHandleScreenShotting = nullptr;
 
-	typedef __int64*(__fastcall* OnUserInput)(__int64 a1, int* a2);
+	typedef uint64_t*(__fastcall* OnUserInput)(uint64_t a1, int* a2);
 	inline static OnUserInput oOnUserInput = nullptr;
 
-	typedef __int64(__thiscall* SetCursorHidden)(__int64 thisptr, char hidden);
+	typedef void(__fastcall* SetCursorHidden)(Window* window, char hidden);
 	inline static SetCursorHidden oSetCursorHidden = nullptr;
 
-	typedef void(__thiscall* UpdateInputStates)(__int64 thisptr, char skipResetKeys);
+	typedef void(__fastcall* UpdateInputStates)(uint64_t thisptr, char skipResetKeys);
 	inline static UpdateInputStates oUpdateInputStates = nullptr;
 
-	typedef void(__thiscall* WeatherUpdate)(__int64 thisptr, float deltaTime);
+	typedef void(__fastcall* WeatherUpdate)(uint64_t thisptr, float deltaTime);
 	inline static WeatherUpdate oWeatherUpdate = nullptr;
 
-	typedef void(__thiscall* SetActiveHotbarSlot)(__int64 thisptr, unsigned int slot, bool triggerInteraction);
+	typedef void(__fastcall* SetActiveHotbarSlot)(uint64_t thisptr, unsigned int slot, bool triggerInteraction);
 	inline static SetActiveHotbarSlot oSetActiveHotbarSlot = nullptr;
 
-	typedef void(__thiscall* OnChat)(__int64 a1, __int64 a2);
+	typedef void(__fastcall* OnChat)(uint64_t a1, uint64_t a2);
 	inline static OnChat oOnChat = nullptr;
 
-	typedef void(__thiscall* DrawScene)(__int64 a1);
+	typedef uint64_t(__fastcall* DrawScene)(uint64_t a1);
 	inline static DrawScene oDrawScene = nullptr;
 
 	bool CreateHooks();
+	bool CreateNewHooks();
+	bool CreateSafetyHooks();
+	void UnhookAll();
 }

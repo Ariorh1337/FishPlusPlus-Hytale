@@ -18,7 +18,7 @@ class Feature {
 public:
 	Feature(std::string name);
 
-	virtual void OnTick();
+	//virtual void OnTick();
 	virtual void PlayerMove(MoveCycleEvent& event);
 	virtual void OnRender3D(Render3DEvent& event);
 	virtual void OnRender2D(Render2DEvent& event);

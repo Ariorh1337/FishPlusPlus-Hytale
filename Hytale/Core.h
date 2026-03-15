@@ -33,6 +33,8 @@
 
 #include "Math/Matrix4x4.h"
 
+#include "Features/Speed.h"
+
 #define ValidPtr(ptr) if (!Util::IsValidPtr(ptr)) return nullptr;
 #define ValidPtrVoid(ptr) if (!Util::IsValidPtr(ptr)) return;
 #define ValidPtrBool(ptr) if (!Util::IsValidPtr(ptr)) return false;

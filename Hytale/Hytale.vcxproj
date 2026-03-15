@@ -118,11 +118,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;HYTALE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,6 +162,8 @@
     <ClCompile Include="external\minhook\hde\hde64.c" />
     <ClCompile Include="external\minhook\hook.c" />
     <ClCompile Include="external\minhook\trampoline.c" />
+    <ClCompile Include="external\safetyhook\safetyhook.cpp" />
+    <ClCompile Include="external\safetyhook\Zydis.c" />
     <ClCompile Include="FeatureDispatcher\Feature.cpp" />
     <ClCompile Include="FeatureDispatcher\FeatureDispatcher.cpp" />
     <ClCompile Include="Features\ESP.cpp" />
@@ -246,6 +249,51 @@
     <ClInclude Include="external\freetype\include\freetype\fttrigon.h" />
     <ClInclude Include="external\freetype\include\freetype\fttypes.h" />
     <ClInclude Include="external\freetype\include\freetype\ftwinfnt.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\autohint.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\cffotypes.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\cfftypes.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\compiler-macros.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftcalc.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftdebug.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftdrv.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftgloadr.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\fthash.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftmemory.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftmmtypes.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftobjs.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftpsprop.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftrfork.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftserv.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftstream.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\fttrace.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftvalid.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\psaux.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\pshints.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svbdf.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svcfftl.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svcid.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svfntfmt.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svgldict.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svgxval.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svkern.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svmetric.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svmm.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svotval.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svpfr.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svpostnm.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svprop.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svpscmap.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svpsinfo.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svsfnt.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svttcmap.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svtteng.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svttglyf.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svwinfnt.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\sfnt.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\svginterface.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\t1types.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\tttypes.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\wofftypes.h" />
     <ClInclude Include="external\freetype\include\freetype\otsvg.h" />
     <ClInclude Include="external\freetype\include\freetype\t1tables.h" />
     <ClInclude Include="external\freetype\include\freetype\ttnameid.h" />
@@ -262,6 +310,8 @@
     <ClInclude Include="external\minhook\hde\table64.h" />
     <ClInclude Include="external\minhook\minhook.h" />
     <ClInclude Include="external\minhook\trampoline.h" />
+    <ClInclude Include="external\safetyhook\safetyhook.hpp" />
+    <ClInclude Include="external\safetyhook\Zydis.h" />
     <ClInclude Include="FeatureDispatcher\Event.h" />
     <ClInclude Include="FeatureDispatcher\Events\MoveCycleEvent.h" />
     <ClInclude Include="FeatureDispatcher\Events\Render2DEvent.h" />

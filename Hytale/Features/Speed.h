@@ -11,9 +11,8 @@
 class Speed : public Feature {
 public:
 	Speed();
+	float GetSpeed() { return this->speed->GetValue(); }
 private:
-	void PlayerMove(MoveCycleEvent& event) override;
 	bool CanExecute() override;
-
 	SliderSetting* speed;
 };

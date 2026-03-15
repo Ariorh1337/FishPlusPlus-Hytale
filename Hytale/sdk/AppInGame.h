@@ -17,8 +17,8 @@ struct AppInGame {
 	char pad_006E[6]; //0x006E
 
 	void UpdateInputStates(bool skipResetKeys) {
-		typedef __int64(__thiscall* UpdateInputStates)(__int64 thisptr, char skipResetKeys);
+		typedef uint64_t(__thiscall* UpdateInputStates)(uint64_t thisptr, char skipResetKeys);
 		static auto oUpdateInputStates = reinterpret_cast<UpdateInputStates>(PatternScan("57 56 53 48 83 EC ? 48 8B D9 8B F2 48 8B 4B ? 48 85 C9 0F 84"));
-		oUpdateInputStates((__int64)this, skipResetKeys);
+		oUpdateInputStates((uint64_t)this, skipResetKeys);
 	}
 };

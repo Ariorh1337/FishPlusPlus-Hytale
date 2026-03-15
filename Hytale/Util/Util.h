@@ -27,7 +27,6 @@ struct SimpleTime
 };
 
 namespace Util {
-
     inline App* app;
     Entity* getLocalPlayer();
     GameInstance* getGameInstance();
@@ -36,9 +35,11 @@ namespace Util {
     CameraModule* getCameraModule();
     inline Matrix4x4 viewProjMat;
     inline Matrix4x4 orthoProjMat;
+	inline bool orthoProjMatInitialized = false;
 
     inline float cursorPosX = 0;
     inline float cursorPosY = 0;
+    inline bool console_allocated = false;
    
     double GetTime();
     bool IsValidPtr(void* ptr);
@@ -47,7 +48,10 @@ namespace Util {
     Matrix4x4 getViewProjMat();
     std::filesystem::path GetDirectory();
     SimpleTime HoursToTime(float hours);
-    __int64 BuildTicksFromHours(float hours);
+    uint64_t BuildTicksFromHours(float hours);
     const char* GetKeyName(SDL_Scancode key);
     bool ShouldInteractWithGame();
+    void allocate_console();
+    void free_console();
+    void log(const char* fmt, ...);
 }

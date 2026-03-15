@@ -12,7 +12,6 @@ Feature::Feature(std::string name) {
 	active = false;
 }
 
-void Feature::OnTick() {}
 void Feature::PlayerMove(MoveCycleEvent& event) {}
 void Feature::OnRender3D(Render3DEvent& event) {};
 void Feature::OnRender2D(Render2DEvent& event) {};

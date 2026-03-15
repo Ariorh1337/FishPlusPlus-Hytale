@@ -2,25 +2,12 @@
  * Copyright (c) FishPlusPlus.
  */
 #include "Core.h"
-#include "external/minhook/minhook.h"
-
 #include "Hooks/Hooks.h"
 
-void createConsole() {
-    AllocConsole();
-
-    FILE* f;
-    freopen_s(&f, "CONOUT$", "w", stdout);
-    freopen_s(&f, "CONIN$", "r", stdin);
-    freopen_s(&f, "CONOUT$", "w", stderr);
-
-    std::cout << "Console allocated!\n";
-}
-
 DWORD WINAPI startPoint(LPVOID lpParam) {
-    createConsole();
+	Util::allocate_console();
 
-    if (!Hooks::CreateHooks())
+    if (!Hooks::CreateSafetyHooks())
         throw std::runtime_error("Failed to create hooks");
 
     while (true) {
@@ -30,8 +17,9 @@ DWORD WINAPI startPoint(LPVOID lpParam) {
             break;
     }
 
-    MH_DisableHook(MH_ALL_HOOKS);
-	FreeConsole();
+    //MH_DisableHook(MH_ALL_HOOKS);
+	Hooks::UnhookAll();
+	Util::free_console();
 
     return 0;
 }
