@@ -77,18 +77,21 @@ void setCursorHidden(bool hidden) {
 void DoMoveCycle(DefaultMovementController* dmc, Vector3 dir) {
 	Util::log("NEW DoMoveCycle called with DMC: 0x%llX, dir: (%f, %f, %f)\n", dmc, dir.x, dir.y, dir.z);
 }
+void SDK::DoMoveCycleTest(DefaultMovementController* dmc, Vector3 dir) {
+	//Util::log("NEW DoMoveCycle called with DMC: 0x%llX, dir: (%f, %f, %f)\n", dmc, dir.x, dir.y, dir.z);
+}
 
 void SDK::Main() {
 	if (!initialized) {
-		EventRegister::DoMoveCycleEvent.Subscribe(DoMoveCycle);
+		//EventRegister::DoMoveCycleEvent.Subscribe(DoMoveCycle);
 		initialized = true;
 	}
 
-	if (Menu::isMenuOpen() && Menu::m_justOpened) {
+	if (Menu::isMenuOpen() && Util::app->Engine->Window->IsCursorHidden) {
 		setCursorHidden(false);
-		Menu::m_justOpened = false;
 	}
-	else if (!Menu::isMenuOpen() && Menu::m_justClosed) {
+
+	if (!Menu::isMenuOpen() && Menu::m_justClosed) {
 		UpdateInputStates(true);
 		Menu::m_justClosed = false;
 	}

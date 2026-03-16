@@ -9,35 +9,32 @@
 
 namespace Hooks {
 
-	typedef uint64_t(__fastcall* DoMoveCycle)(DefaultMovementController* dmc, Vector3* offset);
-	inline DoMoveCycle oDoMoveCycle = nullptr;
+	typedef void(__fastcall* DoMoveCycle)(DefaultMovementController* dmc, Vector3 offset);
+	inline static DoMoveCycle oDoMoveCycle = nullptr;
 
-	typedef uint64_t(__fastcall* SetUniformBuffers)(uint64_t thisptr);
-	inline SetUniformBuffers oSetUniformBuffers = nullptr;
+	typedef void(__fastcall* HandleScreenShotting)(App* app);
+	inline static HandleScreenShotting oHandleScreenShotting = nullptr;
 
-	typedef uint64_t(__fastcall* HandleScreenShotting)(App* app);
-	inline HandleScreenShotting oHandleScreenShotting = nullptr;
-
-	typedef uint64_t*(__fastcall* OnUserInput)(uint64_t a1, int* a2);
-	inline OnUserInput oOnUserInput = nullptr;
+	typedef void(__fastcall* OnUserInput)(uint64_t a1, SDL_Event a2);
+	inline static OnUserInput oOnUserInput = nullptr;
 
 	typedef void(__fastcall* SetCursorHidden)(Window* window, bool hidden);
-	inline SetCursorHidden oSetCursorHidden = nullptr;
+	inline static SetCursorHidden oSetCursorHidden = nullptr;
 
 	typedef void(__fastcall* UpdateInputStates)(uint64_t thisptr, bool skipResetKeys);
-	inline UpdateInputStates oUpdateInputStates = nullptr;
+	inline static UpdateInputStates oUpdateInputStates = nullptr;
 
 	typedef void(__fastcall* WeatherUpdate)(uint64_t thisptr, float deltaTime);
-	inline WeatherUpdate oWeatherUpdate = nullptr;
+	inline static WeatherUpdate oWeatherUpdate = nullptr;
 
 	typedef void(__fastcall* SetActiveHotbarSlot)(uint64_t thisptr, unsigned int slot, bool triggerInteraction);
-	inline SetActiveHotbarSlot oSetActiveHotbarSlot = nullptr;
+	inline static SetActiveHotbarSlot oSetActiveHotbarSlot = nullptr;
 
 	typedef void(__fastcall* OnChat)(uint64_t a1, uint64_t a2);
-	inline OnChat oOnChat = nullptr;
+	inline static OnChat oOnChat = nullptr;
 
 	typedef uint64_t(__fastcall* DrawScene)(uint64_t a1);
-	inline DrawScene oDrawScene = nullptr;
+	inline static DrawScene oDrawScene = nullptr;
 
 	bool CreateHooks();
 	bool CreateNewHooks();

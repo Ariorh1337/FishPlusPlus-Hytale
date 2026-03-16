@@ -19,4 +19,5 @@ namespace SDK {
 
 
 	extern void Main();
+	extern void DoMoveCycleTest(DefaultMovementController* dmc, Vector3 dir);
 }

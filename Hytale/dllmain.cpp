@@ -18,7 +18,6 @@ bool InitSigs() {
     GetSig(UpdateInputStates, "57 56 53 48 83 EC ? 48 8B D9 8B F2 48 8B 4B ? 48 85 C9 0F 84");
     GetSig(OnChat, "56 53 48 83 EC ? 48 8B F1 48 8B DA 38 1B 48 8B CB");
 
-
     SM::WglSwapBuffersAddress = (uint64_t) GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglSwapBuffers");
     if (!Util::IsValidPtr(SM::WglSwapBuffersAddress)) {
         Util::log("Failed to get wglSwapBuffers address\n");
@@ -35,7 +34,8 @@ DWORD WINAPI startPoint(LPVOID lpParam) {
         return 0;
     }
 
-    if (!Hooks::CreateSafetyHooks()) {
+    if (!Hooks::CreateHooks()) {
+    //if (!Hooks::CreateSafetyHooks()) {
 		Util::log("Failed to create hooks\n");
         Util::free_console();
         return 0;
