@@ -26,7 +26,5 @@ private:
 	void OnMenuClose();
 
 	void ListenOpenInput();
-
-	
 	inline static bool m_open = true;
 };

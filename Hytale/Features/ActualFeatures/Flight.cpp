@@ -9,7 +9,7 @@ Flight::Flight() : Feature("Flight") {
 	this->mode = this->RegisterSetting<MultiSetting>("Mode", std::vector<std::string>{"Creative", "Velocity"}, 0);
 	this->speed = this->RegisterSetting<SliderSetting>("Speed", 1.0f, 0.0f, 5.0f);
 }
-
+/*
 void Flight::PlayerMove(MoveCycleEvent& event) {
 	if (mode->GetValue() == 1) {
 		
@@ -42,7 +42,7 @@ void Flight::PlayerMove(MoveCycleEvent& event) {
 		event.dmc.SpeedMultiplier = this->speed->GetValue();
 		event.dmc.clientMovementStates.IsFlying = true;
 	}
-}
+}*/
 
 void Flight::OnDeactivate() {
 	ValidPtrVoid(Util::getGameInstance());
@@ -54,4 +54,8 @@ void Flight::OnDeactivate() {
 bool Flight::CanExecute() {
 	ValidPtrBool(Util::getLocalPlayer());
 	ValidPtrBool(Util::GetMovementController());
+}
+
+void Flight::Initialize() {
+	Util::log("Initialized Flight feature");
 }

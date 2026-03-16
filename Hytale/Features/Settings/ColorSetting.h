@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "FeatureDispatcher/Setting.h"
+#include "../../Features/Feature.h"
 #include "Menu/Children/ColorButton.h"
 #include "Math/Color.h"
 

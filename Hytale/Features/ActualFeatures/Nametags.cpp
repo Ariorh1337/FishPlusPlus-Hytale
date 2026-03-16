@@ -5,6 +5,7 @@
 
 #include "core.h"
 
+/*
 void Nametags::OnRender3D(Render3DEvent& renderer3D) {
 	SDK::global_mutex.lock();
 	std::vector<EntityData> entities = SDK::entities;
@@ -19,8 +20,11 @@ void Nametags::OnRender3D(Render3DEvent& renderer3D) {
 		Fonts::Figtree->RenderText(entity.name, screenPos.x - Fonts::Figtree->getWidth(entity.name) / 2, screenPos.y, 1, Color::White());
 
 	}
-}
+}*/
 
 bool Nametags::CanExecute() {
 	ValidPtrBool(Util::getLocalPlayer());
+}
+void Nametags::Initialize() {
+	Util::log("Initialized Nametags feature");
 }

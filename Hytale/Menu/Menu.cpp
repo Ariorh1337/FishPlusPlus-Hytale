@@ -6,8 +6,7 @@
 #include "../Util/Util.h"
 #include "../Util/InputSystem.h"
 
-#include "FeatureDispatcher/FeatureDispatcher.h"
-
+#include "Features/FeatureHandler.h"
 
 static bool lbuttonWasDown = false;
 static bool rbuttonWasDown = false;
@@ -114,7 +113,7 @@ void Menu::ListenForKeybinds() {
     if (!Util::ShouldInteractWithGame())
         return;
 
-    for (auto& feature : FeatureDispatcher::features) {
+    for (auto& feature : FeatureHandler::features) {
         if (InputSystem::IsKeyPressed(feature->GetKeybind()))
             feature->ToggleState();
     }

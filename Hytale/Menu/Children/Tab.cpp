@@ -14,7 +14,7 @@
 #include "../../Renderer/Renderer2D.h"
 #include "../../Renderer/FontRenderer/Fonts.h"
 
-#include "../../FeatureDispatcher/FeatureDispatcher.h"
+#include "../../Features/FeatureHandler.h"
 
 Tab::Tab(std::string name, float x, float y) : Component(x, y, 200, Style::headerHeight) {
 	this->name = name;
@@ -66,7 +66,7 @@ void Tab::MouseDragged(float mouseX, float mouseY, int vk, float deltaX, float d
 
 Body::Body(Tab* tab) {
 	this->tab = tab;
-	for (auto& feature : FeatureDispatcher::features) {
+	for (auto& feature : FeatureHandler::features) {
 		if (feature->GetCategory() != tab->name)
 			continue;
 		this->AddChild(std::make_unique<FeatureButton>(feature.get()));

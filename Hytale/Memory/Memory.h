@@ -5,4 +5,4 @@
 
 #include <iostream>
 
-std::uint8_t* PatternScan(const char* signature);
+uint64_t PatternScan(const char* signature);

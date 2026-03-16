@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 
-std::uint8_t* PatternScan(const char* signature) noexcept {
+std::uint64_t PatternScan(const char* signature) {
 	const auto module_handle = GetModuleHandleW(nullptr); // instead of using the string to find the handle, we're a dll and injected into the process already we can simplify it by using nullptr instead
 
 	static auto pattern_to_byte = [](const char* pattern) {
@@ -54,8 +54,8 @@ std::uint8_t* PatternScan(const char* signature) noexcept {
 			}
 		}
 		if (found)
-			return &scan_bytes[i];
+			return (uint64_t) &scan_bytes[i];
 	}
 
-	throw std::runtime_error(std::string("Wrong signature: ") + signature);
+	return 0;
 }

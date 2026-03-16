@@ -5,16 +5,13 @@
 
 #define NOMINMAX
 
-#include "core.h"
 #include <algorithm>
-
-
 
 #include "../Style.h"
 #include "../../Renderer/Renderer2D.h"
 #include "../../Renderer/FontRenderer/Fonts.h"
 #include "../../Renderer/SpecialRenderers/HueRenderer.h"
-#include "FeatureDispatcher/Settings/ColorSetting.h"
+#include "Features/Settings/ColorSetting.h"
 
 ColorButton::ColorButton(Setting<Color>* setting) : SettingButton(setting) {
 	auto body = std::make_unique<ColorSettingControl>(this);

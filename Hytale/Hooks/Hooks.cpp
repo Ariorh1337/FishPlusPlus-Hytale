@@ -4,6 +4,8 @@
 #include "Core.h"
 #include "Hooks.h"
 #include "external/safetyhook/safetyhook.hpp"
+#include "Events/EventRegister.h"
+#include "Features/FeatureHandler.h"
 
 typedef int SDL_bool;
 #define SDL_TRUE  1
@@ -17,29 +19,25 @@ inline SafetyHookInline shDoMoveCycle{ };
 inline SafetyHookInline shHandleScreenShotting{ };
 inline SafetyHookInline shOnUserInput{ };
 inline SafetyHookInline shSetCursorHidden{ };
+inline SafetyHookInline shOnChat{ };
 
 static std::unique_ptr<Menu> menu;
 
 #define CREATE_HOOK(name, pattern) \
-std::uint8_t* name##Address = PatternScan(pattern);\
-if (MH_CreateHook(name##Address, &H##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
+uint64_t name##Address = PatternScan(pattern);\
+if (MH_CreateHook((LPVOID)name##Address, &H##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
     std::cout << "failed to create hook: " << #name << "\n";\
     return false;\
 }\
 
-#define safety_hook_method(name, pattern)std::uint8_t* name##Address = PatternScan(pattern);   \
-    if (Util::IsValidPtr(name##Address)) {                                                     \
-        sh##name = safetyhook::create_inline(name##Address, &H##name);                         \
-        if (!sh##name) {                                                                       \
-            Util::log("Failed to hook %s\n", #name);                                           \
-            return false;                                                                      \
-        }                                                                                      \
-        o##name = sh##name.original<name>();                                                   \
-        Util::log("Hooked %s: 0x%llX\n", #name, name##Address);                                \
-    } else {                                                                                   \
-        Util::log("Failed to find address for %s\n", #name);                                   \
-        return false;                                                                          \
-    }  
+#define safety_hook_method(name)                                                            \
+        sh##name = safetyhook::create_inline(SM::name##Address, &H##name);                  \
+        if (!sh##name) {                                                                    \
+            Util::log("Failed to hook %s\n", #name);                                        \
+            return false;                                                                   \
+        }                                                                                   \
+        o##name = sh##name.original<name>();                                                \
+        Util::log("Hooked %s: 0x%llX\n", #name, SM::name##Address);                                
 
 
 static void* GetAnyGLFuncAddress(const char* name) {
@@ -56,8 +54,8 @@ static void* GetAnyGLFuncAddress(const char* name) {
 }
 
 
-typedef BOOL(WINAPI* wglSwapBuffers_t)(HDC hdc);
-wglSwapBuffers_t oWglSwapBuffers = nullptr;
+typedef BOOL(WINAPI* WglSwapBuffers)(HDC hdc);
+WglSwapBuffers oWglSwapBuffers = nullptr;
 BOOL WINAPI HWglSwapBuffers(HDC hdc) {
     if (!initialized) {
         if (!gladLoadGLLoader((GLADloadproc)GetAnyGLFuncAddress)) {
@@ -71,7 +69,7 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
 
         menu = std::make_unique<Menu>(hdc);
 
-        FeatureDispatcher::initFeatures();
+		FeatureHandler::Init();
 
         initialized = true;
     }
@@ -90,21 +88,10 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
     Util::cursorPosY = current.y;
 
     if (Util::IsValidPtr(Util::app)) {
-        /*Engine* engine = app->Engine;
-        if (Util::IsValidPtr(engine)) {
-            Window* window = engine->Window;
-            if (Util::IsValidPtr(window) && !Util::orthoProjMatInitialized) {
-                Util::orthoProjMat = Matrix4x4::Orthographic(0.0f, Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight, 0.0f, -1.0f, 1.0f);
-				Util::log("Window Size: %d x %d\n", window->WindowWidth, window->WindowHeight);
-				Util::orthoProjMatInitialized = true;
-            }
-		}*/
-
         if (!Util::orthoProjMatInitialized) {
             Util::orthoProjMat = Matrix4x4::Orthographic(0.0f, Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight, 0.0f, -1.0f, 1.0f);
             Util::orthoProjMatInitialized = true;
         }
-        SDK::Main();
 
         //Renderer3D renderer3D;
         //Render3DEvent render3DEvent(renderer3D);
@@ -129,12 +116,14 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
 }
 
 uint64_t __fastcall HDoMoveCycle(DefaultMovementController* dmc, Vector3* offset) {
-    try {
+
+	//EventRegister::DoMoveCycleEvent.Invoke(dmc, *offset);
+
         /*
         MoveCycleEvent event(*dmc, *offset);
         FeatureDispatcher::DispatchEvent(event);
         */
-
+        /*
         if (Util::ShouldInteractWithGame()) {
             //Util::log("DoMoveCycle called with DMC: 0x%llX, offset: (%f, %f, %f)\n", dmc, offset->x, offset->y, offset->z);
             Vector3 dir = *offset;
@@ -161,78 +150,43 @@ uint64_t __fastcall HDoMoveCycle(DefaultMovementController* dmc, Vector3* offset
             if (InputSystem::IsKeyHeld(SDL_SCANCODE_D))
                 dir += Vector3(-strafeX * currentSpeed, dir.y, -strafeZ * currentSpeed);
 			offset = &dir;
-        }
-    }
-    catch (...) {
-		std::cout << "Exception in MoveCycleEvent\n";
-	}
+        }*/
     return Hooks::oDoMoveCycle(dmc, offset);
 }
 
 uint64_t __fastcall HHandleScreenShotting(App* app) {
-    try {
-		//Util::log("HandleScreenShotting called with app: 0x%llX\n", app);
-        if (Util::app != app) {
-            Util::app = app;
-        }
+    if (Util::app != app)
+        Util::app = app;
 
-        if (Menu::isMenuOpen() && Menu::m_justOpened) {
-            Hooks::oSetCursorHidden(Util::app->Engine->Window, false);
-            Menu::m_justOpened = false;
-        }
-
-        if (!Menu::isMenuOpen() && Menu::m_justClosed) {
-            Util::app->appInGame->UpdateInputStates(true);
-
-            Menu::m_justClosed = false;
-        }
-    }
-    catch (...) {
-        std::cout << "Exception in HandleScreenShotting\n";
-    }
+    SDK::Main();
 
     return Hooks::oHandleScreenShotting(app);
 }
 
 
 uint64_t* __fastcall HOnUserInput(uint64_t thisptr, int* a2) {
-    try {
-        SDL_Scancode key = (SDL_Scancode) (a2[6]);
-		Util::log("Key event: %s\n", Util::GetKeyName(key));
+    SDL_Scancode key = (SDL_Scancode) (a2[6]);
+    if (*a2 == 768) {
+        if (*((bool*) a2 + 37))
+            return Hooks::oOnUserInput(thisptr, a2);
 
-        if (*a2 == 768) {
-            if (*((bool*) a2 + 37))
-                return Hooks::oOnUserInput(thisptr, a2);
-
-            InputSystem::keysPressed.insert(key);
-            InputSystem::keysHeld.insert(key);
-            InputSystem::keysUnheld.erase(key);
-        }
-
-        if (*(int*) a2 == 769) {
-            InputSystem::keysHeld.erase(key);
-            InputSystem::keysUnheld.insert(key);
-            InputSystem::keysDepressed.insert(key);
-        }
-
+        InputSystem::keysPressed.insert(key);
+        InputSystem::keysHeld.insert(key);
+        InputSystem::keysUnheld.erase(key);
     }
-    catch (...) {
-        std::cout << "Exception in OnUserInput\n";
+
+    if (*(int*) a2 == 769) {
+        InputSystem::keysHeld.erase(key);
+        InputSystem::keysUnheld.insert(key);
+        InputSystem::keysDepressed.insert(key);
     }
 
     return Hooks::oOnUserInput(thisptr, a2);
 }
 
-void __fastcall HSetCursorHidden(Window* window, char hidden) {
-    try {
-		Util::log("SetCursorHidden called\n");
-        if (Menu::isMenuOpen()) {
-            return;
-        }
-    }
-    catch (...) {
-        std::cout << "Exception in SetCursorHidden\n";
-	}
+void __fastcall HSetCursorHidden(Window* window, bool hidden) {
+    if (Menu::isMenuOpen())
+        hidden = false;
        
     Hooks::oSetCursorHidden(window, hidden);
 }
@@ -287,10 +241,10 @@ void __fastcall HOnChat(uint64_t thisptr, uint64_t a2) {
 uint64_t __fastcall HDrawScene(uint64_t thisptr) {
     return Hooks::oDrawScene(thisptr);
     try {
-        Renderer3D renderer3D;
-        Render3DEvent render3DEvent(renderer3D);
-        FeatureDispatcher::DispatchEvent(render3DEvent);
-        renderer3D.Render();
+        //Renderer3D renderer3D;
+        //Render3DEvent render3DEvent(renderer3D);
+        //FeatureDispatcher::DispatchEvent(render3DEvent);
+        //renderer3D.Render();
     }
     catch (...) {
         std::cout << "Exception in DrawScene\n";
@@ -332,24 +286,12 @@ bool Hooks::CreateHooks() {
 bool Hooks::CreateSafetyHooks() {
     Util::log("Creating SafetyHook Hooks\n");
 
-    void* pWglSwapBuffers = GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglSwapBuffers");
-    if (!Util::IsValidPtr(pWglSwapBuffers)) {
-        Util::log("Failed to get wglSwapBuffers address\n");
-        return false;
-    }
-
-    shWglSwapBuffers = safetyhook::create_inline(pWglSwapBuffers, HWglSwapBuffers);
-    if (!shWglSwapBuffers) {
-        Util::log("Failed to hook WglSwapBuffers\n");
-        return false;
-    }
-    oWglSwapBuffers = shWglSwapBuffers.original<wglSwapBuffers_t>();
-    Util::log("Hooked WglSwapBuffers: 0x%llX\n", pWglSwapBuffers);
-
-    safety_hook_method(DoMoveCycle, "55 41 57 41 56 41 55 41 54 57 56 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 48 8D AC 24 ? ? ? ? 33 C0 48 89 85 ? ? ? ? 0F 57 E4 48 B8");
-    safety_hook_method(HandleScreenShotting, "55 41 57 41 56 41 55 41 54 57 56 53 48 81 EC ? ? ? ? 48 8D AC 24 ? ? ? ? 33 C0 48 89 45 ? 0F 57 E4 0F 29 65 ? 48 89 45 ? 48 8B D9 48 8B 4B ? 48 8B 49");
-    safety_hook_method(OnUserInput, "41 57 41 56 41 55 41 54 57 56 55 53 48 83 EC ? 33 C0 48 89 44 24 ? 0F 57 E4 0F 29 64 24 ? 0F 29 64 24 ? 0F 29 64 24 ? 48 89 44 24 ? 48 8B D9 48 8B F2 8B 3E");
-    safety_hook_method(SetCursorHidden, "55 57 56 53 48 83 EC ? 48 8D 6C 24 ? 33 C0 48 89 45 ? 48 89 45 ? 48 8B D9 8B F2");
+    safety_hook_method(WglSwapBuffers);
+    safety_hook_method(DoMoveCycle);
+    safety_hook_method(HandleScreenShotting);
+    safety_hook_method(OnUserInput);
+    safety_hook_method(SetCursorHidden);
+    safety_hook_method(OnChat);
 
     Util::log("All SafetyHook hooks created successfully\n");
     return true;
@@ -361,4 +303,5 @@ void Hooks::UnhookAll() {
     shHandleScreenShotting.reset();
     shOnUserInput.reset();
     shSetCursorHidden.reset();
+	shOnChat.reset();
 }

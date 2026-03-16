@@ -4,7 +4,7 @@
 #pragma once
 
 #include "SettingButton.h"
-#include "FeatureDispatcher/Setting.h"
+#include "Features/Setting.h"
 
 
 class MultiButton : public SettingButton {

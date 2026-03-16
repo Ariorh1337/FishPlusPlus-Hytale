@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "core.h"
+#include "Features/Setting.h"
 
 class RecursiveBody;
 

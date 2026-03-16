@@ -13,7 +13,9 @@
 
 #include "sdk/App.h"
 #include "sdk/DefaultMovementController.h"
-#include "FeatureDispatcher/FeatureDispatcher.h"
+
+#include "Events/EventSystem.h"
+
 #include "Memory/Memory.h"
 #include "external/minhook/minhook.h"
 #include "Util/InputSystem.h"
@@ -33,8 +35,6 @@
 
 #include "Math/Matrix4x4.h"
 
-#include "Features/Speed.h"
-
 #define ValidPtr(ptr) if (!Util::IsValidPtr(ptr)) return nullptr;
 #define ValidPtrVoid(ptr) if (!Util::IsValidPtr(ptr)) return;
 #define ValidPtrBool(ptr) if (!Util::IsValidPtr(ptr)) return false;
@@ -43,4 +43,14 @@
 
 namespace Core {
 	inline HMODULE MODULEPTR = nullptr;
+}
+
+namespace SM { // Signature Methods
+	inline uint64_t DoMoveCycleAddress = 0;
+	inline uint64_t HandleScreenShottingAddress = 0;
+	inline uint64_t OnUserInputAddress = 0;
+	inline uint64_t SetCursorHiddenAddress = 0;
+	inline uint64_t UpdateInputStatesAddress = 0;
+	inline uint64_t WglSwapBuffersAddress = 0;
+	inline uint64_t OnChatAddress = 0;
 }

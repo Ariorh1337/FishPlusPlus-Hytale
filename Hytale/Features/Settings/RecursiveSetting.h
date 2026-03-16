@@ -4,7 +4,7 @@
 #pragma once
 
 #include "core.h"
-#include "../Setting.h"
+#include "../../Features/Feature.h"
 #include "Menu/Children/RecursiveButton.h"
 
 class RecursiveSetting : public Setting<bool> {

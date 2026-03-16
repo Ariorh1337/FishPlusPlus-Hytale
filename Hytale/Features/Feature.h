@@ -8,24 +8,16 @@
 
 #include "Setting.h"
 
-#include "Events/MoveCycleEvent.h"
-#include "Events/Render3DEvent.h"
-#include "Events/Render2DEvent.h"
-
 #include "Util/InputSystem.h"
 
 class Feature {
 public:
 	Feature(std::string name);
 
-	//virtual void OnTick();
-	virtual void PlayerMove(MoveCycleEvent& event);
-	virtual void OnRender3D(Render3DEvent& event);
-	virtual void OnRender2D(Render2DEvent& event);
-
 	virtual bool CanExecute();
 	virtual void OnActivate();
 	virtual void OnDeactivate();
+	virtual void Initialize();
 
 	void CreateForcedKeybind();
 	

@@ -3,11 +3,12 @@
  */
 #pragma once
 
+#include <Menu/Component.h>
+
 #include "SettingButton.h"
-#include "FeatureDispatcher/Setting.h"
+#include "Features/Setting.h"
 #include "Math/Color.h"
 #include "Math/Vector2.h"
-#include <Menu/Component.h>
 
 class ColorSettingControl;
 

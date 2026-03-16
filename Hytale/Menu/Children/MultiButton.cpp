@@ -6,7 +6,7 @@
 #include <Windows.h>
 
 #include "../Style.h"
-#include "FeatureDispatcher/Settings/MultiSetting.h"
+#include "Features/Settings/MultiSetting.h"
 #include "Renderer/Renderer2D.h"
 #include "Renderer/FontRenderer/Fonts.h"
 

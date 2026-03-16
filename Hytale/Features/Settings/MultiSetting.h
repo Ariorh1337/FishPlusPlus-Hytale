@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "FeatureDispatcher/Setting.h"
+#include "../../Features/Feature.h"
 #include "Menu/Children/MultiButton.h"
 
 class MultiSetting : public Setting<int> {

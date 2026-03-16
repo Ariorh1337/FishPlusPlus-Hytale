@@ -2,7 +2,7 @@
  * Copyright (c) FishPlusPlus.
  */
 #include "RecursiveButton.h"
-#include "FeatureDispatcher/Settings/RecursiveSetting.h"
+#include "Features/Settings/RecursiveSetting.h"
 
 RecursiveButton::RecursiveButton(Setting<bool>* setting) : SettingButton(setting) {
 	auto body = std::make_unique<RecursiveBody>(this);

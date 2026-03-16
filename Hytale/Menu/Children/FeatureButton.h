@@ -5,7 +5,7 @@
 
 #include "../Component.h"
 
-#include "../../FeatureDispatcher/Feature.h"
+#include "../../Features/Feature.h"
 
 class FeatureButton;
 

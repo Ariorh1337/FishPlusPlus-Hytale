@@ -12,13 +12,10 @@ Feature::Feature(std::string name) {
 	active = false;
 }
 
-void Feature::PlayerMove(MoveCycleEvent& event) {}
-void Feature::OnRender3D(Render3DEvent& event) {};
-void Feature::OnRender2D(Render2DEvent& event) {};
-
 bool Feature::CanExecute() { return true; }
 void Feature::OnActivate() {}
 void Feature::OnDeactivate() {}
+void Feature::Initialize() {}
 
 void Feature::CreateForcedKeybind() {
 	this->RegisterSetting<KeybindSetting>("Keybind", SDL_SCANCODE_UNKNOWN, this);

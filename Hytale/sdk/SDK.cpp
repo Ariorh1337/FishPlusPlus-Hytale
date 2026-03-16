@@ -3,6 +3,8 @@
  */
 #include "SDK.h"
 
+#include "Events/EventRegister.h"
+
 std::vector<EntityData> getEntities(Entity* localPlayer) {
 	GameInstance* gameInstance = Util::getGameInstance();
 	ValidPtrEmpty(gameInstance);
@@ -46,7 +48,51 @@ std::vector<EntityData> getEntities(Entity* localPlayer) {
 }
 
 
+void UpdateInputStates(bool skipResetKeys) {
+	using m_UpdateInputStates = uint64_t(*)(AppInGame* AppGame, bool skipResetKeys);
+	static m_UpdateInputStates UpdateInputStates_method{ };
+	if (!UpdateInputStates_method)
+		UpdateInputStates_method = reinterpret_cast<m_UpdateInputStates>(SM::UpdateInputStatesAddress);
+	App* app = Util::app;
+	if (!app || !app->appInGame) {
+		Util::log("Invalid app or appInGame pointer\n");
+		return;
+	}
+	UpdateInputStates_method(app->appInGame, skipResetKeys);
+}
+
+void setCursorHidden(bool hidden) {
+	using m_SetCursorHidden = void(*)(Window* window, bool hidden);
+	static m_SetCursorHidden SetCursorHidden_method{ };
+	if (!SetCursorHidden_method)
+		SetCursorHidden_method = reinterpret_cast<m_SetCursorHidden>(SM::SetCursorHiddenAddress);
+	App* app = Util::app;
+	if (!app || !app->Engine || !app->Engine->Window) {
+		Util::log("Invalid app or window pointer\n");
+		return;
+	}
+	SetCursorHidden_method(app->Engine->Window, hidden);
+}
+
+void DoMoveCycle(DefaultMovementController* dmc, Vector3 dir) {
+	Util::log("NEW DoMoveCycle called with DMC: 0x%llX, dir: (%f, %f, %f)\n", dmc, dir.x, dir.y, dir.z);
+}
+
 void SDK::Main() {
+	if (!initialized) {
+		EventRegister::DoMoveCycleEvent.Subscribe(DoMoveCycle);
+		initialized = true;
+	}
+
+	if (Menu::isMenuOpen() && Menu::m_justOpened) {
+		setCursorHidden(false);
+		Menu::m_justOpened = false;
+	}
+	else if (!Menu::isMenuOpen() && Menu::m_justClosed) {
+		UpdateInputStates(true);
+		Menu::m_justClosed = false;
+	}
+
 	global_mutex.lock();
 	entities = getEntities(Util::getLocalPlayer());
 	global_mutex.unlock();

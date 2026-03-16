@@ -39,16 +39,13 @@
     <ClCompile Include="external\minhook\trampoline.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FeatureDispatcher\Feature.cpp">
+    <ClCompile Include="Features\Feature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Features\Flight.cpp">
+    <ClCompile Include="Features\ActualFeatures\Flight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hooks\Hooks.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FeatureDispatcher\FeatureDispatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Menu\Menu.cpp">
@@ -108,13 +105,13 @@
     <ClCompile Include="Menu\Children\Tab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Features\ESP.cpp">
+    <ClCompile Include="Features\ActualFeatures\ESP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Features\Nametags.cpp">
+    <ClCompile Include="Features\ActualFeatures\Nametags.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Features\Speed.cpp">
+    <ClCompile Include="Features\ActualFeatures\Speed.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Menu\Children\ToggleButton.cpp">
@@ -126,7 +123,7 @@
     <ClCompile Include="Menu\Children\MultiButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Features\NoFall.cpp">
+    <ClCompile Include="Features\ActualFeatures\NoFall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sdk\SDK.cpp">
@@ -148,6 +145,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="external\safetyhook\Zydis.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Features\FeatureHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -191,13 +191,10 @@
     <ClInclude Include="sdk\MoveCmd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Feature.h">
+    <ClInclude Include="Features\Feature.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FeatureDispatcher\FeatureDispatcher.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Features\Flight.h">
+    <ClInclude Include="Features\ActualFeatures\Flight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sdk\DefaultMovementController.h">
@@ -464,7 +461,7 @@
     <ClInclude Include="sdk\Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Features\ESP.h">
+    <ClInclude Include="Features\ActualFeatures\ESP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Math\BoundingBox.h">
@@ -473,10 +470,10 @@
     <ClInclude Include="sdk\HytaleString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Features\Nametags.h">
+    <ClInclude Include="Features\ActualFeatures\Nametags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Features\Speed.h">
+    <ClInclude Include="Features\ActualFeatures\Speed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util\InputSystem.h">
@@ -491,19 +488,7 @@
     <ClInclude Include="Menu\Children\SettingButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Setting.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Event.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Events\MoveCycleEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Events\Render3DEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Events\Render2DEvent.h">
+    <ClInclude Include="Features\Setting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sdk\Engine.h">
@@ -512,22 +497,22 @@
     <ClInclude Include="sdk\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Settings\ToggleSetting.h">
+    <ClInclude Include="Features\Settings\ToggleSetting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Settings\SliderSetting.h">
+    <ClInclude Include="Features\Settings\SliderSetting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Menu\Children\SliderButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Settings\MultiSetting.h">
+    <ClInclude Include="Features\Settings\MultiSetting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Menu\Children\MultiButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Features\NoFall.h">
+    <ClInclude Include="Features\ActualFeatures\NoFall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sdk\InventoryModule.h">
@@ -548,7 +533,7 @@
     <ClInclude Include="sdk\SDK.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Settings\KeybindSetting.h">
+    <ClInclude Include="Features\Settings\KeybindSetting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Menu\Children\KeybindButton.h">
@@ -557,7 +542,7 @@
     <ClInclude Include="sdk\Chat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Settings\ColorSetting.h">
+    <ClInclude Include="Features\Settings\ColorSetting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Menu\Children\ColorButton.h">
@@ -572,7 +557,7 @@
     <ClInclude Include="Menu\Children\RecursiveButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FeatureDispatcher\Settings\RecursiveSetting.h">
+    <ClInclude Include="Features\Settings\RecursiveSetting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sdk\CharacterControllerModule.h">
@@ -717,6 +702,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="external\safetyhook\Zydis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\EventSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\EventRegister.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Features\FeatureHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -43,6 +43,7 @@ namespace Util {
    
     double GetTime();
     bool IsValidPtr(void* ptr);
+    bool IsValidPtr(uint64_t ptr);
 
     bool WorldToScreen(Vector3 pos, Vector2& out);
     Matrix4x4 getViewProjMat();

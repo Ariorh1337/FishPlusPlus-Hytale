@@ -8,7 +8,7 @@
 #include "../Style.h"
 #include "Renderer/Renderer2D.h"
 #include "Renderer/FontRenderer/Fonts.h"
-#include "FeatureDispatcher/Settings/KeybindSetting.h"
+#include "Features/Settings/KeybindSetting.h"
 #include "Util/Util.h"
 
 void KeybindButton::Render(double deltaTime) {

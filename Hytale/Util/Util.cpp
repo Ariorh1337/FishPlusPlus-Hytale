@@ -62,6 +62,10 @@ bool Util::IsValidPtr(void* ptr) {
 	return true;
 }
 
+bool Util::IsValidPtr(uint64_t ptr) {
+	return IsValidPtr((void*)ptr);
+}
+
 GameInstance* Util::getGameInstance() {
 	ValidPtr(app);
 	ValidPtr(app->appInGame);

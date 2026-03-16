@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "FeatureDispatcher/Setting.h"
+#include "../../Features/Feature.h"
 #include "Menu/Children/KeybindButton.h"
 #include "Util/InputSystem.h"
 #include "../Feature.h"

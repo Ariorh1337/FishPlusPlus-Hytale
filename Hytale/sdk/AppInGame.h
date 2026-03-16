@@ -15,10 +15,4 @@ struct AppInGame {
 	bool IsInOverlay; //0x006C
 	bool UnknownMouseCheck; //0x006D
 	char pad_006E[6]; //0x006E
-
-	void UpdateInputStates(bool skipResetKeys) {
-		typedef uint64_t(__thiscall* UpdateInputStates)(uint64_t thisptr, char skipResetKeys);
-		static auto oUpdateInputStates = reinterpret_cast<UpdateInputStates>(PatternScan("57 56 53 48 83 EC ? 48 8B D9 8B F2 48 8B 4B ? 48 85 C9 0F 84"));
-		oUpdateInputStates((uint64_t)this, skipResetKeys);
-	}
 };

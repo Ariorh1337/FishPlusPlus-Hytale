@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "FeatureDispatcher/Setting.h"
+#include "../../Features/Feature.h"
 #include "Menu/Children/SliderButton.h"
 
 class SliderSetting : public Setting<float> {

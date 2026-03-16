@@ -3,10 +3,10 @@
  */
 #pragma once
 
-#include "../FeatureDispatcher/FeatureDispatcher.h"
+#include "Features/Feature.h"
 
-#include "FeatureDispatcher/Settings/SliderSetting.h"
-#include "FeatureDispatcher/Settings/MultiSetting.h"
+#include "Features/Settings/SliderSetting.h"
+#include "Features/Settings/MultiSetting.h"
 
 class Speed : public Feature {
 public:
@@ -14,5 +14,7 @@ public:
 	float GetSpeed() { return this->speed->GetValue(); }
 private:
 	bool CanExecute() override;
+	void Initialize() override;
 	SliderSetting* speed;
+
 };
