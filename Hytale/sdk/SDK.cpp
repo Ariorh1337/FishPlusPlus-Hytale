@@ -74,13 +74,6 @@ void setCursorHidden(bool hidden) {
 	SetCursorHidden_method(app->Engine->Window, hidden);
 }
 
-void DoMoveCycle(DefaultMovementController* dmc, Vector3 dir) {
-	Util::log("NEW DoMoveCycle called with DMC: 0x%llX, dir: (%f, %f, %f)\n", dmc, dir.x, dir.y, dir.z);
-}
-void SDK::DoMoveCycleTest(DefaultMovementController* dmc, Vector3 dir) {
-	//Util::log("NEW DoMoveCycle called with DMC: 0x%llX, dir: (%f, %f, %f)\n", dmc, dir.x, dir.y, dir.z);
-}
-
 void SDK::Main() {
 	if (!initialized) {
 		//EventRegister::DoMoveCycleEvent.Subscribe(DoMoveCycle);

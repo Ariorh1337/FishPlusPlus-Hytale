@@ -46,5 +46,12 @@ void Speed::Initialize() {
         if (this->IsActive())
             this->OnMoveCycle(dmc, dir);
 	});
+}	
+
+void Speed::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
+
+	Util::log("Original offset: %f, %f, %f\n", offset.x, offset.y, offset.z);
+	offset = offset * this->GetSpeed();
+	Util::log("Modified offset: %f, %f, %f\n", offset.x, offset.y, offset.z);
 }
 

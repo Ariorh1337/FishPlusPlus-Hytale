@@ -2,6 +2,7 @@
  * Copyright (c) FishPlusPlus.
  */
 #pragma once
+#include <cmath>
 
 struct Vector3 {
 	float x;

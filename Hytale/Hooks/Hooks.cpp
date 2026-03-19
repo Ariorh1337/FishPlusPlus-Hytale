@@ -33,16 +33,6 @@ if (MH_CreateHook((LPVOID)name##Address, &H##name, reinterpret_cast<LPVOID*>(&o#
     return false;\
 }\
 
-#define safety_hook_method(name)                                                            \
-        sh##name = safetyhook::create_inline(SM::name##Address, &H##name);                  \
-        if (!sh##name) {                                                                    \
-            Util::log("Failed to hook %s\n", #name);                                        \
-            return false;                                                                   \
-        }                                                                                   \
-        o##name = sh##name.original<name>();                                                \
-        Util::log("Hooked %s: 0x%llX\n", #name, SM::name##Address);                                
-
-
 static void* GetAnyGLFuncAddress(const char* name) {
     void* p = (void*)wglGetProcAddress(name);
     if (p == nullptr || p == (void*)0x1 || p == (void*)0x2 ||
@@ -55,7 +45,6 @@ static void* GetAnyGLFuncAddress(const char* name) {
     }
     return p;
 }
-
 
 typedef BOOL(WINAPI* WglSwapBuffers)(HDC hdc);
 WglSwapBuffers oWglSwapBuffers = nullptr;
@@ -119,45 +108,9 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
 }
 
 void __fastcall HDoMoveCycle(DefaultMovementController* dmc, Vector3 offset) {
-
 	EventRegister::DoMoveCycleEvent.Invoke(dmc, offset);
-
-	SDK::DoMoveCycleTest(dmc, offset);
-
-        /*
-        MoveCycleEvent event(*dmc, *offset);
-        FeatureDispatcher::DispatchEvent(event);
-        */
-        /*
-        if (Util::ShouldInteractWithGame()) {
-            //Util::log("DoMoveCycle called with DMC: 0x%llX, offset: (%f, %f, %f)\n", dmc, offset->x, offset->y, offset->z);
-            Vector3 dir = *offset;
-            dmc->SpeedMultiplier = 1.0f;
-            float yawRad = Util::getLocalPlayer()->yawRad;
-            float forwardX = -sin(yawRad);
-            float forwardZ = -cos(yawRad);
-
-            float strafeX = forwardZ;
-            float strafeZ = -forwardX;
-
-            dmc->Velocity.x = 0.0f;
-            dmc->Velocity.z = 0.0f;
-            dir.x = 0.0f;
-            dir.z = 0.0f;
-			float currentSpeed = FeatureDispatcher::GetFeatureFloatValue("Speed");
-
-            if (InputSystem::IsKeyHeld(SDL_SCANCODE_W))
-                dir += Vector3(forwardX * currentSpeed, dir.y, forwardZ * currentSpeed);
-            if (InputSystem::IsKeyHeld(SDL_SCANCODE_S))
-                dir += Vector3(-forwardX * currentSpeed, dir.y, -forwardZ * currentSpeed);
-            if (InputSystem::IsKeyHeld(SDL_SCANCODE_A))
-                dir += Vector3(strafeX * currentSpeed, dir.y, strafeZ * currentSpeed);
-            if (InputSystem::IsKeyHeld(SDL_SCANCODE_D))
-                dir += Vector3(-strafeX * currentSpeed, dir.y, -strafeZ * currentSpeed);
-			offset = &dir;
-        }*/
-    if (Hooks::oDoMoveCycle)
-        Hooks::oDoMoveCycle(dmc, offset);
+    Util::log("Modified FINAL offset: %f, %f, %f\n", offset.x, offset.y, offset.z);
+	return Hooks::oDoMoveCycle(dmc, offset);
 }
 
 void __fastcall HHandleScreenShotting(App* app) {

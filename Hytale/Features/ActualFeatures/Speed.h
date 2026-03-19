@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "sdk/DefaultMovementController.h"
 #include "Features/Feature.h"
 
 #include "Features/Settings/SliderSetting.h"

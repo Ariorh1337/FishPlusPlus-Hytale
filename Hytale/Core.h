@@ -33,6 +33,7 @@
 #include "Renderer/FontRenderer/Fonts.h"
 
 #include "Math/Matrix4x4.h"
+#include "Math/Vector3.h"
 
 #define ValidPtr(ptr) if (!Util::IsValidPtr(ptr)) return nullptr;
 #define ValidPtrVoid(ptr) if (!Util::IsValidPtr(ptr)) return;
