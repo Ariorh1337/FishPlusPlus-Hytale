@@ -19,8 +19,16 @@ inline SafetyHookInline shOnChat{ };
 
 static std::unique_ptr<Menu> menu;
 
+
 #define CREATE_HOOK(name) \
 if (MH_CreateHook((LPVOID)SM::name##Address, &H##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
+    Util::log("Failed to hook %s\n", #name);\
+    return false;\
+}\
+
+#define CREATE_SIG_HOOK(name, pattern) \
+std::uintptr_t name##Address = Util::PatternScan(pattern);\
+if (MH_CreateHook((LPVOID)name##Address, &H##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
     Util::log("Failed to hook %s\n", #name);\
     return false;\
 }\
@@ -233,13 +241,26 @@ uint64_t __fastcall HDrawScene(uint64_t thisptr) {
     }
 }
 
+void HGCMethodLookup(GCInstance* instance) {
+    if ((instance->flags & 0x10) == 0) {
+        static uint64_t getGcObject;
+        if (!getGcObject)
+            getGcObject = Util::RelativeVirtualAddress(Util::PatternScan("E8 ? ? ? ? 48 89 06 4C 8B FE"), 1, 5);
+
+        if (!((uint64_t(__fastcall*)(GCData*, uint64_t))getGcObject)(instance->gcData, instance->address))
+            instance->flags |= GCFlag::GCFlag_SkipAddress;
+    }
+    Hooks::oGCMethodLookup(instance);
+}
+
 bool Hooks::CreateHooks() {
-    Util::log("Creating MH Hooks\n");
+    Util::log("Creating Hooks\n");
     if (MH_Initialize() != MH_OK) {
 		Util::log("Failed to initialize MinHook");
         return false;
     }
 
+    CREATE_SIG_HOOK(GCMethodLookup, "40 53 57 48 83 EC ? 48 8D B9"); //E8 ? ? ? ? 83 3D ? ? ? ? ? 72 ? 49 8B CE   
     CREATE_HOOK(WglSwapBuffers);
     CREATE_HOOK(DoMoveCycle);
     CREATE_HOOK(HandleScreenShotting);
@@ -256,21 +277,7 @@ bool Hooks::CreateHooks() {
 
 
     MH_EnableHook(MH_ALL_HOOKS);
-    Util::log("All MinHooks created successfully\n");
-    return true;
-}
-
-bool Hooks::CreateSafetyHooks() {
-    Util::log("Creating SafetyHook Hooks\n");
-
-    safety_hook_method(WglSwapBuffers);
-    safety_hook_method(DoMoveCycle);
-    safety_hook_method(HandleScreenShotting);
-    safety_hook_method(OnUserInput);
-    //safety_hook_method(SetCursorHidden);
-    safety_hook_method(OnChat);
-
-    Util::log("All SafetyHook hooks created successfully\n");
+    Util::log("All Hooks created successfully\n");
     return true;
 }
 

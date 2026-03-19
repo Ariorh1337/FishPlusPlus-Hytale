@@ -173,7 +173,6 @@
     <ClCompile Include="Features\ActualFeatures\Speed.cpp" />
     <ClCompile Include="Hooks\Hooks.cpp" />
     <ClCompile Include="Math\Vector4.h" />
-    <ClCompile Include="Memory\Memory.cpp" />
     <ClCompile Include="Menu\Children\ColorButton.cpp" />
     <ClCompile Include="Menu\Children\FeatureButton.cpp" />
     <ClCompile Include="Menu\Children\KeybindButton.cpp" />
@@ -332,7 +331,6 @@
     <ClInclude Include="Math\Color.h" />
     <ClInclude Include="Math\Matrix4x4.h" />
     <ClInclude Include="Math\Vector2.h" />
-    <ClInclude Include="Memory\Memory.h" />
     <ClInclude Include="Menu\Children\ColorButton.h" />
     <ClInclude Include="Menu\Children\FeatureButton.h" />
     <ClInclude Include="Menu\Children\KeybindButton.h" />

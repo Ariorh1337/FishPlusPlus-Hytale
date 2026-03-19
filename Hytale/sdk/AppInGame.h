@@ -4,8 +4,6 @@
 #pragma once
 #include "GameInstance.h"
 
-#include "Memory/Memory.h"
-
 struct AppInGame {
 	char pad[0x10];
 	GameInstance* gameInstance;

@@ -7,7 +7,30 @@
 
 #include "Math/Vector3.h"
 
+enum GCFlag : uint32_t {
+	GCFlag_None = 0x0,
+	GCFlag_SkipAddress = 0x10
+};
+
+struct GCData {
+	char pad[0x18];            // 0x0
+	uint64_t object;           // 0x18
+	uint64_t regionStart;      // 0x20
+	uint64_t regionEnd;        // 0x28
+};
+
+struct GCInstance {
+	char pad1[0x8];            // 0x0
+	GCData* gcData;            // 0x8
+	char pad2[0x8];            // 0x10
+	uint64_t address;          // 0x18
+	char pad3[0x198];          // 0x20
+	uint32_t flags;            // 0x1B8
+};
+
 namespace Hooks {
+	typedef void(__fastcall* GCMethodLookup)(GCInstance* instance);
+	inline static GCMethodLookup oGCMethodLookup = nullptr;
 
 	typedef void(__fastcall* DoMoveCycle)(DefaultMovementController* dmc, Vector3 offset);
 	inline static DoMoveCycle oDoMoveCycle = nullptr;

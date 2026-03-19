@@ -20,3 +20,4 @@ void Speed::Initialize() {
 		Util::log("DoMoveCycle called with DMC: 0x%llX, offset: (%f, %f, %f)\n", dmc, dir.x, dir.y, dir.z);
 	});
 }
+

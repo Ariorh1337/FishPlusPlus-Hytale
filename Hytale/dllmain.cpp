@@ -4,7 +4,7 @@
 #include "Core.h"
 #include "Hooks/Hooks.h"
 
-#define GetSig(name, pattern) SM::name##Address = PatternScan(pattern); \
+#define GetSig(name, pattern) SM::name##Address = Util::PatternScan(pattern); \
 if (!Util::IsValidPtr(SM::name##Address)) {                             \
     Util::log("Failed to get %s address\n", #name);                     \
     return false;                                                       \
@@ -35,7 +35,6 @@ DWORD WINAPI startPoint(LPVOID lpParam) {
     }
 
     if (!Hooks::CreateHooks()) {
-    //if (!Hooks::CreateSafetyHooks()) {
 		Util::log("Failed to create hooks\n");
         Util::free_console();
         return 0;
