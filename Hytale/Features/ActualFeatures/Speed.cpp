@@ -14,10 +14,37 @@ bool Speed::CanExecute() {
 	ValidPtrBool(Util::getLocalPlayer());
 }
 
+void Speed::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
+    dmc->SpeedMultiplier = 1.0f;
+    float yawRad = Util::getLocalPlayer()->yawRad;
+    float forwardX = -sin(yawRad);
+    float forwardZ = -cos(yawRad);
+
+    float strafeX = forwardZ;
+    float strafeZ = -forwardX;
+
+    dmc->Velocity.x = 0.0f;
+    dmc->Velocity.z = 0.0f;
+    offset.x = 0.0f;
+    offset.z = 0.0f;
+    float currentSpeed = this->speed->GetValue();
+
+    if (InputSystem::IsKeyHeld(SDL_SCANCODE_W))
+        offset += Vector3(forwardX * currentSpeed, offset.y, forwardZ * currentSpeed);
+    if (InputSystem::IsKeyHeld(SDL_SCANCODE_S))
+        offset += Vector3(-forwardX * currentSpeed, offset.y, -forwardZ * currentSpeed);
+    if (InputSystem::IsKeyHeld(SDL_SCANCODE_A))
+        offset += Vector3(strafeX * currentSpeed, offset.y, strafeZ * currentSpeed);
+    if (InputSystem::IsKeyHeld(SDL_SCANCODE_D))
+        offset += Vector3(-strafeX * currentSpeed, offset.y, -strafeZ * currentSpeed);
+}
+
+
 void Speed::Initialize() {
 	Util::log("Initialized Speed feature");
-	EventRegister::DoMoveCycleEvent.Subscribe([](DefaultMovementController* dmc, Vector3 dir) {
-		Util::log("DoMoveCycle called with DMC: 0x%llX, offset: (%f, %f, %f)\n", dmc, dir.x, dir.y, dir.z);
+	EventRegister::DoMoveCycleEvent.Subscribe([&](DefaultMovementController* dmc, Vector3& dir) {
+        if (this->IsActive())
+            this->OnMoveCycle(dmc, dir);
 	});
 }
 

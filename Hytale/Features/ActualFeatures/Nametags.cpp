@@ -27,4 +27,5 @@ bool Nametags::CanExecute() {
 }
 void Nametags::Initialize() {
 	Util::log("Initialized Nametags feature");
+
 }

@@ -15,8 +15,7 @@ public:
 private:
 	bool CanExecute() override;
 	void Initialize() override;
-
-	void OnMoveCycle(DefaultMovementController* dmc, Vector3 offset);
+	void OnMoveCycle(DefaultMovementController* dmc, Vector3& offset);
 	SliderSetting* speed;
 
 };

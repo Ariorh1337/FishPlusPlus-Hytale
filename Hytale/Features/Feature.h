@@ -10,6 +10,10 @@
 
 #include "Util/InputSystem.h"
 
+#include "Events/EventRegister.h"
+
+
+
 class Feature {
 public:
 	Feature(std::string name);

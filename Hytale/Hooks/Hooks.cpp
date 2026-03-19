@@ -120,7 +120,7 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
 
 void __fastcall HDoMoveCycle(DefaultMovementController* dmc, Vector3 offset) {
 
-	//EventRegister::DoMoveCycleEvent.Invoke(dmc, *offset);
+	EventRegister::DoMoveCycleEvent.Invoke(dmc, offset);
 
 	SDK::DoMoveCycleTest(dmc, offset);
 

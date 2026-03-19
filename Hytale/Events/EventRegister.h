@@ -2,5 +2,7 @@
 #include "../Core.h"
 
 namespace EventRegister {
-	inline Event<DefaultMovementController*, Vector3> DoMoveCycleEvent;
+	inline Event<DefaultMovementController*, Vector3&> DoMoveCycleEvent;
+	inline Event<Renderer3D&> Render3DEvent;
+	inline Event<> Render2DEvent;
 }
