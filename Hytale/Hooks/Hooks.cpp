@@ -3,19 +3,11 @@
  */
 #include "Core.h"
 #include "Hooks.h"
-#include "external/safetyhook/safetyhook.hpp"
 #include "Events/EventRegister.h"
 #include "Features/FeatureHandler.h"
 
 static bool initialized = false;
 static bool initialized3D = false;
-
-inline SafetyHookInline shWglSwapBuffers{ };
-inline SafetyHookInline shDoMoveCycle{ };
-inline SafetyHookInline shHandleScreenShotting{ };
-inline SafetyHookInline shOnUserInput{ };
-inline SafetyHookInline shSetCursorHidden{ };
-inline SafetyHookInline shOnChat{ };
 
 static std::unique_ptr<Menu> menu;
 
@@ -227,13 +219,4 @@ bool Hooks::CreateHooks() {
     MH_EnableHook(MH_ALL_HOOKS);
     Util::log("All Hooks created successfully\n");
     return true;
-}
-
-void Hooks::UnhookAll() {
-    shWglSwapBuffers.reset();
-    shDoMoveCycle.reset();
-    shHandleScreenShotting.reset();
-    shOnUserInput.reset();
-    shSetCursorHidden.reset();
-	shOnChat.reset();
 }

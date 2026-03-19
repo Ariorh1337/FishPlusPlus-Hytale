@@ -48,8 +48,7 @@ DWORD WINAPI startPoint(LPVOID lpParam) {
             break;
     }
 
-    //MH_DisableHook(MH_ALL_HOOKS);
-	Hooks::UnhookAll();
+    MH_DisableHook(MH_ALL_HOOKS);
 	Util::free_console();
 
     return 0;

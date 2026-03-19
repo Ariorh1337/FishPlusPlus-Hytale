@@ -60,7 +60,4 @@ namespace Hooks {
 	inline static DrawScene oDrawScene = nullptr;
 
 	bool CreateHooks();
-	bool CreateNewHooks();
-	bool CreateSafetyHooks();
-	void UnhookAll();
 }
