@@ -17,6 +17,7 @@ bool InitSigs() {
     GetSig(SetCursorHidden, "55 57 56 53 48 83 EC ? 48 8D 6C 24 ? 33 C0 48 89 45 ? 48 89 45 ? 48 8B D9 8B F2");
     GetSig(UpdateInputStates, "57 56 53 48 83 EC ? 48 8B D9 8B F2 48 8B 4B ? 48 85 C9 0F 84");
     GetSig(OnChat, "56 53 48 83 EC ? 48 8B F1 48 8B DA 38 1B 48 8B CB");
+    GetSig(DrawScene, "57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 33 C0 48 89 84 24 ? ? ? ? 48 8B D9");
 
     SM::WglSwapBuffersAddress = (uint64_t) GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglSwapBuffers");
     if (!Util::IsValidPtr(SM::WglSwapBuffersAddress)) {

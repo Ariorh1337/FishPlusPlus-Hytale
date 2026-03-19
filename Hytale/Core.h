@@ -53,4 +53,5 @@ namespace SM { // Signature Methods
 	inline uint64_t UpdateInputStatesAddress = 0;
 	inline uint64_t WglSwapBuffersAddress = 0;
 	inline uint64_t OnChatAddress = 0;
+	inline uint64_t DrawSceneAddress = 0;
 }

@@ -10,4 +10,5 @@ public:
 private:
 	bool CanExecute() override;
 	void Initialize() override;
+	void OnRender3D(Renderer3D& renderer3D);
 };

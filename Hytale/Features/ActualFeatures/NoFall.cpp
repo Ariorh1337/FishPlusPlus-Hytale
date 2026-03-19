@@ -5,7 +5,7 @@
 
 #include "core.h"
 
-void OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
+void NoFall::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
 	if (dmc->Velocity.y < -20.0f)
 		dmc->Velocity.y = -20.0f;
 }
@@ -18,7 +18,7 @@ bool NoFall::CanExecute() {
 
 
 void NoFall::Initialize() {
-	Util::log("Initialized Nofall feature");
+	Util::log("Initialized Nofall feature\n");
 	EventRegister::DoMoveCycleEvent.Subscribe([&](DefaultMovementController* dmc, Vector3& dir) {
 		if (this->IsActive())
 			this->OnMoveCycle(dmc, dir);

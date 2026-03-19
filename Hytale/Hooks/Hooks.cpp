@@ -85,10 +85,10 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
             Util::orthoProjMatInitialized = true;
         }
 
-        //Renderer3D renderer3D;
-        //Render3DEvent render3DEvent(renderer3D);
-        //FeatureDispatcher::DispatchEvent(render3DEvent);
-        //renderer3D.Render();
+        Renderer3D renderer3D;
+        EventRegister::Render3DEvent.Invoke(renderer3D);
+        renderer3D.Render();
+
 
         Fonts::Figtree->RenderText(std::format("App: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app)), 0.0f, 10.0f, 0.5f, Color::White());
         Fonts::Figtree->RenderText(std::format("AppInGame: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app->appInGame)), 0.0f, 20.0f, 0.5f, Color::White());
@@ -109,7 +109,6 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
 
 void __fastcall HDoMoveCycle(DefaultMovementController* dmc, Vector3 offset) {
 	EventRegister::DoMoveCycleEvent.Invoke(dmc, offset);
-    Util::log("Modified FINAL offset: %f, %f, %f\n", offset.x, offset.y, offset.z);
 	return Hooks::oDoMoveCycle(dmc, offset);
 }
 
@@ -182,16 +181,12 @@ void __fastcall HOnChat(uint64_t thisptr, uint64_t a2) {
 }
 
 uint64_t __fastcall HDrawScene(uint64_t thisptr) {
+
+    Renderer3D renderer3D;
+    EventRegister::Render3DEvent.Invoke(renderer3D);
+    renderer3D.Render();
+
     return Hooks::oDrawScene(thisptr);
-    try {
-        //Renderer3D renderer3D;
-        //Render3DEvent render3DEvent(renderer3D);
-        //FeatureDispatcher::DispatchEvent(render3DEvent);
-        //renderer3D.Render();
-    }
-    catch (...) {
-        std::cout << "Exception in DrawScene\n";
-    }
 }
 
 void HGCMethodLookup(GCInstance* instance) {
@@ -225,7 +220,7 @@ bool Hooks::CreateHooks() {
     //CREATE_HOOK(SetActiveHotbarSlot, "55 41 56 57 56 53 48 83 EC ? 48 8D 6C 24 ? 48 8B D9 8B F2 48 83 7B");
     //CREATE_HOOK(WeatherUpdate, "57 56 55 53 48 83 EC ? 0F 29 74 24 ? 48 8B D9 48 8B F2 48 8B 4B ? 48 8B 89 ? ? ? ? 48 8B 79 ? 80 BB ? ? ? ? ? 74 ? 80 7B ? ? 0F 85 ? ? ? ? 48 8B CF 4C 8D 1D ? ? ? ? 41 FF 13 85 C0 0F 85 ? ? ? ? 0F B6 83 ? ? ? ? 88 83 ? ? ? ? F3 0F 10 76 ? 0F 16 F6 0F 12 36 0F 57 C0 0F 28 CE 0F C6 C8 ? 0F 28 C6 0F C6 C1 ? 0F 59 C0 0F 28 C8 0F C6 C8 ? 0F 58 C8 0F 28 C1 0F C6 C1 ? 0F 58 C1 F3 0F 51 C0 F3 0F 59 05 ? ? ? ? F3 0F 5A C0 E8 ? ? ? ? 0F 28 C8 F2 0F C2 C8 07 66 0F 54 C8 BA ? ? ? ? F2 0F 2C C9 66 0F 2E 05 ? ? ? ? 0F 42 D1 8B F2 0F 57 C0 F3 0F 2A C6 0F C6 C0 ? 0F 5E F0 85 F6 7E ? 8B EE 0F 29 74 24 ? 48 8D 54 24 ? 48 8B CB E8 ? ? ? ? FF CD 75 ? 85 F6 0F 85");
 
-    //CREATE_HOOK(DrawScene, "57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 33 C0 48 89 84 24 ? ? ? ? 48 8B D9");
+    //CREATE_HOOK(DrawScene);
     
 
 

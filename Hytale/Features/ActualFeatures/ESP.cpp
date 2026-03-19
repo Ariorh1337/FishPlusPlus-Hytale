@@ -16,8 +16,8 @@ ESP::ESP() : Feature("ESP") {
 	this->colorUnderRecrusive = this->testRecursive->RegisterSetting<ColorSetting>("testColor", Color(255, 255, 0, 255));
 }
 
-/*
-void ESP::OnRender3D(Render3DEvent& renderer3D) {
+
+void ESP::OnRender3D(Renderer3D& renderer3D) {
 	SDK::global_mutex.lock();
 	std::vector<EntityData> entities = SDK::entities;
 	SDK::global_mutex.unlock();
@@ -30,14 +30,18 @@ void ESP::OnRender3D(Render3DEvent& renderer3D) {
 		if (!toggle->GetValue() && entity.isLocalPlayer)
 			continue;
 		
-		renderer3D.renderer3D.BoxLines(entity.entityPtr, Color::Normalize(insideColor->GetValue()), Color::Normalize(outsideColor->GetValue()));
+		renderer3D.BoxLines(entity.entityPtr, Color::Normalize(insideColor->GetValue()), Color::Normalize(outsideColor->GetValue()));
 	}
-}*/
+}
 
 bool ESP::CanExecute() {
 	ValidPtrBool(Util::getLocalPlayer());
 }
 
 void ESP::Initialize() {
-	Util::log("Initialized ESP feature");
+	Util::log("Initialized ESP feature\n");
+	EventRegister::Render3DEvent.Subscribe([&](Renderer3D& renderer) {
+		if (this->IsActive())
+			this->OnRender3D(renderer);
+		});
 }
