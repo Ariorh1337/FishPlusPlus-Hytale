@@ -27,8 +27,5 @@ bool Nametags::CanExecute() {
 }
 void Nametags::Initialize() {
 	Util::log("Initialized Nametags feature\n");
-	EventRegister::Render3DEvent.Subscribe([&](Renderer3D& renderer) {
-		if (this->IsActive())
-			this->OnRender3D(renderer);
-	});
+	RegisterEvent(this);
 }

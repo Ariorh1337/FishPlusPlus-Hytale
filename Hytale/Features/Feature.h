@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <concepts>
 
 #include "Setting.h"
 
@@ -12,7 +13,15 @@
 
 #include "Events/EventRegister.h"
 
+template<typename T>
+concept HasDoMoveCycle = requires(T t, DefaultMovementController* dmc, Vector3& offset) {
+	t->OnMoveCycle(dmc, offset);
+};
 
+template<typename T>
+concept HasRender3D = requires(T t, Renderer3D& renderer) {
+	t->OnRender3D(renderer);
+};
 
 class Feature {
 public:
@@ -22,7 +31,7 @@ public:
 	virtual void OnActivate();
 	virtual void OnDeactivate();
 	virtual void Initialize();
-
+	
 	void CreateForcedKeybind();
 	
 	template<typename T, typename... Args>
@@ -31,6 +40,30 @@ public:
 		T* raw = ptr.get();
 		m_settings.push_back(std::move(ptr));
 		return raw;
+	}
+
+	template<typename T>
+	void RegisterEvent(T feature) {
+		if constexpr (HasDoMoveCycle<T>) {
+			EventRegister::DoMoveCycleEvent.Subscribe([feature](DefaultMovementController* dmc, Vector3& dir) {
+				if (feature->IsActive() && feature->CanExecute())
+					feature->OnMoveCycle(dmc, dir);
+				});
+		}
+
+		if constexpr (HasRender3D<T>) {
+			EventRegister::Render3DEvent.Subscribe([feature](Renderer3D& renderer) {
+				if (feature->IsActive() && feature->CanExecute())
+					feature->OnRender3D(renderer);
+				});
+		}
+	}
+
+	ISetting* GetSettingFromName(std::string name) {
+		for (auto& setting : this->m_settings) {
+			if (setting->GetName() == name)
+				return setting.get();
+		}
 	}
 
 	[[nodiscard]] const std::string& GetName() const { return m_name; }

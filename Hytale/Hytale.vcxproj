@@ -140,11 +140,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;HYTALE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,6 +163,7 @@
     <ClCompile Include="external\minhook\hde\hde64.c" />
     <ClCompile Include="external\minhook\hook.c" />
     <ClCompile Include="external\minhook\trampoline.c" />
+    <ClCompile Include="Features\ActualFeatures\WorldModulate.cpp" />
     <ClCompile Include="Features\Feature.cpp" />
     <ClCompile Include="Features\ActualFeatures\ESP.cpp" />
     <ClCompile Include="Features\FeatureHandler.cpp" />
@@ -308,6 +310,7 @@
     <ClInclude Include="external\minhook\hde\table64.h" />
     <ClInclude Include="external\minhook\minhook.h" />
     <ClInclude Include="external\minhook\trampoline.h" />
+    <ClInclude Include="Features\ActualFeatures\WorldModulate.h" />
     <ClInclude Include="Features\Feature.h" />
     <ClInclude Include="Features\Setting.h" />
     <ClInclude Include="Features\Settings\ColorSetting.h" />

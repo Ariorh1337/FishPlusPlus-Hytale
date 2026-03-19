@@ -56,7 +56,7 @@ namespace Hooks {
 	typedef void(__fastcall* OnChat)(uint64_t a1, uint64_t a2);
 	inline static OnChat oOnChat = nullptr;
 
-	typedef uint64_t(__fastcall* DrawScene)(uint64_t a1);
+	typedef void(__fastcall* DrawScene)(GameInstance* a1);
 	inline static DrawScene oDrawScene = nullptr;
 
 	bool CreateHooks();

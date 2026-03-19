@@ -58,8 +58,5 @@ bool Flight::CanExecute() {
 
 void Flight::Initialize() {
 	Util::log("Initialized Flight feature\n");
-	EventRegister::DoMoveCycleEvent.Subscribe([&](DefaultMovementController* dmc, Vector3& dir) {
-		if (this->IsActive())
-			this->OnMoveCycle(dmc, dir);
-		});
+	RegisterEvent(this);
 }

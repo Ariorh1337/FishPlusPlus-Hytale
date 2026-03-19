@@ -13,10 +13,11 @@ class Speed : public Feature {
 public:
 	Speed();
 	float GetSpeed() { return this->speed->GetValue(); }
-private:
-	bool CanExecute() override;
-	void Initialize() override;
 	void OnMoveCycle(DefaultMovementController* dmc, Vector3& offset);
+	bool CanExecute() override;
+	
+	void Initialize() override;
+	
 	SliderSetting* speed;
 
 };

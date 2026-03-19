@@ -15,6 +15,7 @@ bool Speed::CanExecute() {
 }
 
 void Speed::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
+    
     dmc->SpeedMultiplier = 1.0f;
     float yawRad = Util::getLocalPlayer()->yawRad;
     float forwardX = -sin(yawRad);
@@ -42,8 +43,5 @@ void Speed::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
 
 void Speed::Initialize() {
 	Util::log("Initialized Speed feature\n");
-	EventRegister::DoMoveCycleEvent.Subscribe([&](DefaultMovementController* dmc, Vector3& dir) {
-        if (this->IsActive())
-            this->OnMoveCycle(dmc, dir);
-	});
+    RegisterEvent(this);
 }	

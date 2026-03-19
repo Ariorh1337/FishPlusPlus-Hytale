@@ -40,8 +40,5 @@ bool ESP::CanExecute() {
 
 void ESP::Initialize() {
 	Util::log("Initialized ESP feature\n");
-	EventRegister::Render3DEvent.Subscribe([&](Renderer3D& renderer) {
-		if (this->IsActive())
-			this->OnRender3D(renderer);
-		});
+	RegisterEvent(this);
 }

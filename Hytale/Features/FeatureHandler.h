@@ -5,4 +5,6 @@ namespace FeatureHandler {
 	inline std::vector<std::unique_ptr<Feature>> features;
 
 	void Init();
+
+	Feature* GetFeatureFromName(std::string name);
 }

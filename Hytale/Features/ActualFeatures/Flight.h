@@ -12,12 +12,12 @@
 class Flight : public Feature {
 public:
 	Flight();
-private:
+	void OnMoveCycle(DefaultMovementController* dmc, Vector3& offset);
 	void OnDeactivate() override;
 	bool CanExecute() override;
 	void Initialize() override;
 
-	void OnMoveCycle(DefaultMovementController* dmc, Vector3& offset);
+	
 
 	MultiSetting* mode;
 	SliderSetting* speed;

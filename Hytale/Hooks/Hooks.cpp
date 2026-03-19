@@ -6,6 +6,8 @@
 #include "Events/EventRegister.h"
 #include "Features/FeatureHandler.h"
 
+#include "Features/ActualFeatures/WorldModulate.h"
+
 static bool initialized = false;
 static bool initialized3D = false;
 
@@ -142,46 +144,79 @@ void __fastcall HOnUserInput(uint64_t thisptr, SDL_Event a2) {
 }
 
 void __fastcall HOnChat(uint64_t thisptr, uint64_t a2) {
-    try {
-        HytaleString* stringTest = (HytaleString*) a2;
-		//Util::log("Chat message: %s\n", stringTest->getName().c_str());
+    HytaleString* stringTest = (HytaleString*)a2;
+    //Util::log("Chat message: %s\n", stringTest->getName().c_str());
 
-        if (!stringTest->getName().starts_with('!')) {
-            Hooks::oOnChat(thisptr, a2);
-            return;
-        }
-
-        std::string message = stringTest->getName();
-
-        std::istringstream iss(message.substr(1));
-        float x;
-        float y;
-        float z;
-
-        if (iss >> x >> y >> z) {
-            GameInstance* instance = Util::getGameInstance();
-            Entity* player = Util::getLocalPlayer();
-            ValidPtrVoid(player);
-            player->SetPositionTeleport(Vector3(x, y, z));
-        }
-    }
-    catch (...) {
-        std::cout << "Exception in OnChat\n";
-	}
-	if (Hooks::oOnChat)
+    if (!stringTest->getName().starts_with('!')) {
         Hooks::oOnChat(thisptr, a2);
+        return;
+    }
+
+    std::string message = stringTest->getName();
+
+    std::istringstream iss(message.substr(1));
+    float x;
+    float y;
+    float z;
+
+    if (iss >> x >> y >> z) {
+        GameInstance* instance = Util::getGameInstance();
+        Entity* player = Util::getLocalPlayer();
+        ValidPtrVoid(player);
+        player->SetPositionTeleport(Vector3(x, y, z));
+    }
+
+    Hooks::oOnChat(thisptr, a2);
 }
 
-uint64_t __fastcall HDrawScene(uint64_t thisptr) {
+void HDrawScene(GameInstance* thisptr) {
+    Hooks::oDrawScene(thisptr);
+
+    if (!initialized)
+        return;
 
     Renderer3D renderer3D;
     EventRegister::Render3DEvent.Invoke(renderer3D);
     renderer3D.Render();
+}
 
-    return Hooks::oDrawScene(thisptr);
+void HWeatherUpdate(uintptr_t a1, float deltaTime) {
+
+    Hooks::oWeatherUpdate(a1, deltaTime);
+
+    WorldModulate* worldModulate = static_cast<WorldModulate*>(FeatureHandler::GetFeatureFromName("WorldModulate"));
+    if (!worldModulate)
+        return;
+
+    if (!worldModulate->IsActive())
+        return;
+
+    bool noFog = static_cast<ToggleSetting*>(worldModulate->GetSettingFromName("No Fog"))->GetValue();
+
+    RecursiveSetting* fogChanger = static_cast<RecursiveSetting*>(worldModulate->GetSettingFromName("Fog Changer"));
+    
+    //TODO: Add the actual WeatherModule struct
+    if (fogChanger->GetValue()) {
+        float fogStart = static_cast<SliderSetting*>(fogChanger->GetSettingFromName("Start"))->GetValue();
+        float fogEnd = static_cast<SliderSetting*>(fogChanger->GetSettingFromName("End"))->GetValue();
+        Color color = static_cast<ColorSetting*>(fogChanger->GetSettingFromName("Color"))->GetValue();
+        color = Color::Normalize(color);
+
+        *(float*)((uintptr_t)(a1 + 0x90)) = fogStart;
+        *(float*)((uintptr_t)(a1 + 0x94)) = fogEnd;
+        *(float*)((uintptr_t)(a1 + 0x110)) = color.r;
+        *(float*)((uintptr_t)(a1 + 0x114)) = color.g;
+        *(float*)((uintptr_t)(a1 + 0x118)) = color.b;
+    }
+    
+    if (noFog)
+        *(float*)((uintptr_t)(a1 + 0x94)) = 0.0f;
 }
 
 void HGCMethodLookup(GCInstance* instance) {
+    /*
+        Fix for fail fast exceptions. Explanation @ https://www.unknowncheats.me/forum/4625377-post292.html
+    */
     if ((instance->flags & 0x10) == 0) {
         static uint64_t getGcObject;
         if (!getGcObject)
@@ -210,9 +245,9 @@ bool Hooks::CreateHooks() {
 
     //CREATE_HOOK(UpdateInputStates, "57 56 53 48 83 EC ? 48 8B D9 8B F2 48 8B 4B ? 48 85 C9 0F 84");
     //CREATE_HOOK(SetActiveHotbarSlot, "55 41 56 57 56 53 48 83 EC ? 48 8D 6C 24 ? 48 8B D9 8B F2 48 83 7B");
-    //CREATE_HOOK(WeatherUpdate, "57 56 55 53 48 83 EC ? 0F 29 74 24 ? 48 8B D9 48 8B F2 48 8B 4B ? 48 8B 89 ? ? ? ? 48 8B 79 ? 80 BB ? ? ? ? ? 74 ? 80 7B ? ? 0F 85 ? ? ? ? 48 8B CF 4C 8D 1D ? ? ? ? 41 FF 13 85 C0 0F 85 ? ? ? ? 0F B6 83 ? ? ? ? 88 83 ? ? ? ? F3 0F 10 76 ? 0F 16 F6 0F 12 36 0F 57 C0 0F 28 CE 0F C6 C8 ? 0F 28 C6 0F C6 C1 ? 0F 59 C0 0F 28 C8 0F C6 C8 ? 0F 58 C8 0F 28 C1 0F C6 C1 ? 0F 58 C1 F3 0F 51 C0 F3 0F 59 05 ? ? ? ? F3 0F 5A C0 E8 ? ? ? ? 0F 28 C8 F2 0F C2 C8 07 66 0F 54 C8 BA ? ? ? ? F2 0F 2C C9 66 0F 2E 05 ? ? ? ? 0F 42 D1 8B F2 0F 57 C0 F3 0F 2A C6 0F C6 C0 ? 0F 5E F0 85 F6 7E ? 8B EE 0F 29 74 24 ? 48 8D 54 24 ? 48 8B CB E8 ? ? ? ? FF CD 75 ? 85 F6 0F 85");
+    CREATE_SIG_HOOK(WeatherUpdate, "41 57 41 56 41 55 41 54 57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 44 0F 29 8C 24 ? ? ? ? 0F 57 E4 0F 29 64 24 ? 0F 29 64 24 ? 48 B8");
 
-    //CREATE_HOOK(DrawScene);
+    CREATE_HOOK(DrawScene);
     
 
 

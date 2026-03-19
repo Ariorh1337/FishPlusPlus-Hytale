@@ -19,8 +19,5 @@ bool NoFall::CanExecute() {
 
 void NoFall::Initialize() {
 	Util::log("Initialized Nofall feature\n");
-	EventRegister::DoMoveCycleEvent.Subscribe([&](DefaultMovementController* dmc, Vector3& dir) {
-		if (this->IsActive())
-			this->OnMoveCycle(dmc, dir);
-		});
+	RegisterEvent(this);
 }

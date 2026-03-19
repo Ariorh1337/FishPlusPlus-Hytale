@@ -29,6 +29,13 @@ public:
 		return raw;
 	}
 
+	ISetting* GetSettingFromName(std::string name) {
+		for (auto& setting : this->m_settings) {
+			if (setting->GetName() == name)
+				return setting.get();
+		}
+	}
+
 	std::vector<std::unique_ptr<ISetting>>& GetSettings() {
 		return m_settings;
 	}
