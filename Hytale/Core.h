@@ -41,9 +41,8 @@
 #define ValidPtrEmpty(ptr) if (!Util::IsValidPtr(ptr)) return {};
 #define ValidPtrLoop(ptr) if (!Util::IsValidPtr(ptr)) continue;
 
-namespace Core {
-	inline HMODULE MODULEPTR = nullptr;
-}
+inline uint64_t dllBase;
+inline uint64_t dllBaseEnd;
 
 namespace SM { // Signature Methods
 	inline uint64_t DoMoveCycleAddress = 0;
@@ -54,4 +53,5 @@ namespace SM { // Signature Methods
 	inline uint64_t WglSwapBuffersAddress = 0;
 	inline uint64_t OnChatAddress = 0;
 	inline uint64_t DrawSceneAddress = 0;
+	inline uint64_t GCToEEInterface_CreateThreadAddress = 0;
 }

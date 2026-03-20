@@ -32,7 +32,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     return oWndProc(hWnd, msg, wParam, lParam);
 }
 
-
 Menu::Menu(HDC hdc) {
     HWND hwnd = WindowFromDC(hdc);
     g_hWnd = hwnd;

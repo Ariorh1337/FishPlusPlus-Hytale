@@ -64,6 +64,7 @@ public:
 			if (setting->GetName() == name)
 				return setting.get();
 		}
+		return nullptr;
 	}
 
 	[[nodiscard]] const std::string& GetName() const { return m_name; }

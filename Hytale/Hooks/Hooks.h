@@ -22,9 +22,11 @@ struct GCData {
 struct GCInstance {
 	char pad1[0x8];            // 0x0
 	GCData* gcData;            // 0x8
-	char pad2[0x8];            // 0x10
+	uint64_t field_10;         // 0x10
 	uint64_t address;          // 0x18
-	char pad3[0x198];          // 0x20
+	char pad3[0x180];          // 0x20
+	uint64_t field_1A0;        // 0x1A0
+	char pad4[0x10];           // 0x1A8
 	uint32_t flags;            // 0x1B8
 };
 

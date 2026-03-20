@@ -52,8 +52,11 @@ void Flight::OnDeactivate() {
 }
 
 bool Flight::CanExecute() {
-	ValidPtrBool(Util::getLocalPlayer());
-	ValidPtrBool(Util::GetMovementController());
+	if (!Util::IsValidPtr(Util::getLocalPlayer()))
+		return false;;
+	if (!Util::IsValidPtr(Util::GetMovementController()))
+		return false;;
+	return true;
 }
 
 void Flight::Initialize() {

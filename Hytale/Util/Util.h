@@ -49,7 +49,6 @@ namespace Util {
 
     bool WorldToScreen(Vector3 pos, Vector2& out);
     Matrix4x4 getViewProjMat();
-    std::filesystem::path GetDirectory();
     SimpleTime HoursToTime(float hours);
     uint64_t BuildTicksFromHours(float hours);
     const char* GetKeyName(SDL_Scancode key);

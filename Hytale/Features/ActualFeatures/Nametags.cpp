@@ -23,7 +23,9 @@ void Nametags::OnRender3D(Renderer3D& renderer3D) {
 }
 
 bool Nametags::CanExecute() {
-	ValidPtrBool(Util::getLocalPlayer());
+	if (!Util::IsValidPtr(Util::getLocalPlayer()))
+		return false;;
+	return true;
 }
 void Nametags::Initialize() {
 	Util::log("Initialized Nametags feature\n");

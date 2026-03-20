@@ -11,7 +11,9 @@ Speed::Speed() : Feature("Speed") {
 }
 
 bool Speed::CanExecute() {
-	ValidPtrBool(Util::getLocalPlayer());
+    if (!Util::IsValidPtr(Util::getLocalPlayer()))
+        return false;;
+    return true;
 }
 
 void Speed::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {

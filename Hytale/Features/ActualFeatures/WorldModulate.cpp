@@ -21,7 +21,9 @@ WorldModulate::WorldModulate() : Feature("WorldModulate") {
 }
 
 bool WorldModulate::CanExecute() {
-    ValidPtrBool(Util::getLocalPlayer());
+    if (!Util::IsValidPtr(Util::getLocalPlayer()))
+        return false;;
+    return true;
 }
 
 

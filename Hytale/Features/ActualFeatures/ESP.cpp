@@ -35,7 +35,9 @@ void ESP::OnRender3D(Renderer3D& renderer3D) {
 }
 
 bool ESP::CanExecute() {
-	ValidPtrBool(Util::getLocalPlayer());
+	if (!Util::IsValidPtr(Util::getLocalPlayer()))
+		return false;;
+	return true;
 }
 
 void ESP::Initialize() {

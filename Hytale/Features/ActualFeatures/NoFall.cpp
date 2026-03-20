@@ -11,8 +11,11 @@ void NoFall::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
 }
 
 bool NoFall::CanExecute() {
-	ValidPtrBool(Util::getLocalPlayer());
-	ValidPtrBool(Util::GetMovementController());
+	if (!Util::IsValidPtr(Util::getLocalPlayer()))
+		return false;
+	if (!Util::IsValidPtr(Util::GetMovementController()))
+		return false;
+	return true;
 }
 
 

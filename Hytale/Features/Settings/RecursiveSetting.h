@@ -34,6 +34,7 @@ public:
 			if (setting->GetName() == name)
 				return setting.get();
 		}
+		return nullptr;
 	}
 
 	std::vector<std::unique_ptr<ISetting>>& GetSettings() {

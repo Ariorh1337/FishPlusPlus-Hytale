@@ -66,7 +66,6 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
     lastTime = currentTime;
 
     HWND hwnd = WindowFromDC(hdc);
-    RECT r;
     POINT current;
     GetCursorPos(&current);
     ScreenToClient(hwnd, &current);
@@ -79,9 +78,19 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
             Util::orthoProjMatInitialized = true;
         }
 
-        Renderer3D renderer3D;
-        EventRegister::Render3DEvent.Invoke(renderer3D);
-        renderer3D.Render();
+        //SDK::Main();
+
+        //Renderer3D renderer3D;
+        //EventRegister::Render3DEvent.Invoke(renderer3D);
+        //renderer3D.Render();
+
+        bool uninject = InputSystem::IsKeyPressed(SDL_SCANCODE_END);
+        if (uninject) {
+            bool result = oWglSwapBuffers(hdc);
+            MH_DisableHook(MH_ALL_HOOKS);
+            Util::free_console();
+            return result;
+		}
 
 
         Fonts::Figtree->RenderText(std::format("App: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app)), 0.0f, 10.0f, 0.5f, Color::White());
@@ -92,11 +101,16 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
 
         Fonts::Figtree->RenderText(std::format("Fish++ Hytale by LimitlessChicken aka milaq", reinterpret_cast<uintptr_t>(Util::app)), 500.0f, 10.0f, 0.5f, Color::White());
 
+
         menu->Run(deltaTime);
     }
 
-    InputSystem::keysPressed.clear();
-    InputSystem::keysDepressed.clear();
+    {
+        InputSystem::inputMutex.lock();
+        InputSystem::keysPressed.clear();
+        InputSystem::keysDepressed.clear();
+        InputSystem::inputMutex.unlock();
+    }
 
     return oWglSwapBuffers(hdc);
 }
@@ -112,8 +126,7 @@ void __fastcall HHandleScreenShotting(App* app) {
 
     SDK::Main();
 
-	if (Hooks::oHandleScreenShotting)
-        Hooks::oHandleScreenShotting(app);
+    Hooks::oHandleScreenShotting(app);
 }
 
 
@@ -124,23 +137,29 @@ void __fastcall HOnUserInput(uint64_t thisptr, SDL_Event a2) {
     }
 
     SDL_Scancode key = a2.key.scancode;
-	if (a2.type == SDL_KEYDOWN) {
-		if (a2.key.repeat) {
+    bool shouldCallOriginal = true;
+
+    if (a2.type == SDL_KEYDOWN) {
+        if (a2.key.repeat) {
             Hooks::oOnUserInput(thisptr, a2);
             return;
         }
 
+        InputSystem::inputMutex.lock();
         InputSystem::keysPressed.insert(key);
         InputSystem::keysHeld.insert(key);
         InputSystem::keysUnheld.erase(key);
+        InputSystem::inputMutex.unlock();
     }
     else if (a2.type == SDL_KEYUP) {
+        InputSystem::inputMutex.lock();
         InputSystem::keysHeld.erase(key);
         InputSystem::keysUnheld.insert(key);
         InputSystem::keysDepressed.insert(key);
+        InputSystem::inputMutex.unlock();
     }
+
     Hooks::oOnUserInput(thisptr, a2);
-    return;
 }
 
 void __fastcall HOnChat(uint64_t thisptr, uint64_t a2) {
@@ -165,19 +184,17 @@ void __fastcall HOnChat(uint64_t thisptr, uint64_t a2) {
         ValidPtrVoid(player);
         player->SetPositionTeleport(Vector3(x, y, z));
     }
-
-    Hooks::oOnChat(thisptr, a2);
 }
 
 void HDrawScene(GameInstance* thisptr) {
-    Hooks::oDrawScene(thisptr);
-
     if (!initialized)
         return;
 
     Renderer3D renderer3D;
     EventRegister::Render3DEvent.Invoke(renderer3D);
     renderer3D.Render();
+
+    Hooks::oDrawScene(thisptr);
 }
 
 void HWeatherUpdate(uintptr_t a1, float deltaTime) {
@@ -217,14 +234,13 @@ void HGCMethodLookup(GCInstance* instance) {
     /*
         Fix for fail fast exceptions. Explanation @ https://www.unknowncheats.me/forum/4625377-post292.html
     */
-    if ((instance->flags & 0x10) == 0) {
-        static uint64_t getGcObject;
-        if (!getGcObject)
-            getGcObject = Util::RelativeVirtualAddress(Util::PatternScan("E8 ? ? ? ? 48 89 06 4C 8B FE"), 1, 5);
+    static uint64_t getGcObject;
+    if (!getGcObject)
+        getGcObject = Util::RelativeVirtualAddress(Util::PatternScan("E8 ? ? ? ? 48 89 06 4C 8B FE"), 1, 5);
 
-        if (!((uint64_t(__fastcall*)(GCData*, uint64_t))getGcObject)(instance->gcData, instance->address))
-            instance->flags |= GCFlag::GCFlag_SkipAddress;
-    }
+    if (!((uint64_t(__fastcall*)(GCData*, uint64_t))getGcObject)(instance->gcData, instance->address)) 
+        instance->flags |= GCFlag::GCFlag_SkipAddress;
+
     Hooks::oGCMethodLookup(instance);
 }
 
@@ -234,7 +250,7 @@ bool Hooks::CreateHooks() {
 		Util::log("Failed to initialize MinHook");
         return false;
     }
-
+ 
     CREATE_SIG_HOOK(GCMethodLookup, "40 53 57 48 83 EC ? 48 8D B9"); //E8 ? ? ? ? 83 3D ? ? ? ? ? 72 ? 49 8B CE   
     CREATE_HOOK(WglSwapBuffers);
     CREATE_HOOK(DoMoveCycle);
@@ -248,8 +264,6 @@ bool Hooks::CreateHooks() {
     CREATE_SIG_HOOK(WeatherUpdate, "41 57 41 56 41 55 41 54 57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 44 0F 29 8C 24 ? ? ? ? 0F 57 E4 0F 29 64 24 ? 0F 29 64 24 ? 48 B8");
 
     CREATE_HOOK(DrawScene);
-    
-
 
     MH_EnableHook(MH_ALL_HOOKS);
     Util::log("All Hooks created successfully\n");

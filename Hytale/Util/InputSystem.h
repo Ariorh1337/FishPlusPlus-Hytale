@@ -4,6 +4,7 @@
 #pragma once
 
 #include <unordered_set>
+#include <mutex>
 
 typedef enum SDL_Scancode {
     SDL_SCANCODE_UNKNOWN = 0,
@@ -547,17 +548,24 @@ typedef union SDL_Event {
 //Hytale uses SDL 3.4 > https://github.com/libsdl-org/SDL/blob/release-3.4.x/include/SDL3/SDL_events.h#L360
 
 namespace InputSystem {
-    
+
+    inline std::mutex inputMutex;
 	inline std::unordered_set<SDL_Scancode> keysHeld;
 	inline std::unordered_set<SDL_Scancode> keysPressed;
-    inline std::unordered_set<SDL_Scancode> keysUnheld;
-    inline std::unordered_set<SDL_Scancode> keysDepressed;
+	inline std::unordered_set<SDL_Scancode> keysUnheld;
+	inline std::unordered_set<SDL_Scancode> keysDepressed;
 
-    static bool IsKeyPressed(SDL_Scancode key) {
-        return keysPressed.count(key);
-    }
-    static bool IsKeyHeld(SDL_Scancode key) {
-        return keysHeld.count(key);
-    }
+	static bool IsKeyPressed(SDL_Scancode key) {
+		inputMutex.lock();
+		int result = keysPressed.count(key);
+		inputMutex.unlock();
+		return result;
+	}
+	static bool IsKeyHeld(SDL_Scancode key) {
+        inputMutex.lock();
+        int result = keysHeld.count(key);
+        inputMutex.unlock();
+		return keysHeld.count(key);
+	}
 
 }
