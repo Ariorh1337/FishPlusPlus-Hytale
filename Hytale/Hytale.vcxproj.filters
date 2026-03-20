@@ -138,12 +138,6 @@
     <ClCompile Include="Menu\Children\RecursiveButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="external\safetyhook\safetyhook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="external\safetyhook\Zydis.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Features\FeatureHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -690,12 +684,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="external\freetype\include\freetype\internal\wofftypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="external\safetyhook\safetyhook.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="external\safetyhook\Zydis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Events\EventSystem.h">
