@@ -9,7 +9,9 @@
 
 enum GCFlag : uint32_t {
 	GCFlag_None = 0x0,
-	GCFlag_SkipAddress = 0x10
+	GCFlag_SkipAddress = 0x10,
+	GCFlag_CleanUp = 0x20,
+	GCFlag_NeedsChecked = 0x80,
 };
 
 struct GCData {
@@ -31,35 +33,35 @@ struct GCInstance {
 };
 
 namespace Hooks {
-	typedef void(__fastcall* GCMethodLookup)(GCInstance* instance);
-	inline static GCMethodLookup oGCMethodLookup = nullptr;
+	typedef bool(__fastcall* GCCleanup)(GCInstance* a1);
+	inline GCCleanup oGCCleanup = nullptr;
 
 	typedef void(__fastcall* DoMoveCycle)(DefaultMovementController* dmc, Vector3 offset);
-	inline static DoMoveCycle oDoMoveCycle = nullptr;
+	inline DoMoveCycle oDoMoveCycle = nullptr;
 
 	typedef void(__fastcall* HandleScreenShotting)(App* app);
-	inline static HandleScreenShotting oHandleScreenShotting = nullptr;
+	inline HandleScreenShotting oHandleScreenShotting = nullptr;
 
 	typedef void(__fastcall* OnUserInput)(uint64_t a1, SDL_Event a2);
-	inline static OnUserInput oOnUserInput = nullptr;
+	inline OnUserInput oOnUserInput = nullptr;
 
 	typedef void(__fastcall* SetCursorHidden)(Window* window, bool hidden);
-	inline static SetCursorHidden oSetCursorHidden = nullptr;
+	inline SetCursorHidden oSetCursorHidden = nullptr;
 
 	typedef void(__fastcall* UpdateInputStates)(uint64_t thisptr, bool skipResetKeys);
-	inline static UpdateInputStates oUpdateInputStates = nullptr;
+	inline UpdateInputStates oUpdateInputStates = nullptr;
 
 	typedef void(__fastcall* WeatherUpdate)(uint64_t thisptr, float deltaTime);
-	inline static WeatherUpdate oWeatherUpdate = nullptr;
+	inline WeatherUpdate oWeatherUpdate = nullptr;
 
 	typedef void(__fastcall* SetActiveHotbarSlot)(uint64_t thisptr, unsigned int slot, bool triggerInteraction);
-	inline static SetActiveHotbarSlot oSetActiveHotbarSlot = nullptr;
+	inline SetActiveHotbarSlot oSetActiveHotbarSlot = nullptr;
 
 	typedef void(__fastcall* OnChat)(uint64_t a1, uint64_t a2);
-	inline static OnChat oOnChat = nullptr;
+	inline OnChat oOnChat = nullptr;
 
 	typedef void(__fastcall* DrawScene)(GameInstance* a1);
-	inline static DrawScene oDrawScene = nullptr;
+	inline DrawScene oDrawScene = nullptr;
 
 	bool CreateHooks();
 }

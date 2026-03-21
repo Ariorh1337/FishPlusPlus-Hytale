@@ -7,7 +7,6 @@
 #include "Features/FeatureHandler.h"
 
 #include "Features/ActualFeatures/WorldModulate.h"
-
 static bool initialized = false;
 static bool initialized3D = false;
 
@@ -78,12 +77,6 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
             Util::orthoProjMatInitialized = true;
         }
 
-        //SDK::Main();
-
-        //Renderer3D renderer3D;
-        //EventRegister::Render3DEvent.Invoke(renderer3D);
-        //renderer3D.Render();
-
         bool uninject = InputSystem::IsKeyPressed(SDL_SCANCODE_END);
         if (uninject) {
             bool result = oWglSwapBuffers(hdc);
@@ -116,8 +109,14 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
 }
 
 void __fastcall HDoMoveCycle(DefaultMovementController* dmc, Vector3 offset) {
-	EventRegister::DoMoveCycleEvent.Invoke(dmc, offset);
-	return Hooks::oDoMoveCycle(dmc, offset);
+    if (!initialized)
+        return;
+    if (Util::IsValidPtr(dmc) && Util::IsValidPtr(Util::app) && Util::IsValidPtr(Util::app->appInGame) && Util::IsValidPtr(Util::getGameInstance()) && Util::IsValidPtr(Util::getLocalPlayer())) {
+        EventRegister::DoMoveCycleEvent.Invoke(dmc, offset);
+    }
+
+    //EventRegister::DoMoveCycleEvent.Invoke(dmc, offset);
+    Hooks::oDoMoveCycle(dmc, offset);
 }
 
 void __fastcall HHandleScreenShotting(App* app) {
@@ -136,7 +135,7 @@ void __fastcall HOnUserInput(uint64_t thisptr, SDL_Event a2) {
         return;
     }
 
-    SDL_Scancode key = a2.key.scancode;
+    SDL_Scancode key{ a2.key.scancode };
     bool shouldCallOriginal = true;
 
     if (a2.type == SDL_KEYDOWN) {
@@ -150,8 +149,7 @@ void __fastcall HOnUserInput(uint64_t thisptr, SDL_Event a2) {
         InputSystem::keysHeld.insert(key);
         InputSystem::keysUnheld.erase(key);
         InputSystem::inputMutex.unlock();
-    }
-    else if (a2.type == SDL_KEYUP) {
+    } else if (a2.type == SDL_KEYUP) {
         InputSystem::inputMutex.lock();
         InputSystem::keysHeld.erase(key);
         InputSystem::keysUnheld.insert(key);
@@ -163,7 +161,7 @@ void __fastcall HOnUserInput(uint64_t thisptr, SDL_Event a2) {
 }
 
 void __fastcall HOnChat(uint64_t thisptr, uint64_t a2) {
-    HytaleString* stringTest = (HytaleString*)a2;
+    HytaleString* stringTest = (HytaleString*) a2;
     //Util::log("Chat message: %s\n", stringTest->getName().c_str());
 
     if (!stringTest->getName().starts_with('!')) {
@@ -187,18 +185,16 @@ void __fastcall HOnChat(uint64_t thisptr, uint64_t a2) {
 }
 
 void HDrawScene(GameInstance* thisptr) {
+    Hooks::oDrawScene(thisptr);
     if (!initialized)
         return;
 
     Renderer3D renderer3D;
     EventRegister::Render3DEvent.Invoke(renderer3D);
     renderer3D.Render();
-
-    Hooks::oDrawScene(thisptr);
 }
 
 void HWeatherUpdate(uintptr_t a1, float deltaTime) {
-
     Hooks::oWeatherUpdate(a1, deltaTime);
 
     WorldModulate* worldModulate = static_cast<WorldModulate*>(FeatureHandler::GetFeatureFromName("WorldModulate"));
@@ -211,7 +207,7 @@ void HWeatherUpdate(uintptr_t a1, float deltaTime) {
     bool noFog = static_cast<ToggleSetting*>(worldModulate->GetSettingFromName("No Fog"))->GetValue();
 
     RecursiveSetting* fogChanger = static_cast<RecursiveSetting*>(worldModulate->GetSettingFromName("Fog Changer"));
-    
+
     //TODO: Add the actual WeatherModule struct
     if (fogChanger->GetValue()) {
         float fogStart = static_cast<SliderSetting*>(fogChanger->GetSettingFromName("Start"))->GetValue();
@@ -219,29 +215,28 @@ void HWeatherUpdate(uintptr_t a1, float deltaTime) {
         Color color = static_cast<ColorSetting*>(fogChanger->GetSettingFromName("Color"))->GetValue();
         color = Color::Normalize(color);
 
-        *(float*)((uintptr_t)(a1 + 0x90)) = fogStart;
-        *(float*)((uintptr_t)(a1 + 0x94)) = fogEnd;
-        *(float*)((uintptr_t)(a1 + 0x110)) = color.r;
-        *(float*)((uintptr_t)(a1 + 0x114)) = color.g;
-        *(float*)((uintptr_t)(a1 + 0x118)) = color.b;
+        *(float*) ((uintptr_t) (a1 + 0x90)) = fogStart;
+        *(float*) ((uintptr_t) (a1 + 0x94)) = fogEnd;
+        *(float*) ((uintptr_t) (a1 + 0x110)) = color.r;
+        *(float*) ((uintptr_t) (a1 + 0x114)) = color.g;
+        *(float*) ((uintptr_t) (a1 + 0x118)) = color.b;
     }
-    
     if (noFog)
-        *(float*)((uintptr_t)(a1 + 0x94)) = 0.0f;
+        *(float*) ((uintptr_t) (a1 + 0x94)) = 0.0f;
 }
 
-void HGCMethodLookup(GCInstance* instance) {
-    /*
-        Fix for fail fast exceptions. Explanation @ https://www.unknowncheats.me/forum/4625377-post292.html
-    */
-    static uint64_t getGcObject;
-    if (!getGcObject)
-        getGcObject = Util::RelativeVirtualAddress(Util::PatternScan("E8 ? ? ? ? 48 89 06 4C 8B FE"), 1, 5);
+bool hasGcObject(GCData* gcdata, uint64_t address) {
+    return address - gcdata->regionStart < gcdata->regionEnd;
+}
 
-    if (!((uint64_t(__fastcall*)(GCData*, uint64_t))getGcObject)(instance->gcData, instance->address)) 
-        instance->flags |= GCFlag::GCFlag_SkipAddress;
+bool __fastcall HGCCleanup(GCInstance* instance) {
+    if (!Hooks::oGCCleanup(instance))
+        return false;
 
-    Hooks::oGCMethodLookup(instance);
+    if (!hasGcObject(instance->gcData, instance->address))
+        return false;
+
+    return true;
 }
 
 bool Hooks::CreateHooks() {
@@ -251,7 +246,7 @@ bool Hooks::CreateHooks() {
         return false;
     }
  
-    CREATE_SIG_HOOK(GCMethodLookup, "40 53 57 48 83 EC ? 48 8D B9"); //E8 ? ? ? ? 83 3D ? ? ? ? ? 72 ? 49 8B CE   
+    CREATE_SIG_HOOK(GCCleanup, "48 83 79 ? ? 0F 95 C0 C3 CC CC CC CC CC CC CC 40 53");
     CREATE_HOOK(WglSwapBuffers);
     CREATE_HOOK(DoMoveCycle);
     CREATE_HOOK(HandleScreenShotting);
