@@ -701,9 +701,6 @@
     <ClInclude Include="Features\ActualFeatures\WorldModulate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Features\Config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="external\imgui-1.92.5\examples\libs\emscripten\shell_minimal.html" />

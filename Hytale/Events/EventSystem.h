@@ -48,22 +48,27 @@ public:
 
 	// Call all registered callbacks
 	void Invoke(Args... args) {
-		std::lock_guard<std::mutex> lock(m_mutex);
-		for (auto& callbackData : m_callbacks) {
+		m_mutex.lock();
+		std::vector<CallbackData> callbacksCopy = m_callbacks;
+		m_mutex.unlock();
+		for (auto& callbackData : callbacksCopy) {
 			callbackData.callback(args...);
 		}
 	}
 
 	// Get number of subscribers
 	size_t GetSubscriberCount() const {
-		std::lock_guard<std::mutex> lock(m_mutex);
-		return m_callbacks.size();
+		m_mutex.lock();
+		size_t size = m_callbacks.size();
+		m_mutex.unlock();
+		return size;
 	}
 
 	// Clear all callbacks
 	void Clear() {
-		std::lock_guard<std::mutex> lock(m_mutex);
+		m_mutex.lock();
 		m_callbacks.clear();
+		m_mutex.unlock();
 	}
 };
 

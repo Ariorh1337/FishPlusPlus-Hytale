@@ -10,6 +10,8 @@
 #include <Windows.h>
 #include <algorithm>
 #include <mutex>
+#include <psapi.h>
+#include <winnt.h>
 
 #include "sdk/App.h"
 #include "sdk/DefaultMovementController.h"
@@ -41,8 +43,12 @@
 #define ValidPtrEmpty(ptr) if (!Util::IsValidPtr(ptr)) return {};
 #define ValidPtrLoop(ptr) if (!Util::IsValidPtr(ptr)) continue;
 
+//#define NativeGameLogger
+
+inline uint64_t gameBase;
 inline uint64_t dllBase;
 inline uint64_t dllBaseEnd;
+inline bool uninjecting = false;
 
 namespace SM { // Signature Methods
 	inline uint64_t DoMoveCycleAddress = 0;

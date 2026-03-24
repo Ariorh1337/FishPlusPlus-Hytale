@@ -7,24 +7,24 @@
 #include "Features/FeatureHandler.h"
 
 #include "Features/ActualFeatures/WorldModulate.h"
+
 static bool initialized = false;
 static bool initialized3D = false;
 
 static std::unique_ptr<Menu> menu;
 
-
 #define CREATE_HOOK(name) \
 if (MH_CreateHook((LPVOID)SM::name##Address, &H##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
     Util::log("Failed to hook %s\n", #name);\
     return false;\
-}\
-
+}
 #define CREATE_SIG_HOOK(name, pattern) \
 std::uintptr_t name##Address = Util::PatternScan(pattern);\
+Util::log("Found %s sig at: 0x%llX - 0x%llX = 0x%lX\n", #name, name##Address, gameBase, (name##Address - gameBase));\
 if (MH_CreateHook((LPVOID)name##Address, &H##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
     Util::log("Failed to hook %s\n", #name);\
     return false;\
-}\
+}
 
 static void* GetAnyGLFuncAddress(const char* name) {
     void* p = (void*)wglGetProcAddress(name);
@@ -58,6 +58,7 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
 
         initialized = true;
     }
+    bool result = oWglSwapBuffers(hdc);
 
     static double lastTime = 0.0;
     double currentTime = Util::GetTime();
@@ -76,15 +77,14 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
             Util::orthoProjMat = Matrix4x4::Orthographic(0.0f, Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight, 0.0f, -1.0f, 1.0f);
             Util::orthoProjMatInitialized = true;
         }
+        if (!uninjecting)
+            uninjecting = InputSystem::IsKeyPressed(SDL_SCANCODE_END);
 
-        bool uninject = InputSystem::IsKeyPressed(SDL_SCANCODE_END);
-        if (uninject) {
-            bool result = oWglSwapBuffers(hdc);
+        if (uninjecting) {
             MH_DisableHook(MH_ALL_HOOKS);
             Util::free_console();
             return result;
 		}
-
 
         Fonts::Figtree->RenderText(std::format("App: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app)), 0.0f, 10.0f, 0.5f, Color::White());
         Fonts::Figtree->RenderText(std::format("AppInGame: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app->appInGame)), 0.0f, 20.0f, 0.5f, Color::White());
@@ -94,18 +94,16 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
 
         Fonts::Figtree->RenderText(std::format("Fish++ Hytale by LimitlessChicken aka milaq", reinterpret_cast<uintptr_t>(Util::app)), 500.0f, 10.0f, 0.5f, Color::White());
 
-
         menu->Run(deltaTime);
     }
 
-    {
-        InputSystem::inputMutex.lock();
-        InputSystem::keysPressed.clear();
-        InputSystem::keysDepressed.clear();
-        InputSystem::inputMutex.unlock();
-    }
+    InputSystem::inputMutex.lock();
+    InputSystem::keysPressed.clear();
+    InputSystem::keysDepressed.clear();
+    InputSystem::inputMutex.unlock();
 
-    return oWglSwapBuffers(hdc);
+    
+    return result;
 }
 
 void __fastcall HDoMoveCycle(DefaultMovementController* dmc, Vector3 offset) {
@@ -123,11 +121,9 @@ void __fastcall HHandleScreenShotting(App* app) {
     if (Util::app != app)
         Util::app = app;
 
-    SDK::Main();
-
     Hooks::oHandleScreenShotting(app);
+    SDK::Main();
 }
-
 
 void __fastcall HOnUserInput(uint64_t thisptr, SDL_Event a2) {
     if (a2.type != SDL_KEYDOWN && a2.type != SDL_KEYUP) {
@@ -225,28 +221,38 @@ void HWeatherUpdate(uintptr_t a1, float deltaTime) {
         *(float*) ((uintptr_t) (a1 + 0x94)) = 0.0f;
 }
 
-bool hasGcObject(GCData* gcdata, uint64_t address) {
-    return address - gcdata->regionStart < gcdata->regionEnd;
+bool HFrameIterator_IsValid(GCInstance* instance) {
+    if (!instance)
+        return Hooks::oFrameIterator_IsValid(instance);
+
+    bool isValid = Hooks::oFrameIterator_IsValid(instance);
+    if (instance->address >= dllBase && instance->address <= dllBaseEnd) {
+        Util::log("GC: Marking DLL frame 0x%llX with ActiveStackFrame\n", instance->address);
+		instance->address = 0; // Clear address to prevent GC from trying to read method info
+		instance->originalControlPC = 0;
+        instance->codeManager = nullptr;
+        instance->pendingFuncletFramePointer = nullptr;
+        instance->framePointer = nullptr;
+        instance->pConservativeStackRangeLowerBound = 0x0;
+        instance->pConservativeStackRangeUpperBound = 0x0;
+        instance->flags |= GCFlag::MethodStateCalculated;
+        instance->flags |= GCFlag::SkipNativeFrames;
+        return false;
+    }
+
+    return isValid;
 }
 
-bool __fastcall HGCCleanup(GCInstance* instance) {
-    if (!Hooks::oGCCleanup(instance))
-        return false;
-
-    if (!hasGcObject(instance->gcData, instance->address))
-        return false;
-
-    return true;
-}
 
 bool Hooks::CreateHooks() {
     Util::log("Creating Hooks\n");
+
     if (MH_Initialize() != MH_OK) {
-		Util::log("Failed to initialize MinHook");
+        Util::log("Failed to initialize MinHook");
         return false;
     }
- 
-    CREATE_SIG_HOOK(GCCleanup, "48 83 79 ? ? 0F 95 C0 C3 CC CC CC CC CC CC CC 40 53");
+
+    CREATE_SIG_HOOK(FrameIterator_IsValid, "48 83 79 ? ? 0F 95 C0 C3 CC CC CC CC CC CC CC 40 53");
     CREATE_HOOK(WglSwapBuffers);
     CREATE_HOOK(DoMoveCycle);
     CREATE_HOOK(HandleScreenShotting);
@@ -261,6 +267,7 @@ bool Hooks::CreateHooks() {
     CREATE_HOOK(DrawScene);
 
     MH_EnableHook(MH_ALL_HOOKS);
-    Util::log("All Hooks created successfully\n");
+
+    Util::log("All Hooks created and registered successfully\n");
     return true;
 }
