@@ -10,6 +10,13 @@ if (!Util::IsValidPtr(SM::name##Address)) {                             \
     Util::log("Failed to get %s address\n", #name);                     \
     return false;                                                       \
 }
+
+#define GetSigByRef(name, pattern) SM::name##Address = Util::RelativeVirtualAddress(Util::PatternScan(pattern), 1, 5); \
+Util::log("Found %s sig at: 0x%llX - 0x%llX = 0x%lX\n", #name, SM::name##Address, gameBase, (SM::name##Address - gameBase));\
+if (!Util::IsValidPtr(SM::name##Address)) {                             \
+    Util::log("Failed to get %s address\n", #name);                     \
+    return false;                                                       \
+}
 /*// Available GC Registered Thread
 void __fastcall GCThread(void* pArg) {
     while (!uninjecting) {
@@ -19,14 +26,14 @@ void __fastcall GCThread(void* pArg) {
 
 
 bool InitSigs() {
-    GetSig(DoMoveCycle, "55 41 57 41 56 41 55 41 54 57 56 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 48 8D AC 24 ? ? ? ? 33 C0 48 89 85 ? ? ? ? 0F 57 E4 48 B8");
-    GetSig(HandleScreenShotting, "55 41 57 41 56 41 55 41 54 57 56 53 48 81 EC ? ? ? ? 48 8D AC 24 ? ? ? ? 33 C0 48 89 45 ? 0F 57 E4 0F 29 65 ? 48 89 45 ? 48 8B D9 48 8B 4B ? 48 8B 49");
-    GetSig(OnUserInput, "41 57 41 56 41 55 41 54 57 56 55 53 48 83 EC ? 33 C0 48 89 44 24 ? 0F 57 E4 0F 29 64 24 ? 0F 29 64 24 ? 0F 29 64 24 ? 48 89 44 24 ? 48 8B D9 48 8B F2 8B 3E");
-    GetSig(SetCursorHidden, "55 57 56 53 48 83 EC ? 48 8D 6C 24 ? 33 C0 48 89 45 ? 48 89 45 ? 48 8B D9 8B F2");
-    GetSig(UpdateInputStates, "57 56 53 48 83 EC ? 48 8B D9 8B F2 48 8B 4B ? 48 85 C9 0F 84");
-    GetSig(OnChat, "56 53 48 83 EC ? 48 8B F1 48 8B DA 38 1B 48 8B CB");
-    GetSig(DrawScene, "57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 33 C0 48 89 84 24 ? ? ? ? 48 8B D9");
-    GetSig(GCToEEInterface_CreateThread, "48 89 6C 24 ? 48 89 74 24 ? 41 56 48 83 EC ? 49 8B F1");
+    GetSigByRef(DoMoveCycle, "E8 ? ? ? ? FF CD 75 ? 85 F6 0F 85 ? ? ? ? 48 8B 4B");
+    GetSigByRef(HandleScreenShotting, "E8 ? ? ? ? 4C 8B 7D ? 49 8B 8F ? ? ? ? 39 09");
+    GetSigByRef(OnUserInput, "E8 ? ? ? ? 48 8B 53 ? 48 8B 92 ? ? ? ? 38 12");
+    GetSigByRef(SetCursorHidden, "E8 ? ? ? ? 0F B6 4B ? 85 C9 74");
+    GetSigByRef(UpdateInputStates, "E8 ? ? ? ? 83 7E ? ? 75 ? 48 83 C4");
+    GetSigByRef(OnChat, "E8 ? ? ? ? 48 8B 4D ? 48 8B 89 ? ? ? ? 48 8B 89");
+    GetSigByRef(DrawScene, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
+    GetSigByRef(GCToEEInterface_CreateThread, "E8 ? ? ? ? 0F B6 C0 89 05 ? ? ? ? 85 C0");
     
     SM::WglSwapBuffersAddress = (uint64_t) GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglSwapBuffers");
     if (!Util::IsValidPtr(SM::WglSwapBuffersAddress)) {

@@ -58,7 +58,6 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
 
         initialized = true;
     }
-    bool result = oWglSwapBuffers(hdc);
 
     static double lastTime = 0.0;
     double currentTime = Util::GetTime();
@@ -83,7 +82,7 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
         if (uninjecting) {
             MH_DisableHook(MH_ALL_HOOKS);
             Util::free_console();
-            return result;
+            return oWglSwapBuffers(hdc);
 		}
 
         Fonts::Figtree->RenderText(std::format("App: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app)), 0.0f, 10.0f, 0.5f, Color::White());
@@ -103,7 +102,7 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
     InputSystem::inputMutex.unlock();
 
     
-    return result;
+    return oWglSwapBuffers(hdc);
 }
 
 void __fastcall HDoMoveCycle(DefaultMovementController* dmc, Vector3 offset) {
@@ -252,7 +251,7 @@ bool Hooks::CreateHooks() {
         return false;
     }
 
-    CREATE_SIG_HOOK(FrameIterator_IsValid, "48 83 79 ? ? 0F 95 C0 C3 CC CC CC CC CC CC CC 40 53");
+    CREATE_SIG_HOOK(FrameIterator_IsValid, "48 83 79 ? ? 0F 95 C0 C3 CC CC CC CC CC CC CC 40 53"); // E8 ? ? ? ? 84 C0 0F 85 ? ? ? ? 49 8B 5D
     CREATE_HOOK(WglSwapBuffers);
     CREATE_HOOK(DoMoveCycle);
     CREATE_HOOK(HandleScreenShotting);
@@ -262,7 +261,7 @@ bool Hooks::CreateHooks() {
 
     //CREATE_HOOK(UpdateInputStates, "57 56 53 48 83 EC ? 48 8B D9 8B F2 48 8B 4B ? 48 85 C9 0F 84");
     //CREATE_HOOK(SetActiveHotbarSlot, "55 41 56 57 56 53 48 83 EC ? 48 8D 6C 24 ? 48 8B D9 8B F2 48 83 7B");
-    CREATE_SIG_HOOK(WeatherUpdate, "41 57 41 56 41 55 41 54 57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 44 0F 29 8C 24 ? ? ? ? 0F 57 E4 0F 29 64 24 ? 0F 29 64 24 ? 48 B8");
+    CREATE_SIG_HOOK(WeatherUpdate, "41 57 41 56 41 55 41 54 57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 44 0F 29 8C 24 ? ? ? ? 0F 57 E4 0F 29 64 24 ? 0F 29 64 24 ? 48 B8"); //E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 80 BB ? ? ? ? ? 75 ? 48 8B 8B ? ? ? ? F3 0F 10 8B ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 8B
 
     CREATE_HOOK(DrawScene);
 
