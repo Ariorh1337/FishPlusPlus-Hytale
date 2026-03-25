@@ -34,6 +34,7 @@ bool InitSigs() {
     GetSigByRef(OnChat, "E8 ? ? ? ? 48 8B 4D ? 48 8B 89 ? ? ? ? 48 8B 89");
     GetSigByRef(DrawScene, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
     GetSigByRef(GCToEEInterface_CreateThread, "E8 ? ? ? ? 0F B6 C0 89 05 ? ? ? ? 85 C0");
+    GetSigByRef(DrawEntityCharactersAndItems, "E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 85");
     
     SM::WglSwapBuffersAddress = (uint64_t) GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglSwapBuffers");
     if (!Util::IsValidPtr(SM::WglSwapBuffersAddress)) {

@@ -35,7 +35,7 @@ void ESP::OnRender3D(Renderer3D& renderer3D) {
 }
 
 bool ESP::CanExecute() {
-	if (!Util::IsValidPtr(Util::getLocalPlayer()))
+	if (!Util::IsValidPtr(Util::getGameInstance()))
 		return false;;
 	return true;
 }

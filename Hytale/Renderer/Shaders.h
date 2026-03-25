@@ -13,6 +13,7 @@ namespace Shaders {
 	inline std::unique_ptr<Shader> text = nullptr;
 	inline std::unique_ptr<Shader> alphaChecker = nullptr;
 	inline std::unique_ptr<Shader> hue = nullptr;
+	inline std::unique_ptr<Shader> postProcess = nullptr;
 
 	void initShaders();
 }

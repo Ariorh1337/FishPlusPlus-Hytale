@@ -153,5 +153,9 @@ namespace Hooks {
 	typedef void(__fastcall* DrawScene)(GameInstance* a1);
 	inline DrawScene oDrawScene = nullptr;
 
+    typedef void(__fastcall* DrawEntityCharactersAndItems)(SceneRenderer* a1, bool useOcclusionCulling);
+	inline DrawEntityCharactersAndItems oDrawEntityCharactersAndItems = nullptr;
+
+
 	bool CreateHooks();
 }

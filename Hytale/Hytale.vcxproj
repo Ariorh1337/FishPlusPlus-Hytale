@@ -189,6 +189,7 @@
     <ClCompile Include="Renderer\FontRenderer\FontLoader.cpp" />
     <ClCompile Include="Renderer\FontRenderer\Font.cpp" />
     <ClCompile Include="Renderer\FontRenderer\Fonts.cpp" />
+    <ClCompile Include="Renderer\FramebufferRenderer\FramebufferRenderer.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Renderer2D.cpp" />
     <ClCompile Include="Renderer\Renderer3D.cpp" />
@@ -350,6 +351,7 @@
     <ClInclude Include="Renderer\FontRenderer\Fontloader.h" />
     <ClInclude Include="Renderer\FontRenderer\Font.h" />
     <ClInclude Include="Renderer\FontRenderer\Fonts.h" />
+    <ClInclude Include="Renderer\FramebufferRenderer\FramebufferRenderer.h" />
     <ClInclude Include="Renderer\Mesh.h" />
     <ClInclude Include="Renderer\Renderer2D.h" />
     <ClInclude Include="Renderer\Renderer3D.h" />

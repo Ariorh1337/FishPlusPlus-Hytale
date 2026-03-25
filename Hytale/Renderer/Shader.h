@@ -92,6 +92,9 @@ public:
     void set(const std::string name, Color value) {
         glUniform3f(glGetUniformLocation(id, name.c_str()), value.r, value.g, value.b);
     }
+    void set(const std::string name, Vector2 value) {
+        glUniform2f(glGetUniformLocation(id, name.c_str()), value.x, value.y);
+    }
 private:
 	uint32_t id;
 };

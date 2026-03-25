@@ -557,13 +557,13 @@ namespace InputSystem {
 
 	static bool IsKeyPressed(SDL_Scancode key) {
 		inputMutex.lock();
-		int result = keysPressed.count(key);
+		int result = (int)keysPressed.count(key);
 		inputMutex.unlock();
 		return result;
 	}
 	static bool IsKeyHeld(SDL_Scancode key) {
         inputMutex.lock();
-        int result = keysHeld.count(key);
+        int result = (int)keysHeld.count(key);
         inputMutex.unlock();
 		return keysHeld.count(key);
 	}

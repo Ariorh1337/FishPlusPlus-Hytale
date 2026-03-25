@@ -33,6 +33,7 @@
 #include "Renderer/Renderer2D.h"
 #include "Renderer/Renderer3D.h"
 #include "Renderer/FontRenderer/Fonts.h"
+#include "Renderer/FramebufferRenderer/FramebufferRenderer.h"
 
 #include "Math/Matrix4x4.h"
 #include "Math/Vector3.h"
@@ -60,4 +61,5 @@ namespace SM { // Signature Methods
 	inline uint64_t OnChatAddress = 0;
 	inline uint64_t DrawSceneAddress = 0;
 	inline uint64_t GCToEEInterface_CreateThreadAddress = 0;
+	inline uint64_t DrawEntityCharactersAndItemsAddress = 0;
 }

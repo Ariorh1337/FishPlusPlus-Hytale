@@ -5,26 +5,30 @@
 #include "Hooks.h"
 #include "Events/EventRegister.h"
 #include "Features/FeatureHandler.h"
-
 #include "Features/ActualFeatures/WorldModulate.h"
 
 static bool initialized = false;
 static bool initialized3D = false;
 
+static int oldWindowWidth = 0;
+static int oldWindowHeight = 0;
+
 static std::unique_ptr<Menu> menu;
+static std::unique_ptr<FramebufferRenderer> fboRenderer;
 
 #define CREATE_HOOK(name) \
 if (MH_CreateHook((LPVOID)SM::name##Address, &H##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
     Util::log("Failed to hook %s\n", #name);\
     return false;\
-}
+}\
+
 #define CREATE_SIG_HOOK(name, pattern) \
 std::uintptr_t name##Address = Util::PatternScan(pattern);\
 Util::log("Found %s sig at: 0x%llX - 0x%llX = 0x%lX\n", #name, name##Address, gameBase, (name##Address - gameBase));\
 if (MH_CreateHook((LPVOID)name##Address, &H##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
     Util::log("Failed to hook %s\n", #name);\
     return false;\
-}
+}\
 
 static void* GetAnyGLFuncAddress(const char* name) {
     void* p = (void*)wglGetProcAddress(name);
@@ -52,6 +56,8 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
 
         Renderer2D::InitRenderer();
 
+		fboRenderer = std::make_unique<FramebufferRenderer>(Shaders::postProcess.get());
+
         menu = std::make_unique<Menu>(hdc);
 
 		FeatureHandler::Init();
@@ -72,6 +78,12 @@ BOOL WINAPI HWglSwapBuffers(HDC hdc) {
     Util::cursorPosY = current.y;
 
     if (Util::IsValidPtr(Util::app)) {
+
+        if (fboRenderer &&  ((oldWindowWidth != Util::app->Engine->Window->WindowWidth) || (oldWindowHeight != Util::app->Engine->Window->WindowHeight)))
+			fboRenderer->resize(Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight);
+        oldWindowWidth = Util::app->Engine->Window->WindowWidth;
+		oldWindowHeight = Util::app->Engine->Window->WindowHeight;
+
         if (!Util::orthoProjMatInitialized) {
             Util::orthoProjMat = Matrix4x4::Orthographic(0.0f, Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight, 0.0f, -1.0f, 1.0f);
             Util::orthoProjMatInitialized = true;
@@ -187,6 +199,8 @@ void HDrawScene(GameInstance* thisptr) {
     Renderer3D renderer3D;
     EventRegister::Render3DEvent.Invoke(renderer3D);
     renderer3D.Render();
+
+    fboRenderer->draw();
 }
 
 void HWeatherUpdate(uintptr_t a1, float deltaTime) {
@@ -220,6 +234,25 @@ void HWeatherUpdate(uintptr_t a1, float deltaTime) {
         *(float*) ((uintptr_t) (a1 + 0x94)) = 0.0f;
 }
 
+void HDrawEntityCharactersAndItems(SceneRenderer* a1, bool useOcclusionCulling) {
+    if (!Util::IsValidPtr(Util::app))
+        return Hooks::oDrawEntityCharactersAndItems(a1, useOcclusionCulling);
+
+    //Render entities through the walls
+	glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(1.0f, -1500000.0f);
+    Hooks::oDrawEntityCharactersAndItems(a1, false);
+    glPolygonOffset(1.0f, 1500000.0f);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+   
+
+    fboRenderer->bind();
+
+    Hooks::oDrawEntityCharactersAndItems(a1, false);
+
+    fboRenderer->unbind();
+}
+
 bool HFrameIterator_IsValid(GCInstance* instance) {
     if (!instance)
         return Hooks::oFrameIterator_IsValid(instance);
@@ -242,7 +275,6 @@ bool HFrameIterator_IsValid(GCInstance* instance) {
     return isValid;
 }
 
-
 bool Hooks::CreateHooks() {
     Util::log("Creating Hooks\n");
 
@@ -257,6 +289,7 @@ bool Hooks::CreateHooks() {
     CREATE_HOOK(HandleScreenShotting);
     CREATE_HOOK(OnUserInput);
     CREATE_HOOK(OnChat);
+    CREATE_HOOK(DrawEntityCharactersAndItems);
     //CREATE_HOOK(SetCursorHidden, "55 57 56 53 48 83 EC ? 48 8D 6C 24 ? 33 C0 48 89 45 ? 48 89 45 ? 48 8B D9 8B F2");
 
     //CREATE_HOOK(UpdateInputStates, "57 56 53 48 83 EC ? 48 8B D9 8B F2 48 8B 4B ? 48 85 C9 0F 84");
