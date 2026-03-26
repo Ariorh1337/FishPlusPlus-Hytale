@@ -3,9 +3,6 @@
  */
 #include "Core.h"
 #include "Hooks.h"
-#include "Events/EventRegister.h"
-#include "Features/FeatureHandler.h"
-#include "Features/ActualFeatures/WorldModulate.h"
 
 #define CREATE_HOOK(name) \
 if (MH_CreateHook((LPVOID)name##Address, &hk##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
@@ -44,7 +41,7 @@ bool Hooks::CreateHooks() {
     CREATE_HOOK(WglSwapBuffers);
     CREATE_SIG_HOOK(FrameIterator_IsValid, "48 83 79 ? ? 0F 95 C0 C3 CC CC CC CC CC CC CC 40 53"); // E8 ? ? ? ? 84 C0 0F 85 ? ? ? ? 49 8B 5D
     CREATE_SIG_HOOK(WeatherUpdate, "41 57 41 56 41 55 41 54 57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 44 0F 29 8C 24 ? ? ? ? 0F 57 E4 0F 29 64 24 ? 0F 29 64 24 ? 48 B8"); //E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 80 BB ? ? ? ? ? 75 ? 48 8B 8B ? ? ? ? F3 0F 10 8B ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 8B
-    CREATE_SIG_HOOK_BY_REF(DoMoveCycle, "E8 ? ? ? ? FF CD 75 ? 85 F6 0F 85 ? ? ? ? 48 8B 4B");
+    CREATE_SIG_HOOK_BY_REF(DoMoveCycle, "E8 ? ? ? ? FF CE 75 ? 48 8B 4B");
     CREATE_SIG_HOOK_BY_REF(HandleScreenShotting, "E8 ? ? ? ? 4C 8B 7D ? 49 8B 8F ? ? ? ? 39 09");
     CREATE_SIG_HOOK_BY_REF(OnUserInput, "E8 ? ? ? ? 48 8B 53 ? 48 8B 92 ? ? ? ? 38 12");
     CREATE_SIG_HOOK_BY_REF(OnChat, "E8 ? ? ? ? 48 8B 4D ? 48 8B 89 ? ? ? ? 48 8B 89");

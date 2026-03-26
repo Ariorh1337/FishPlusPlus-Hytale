@@ -6,6 +6,6 @@
 #include "Math/Matrix4x4.h"
 
 struct SceneRenderer {
-	char pad[0x300];
+	char pad[0x310];
 	Matrix4x4 MPV;
 };

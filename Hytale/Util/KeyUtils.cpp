@@ -318,6 +318,8 @@ const char* Util::GetKeyName(SDL_Scancode key) {
 bool Util::isFullyInitialized() {
     ValidPtrBool(app);
     ValidPtrBool(app->appInGame);
+    if (app->Stage != AppStage::InGame)
+        return false;
     ValidPtrBool(app->appInGame->gameInstance);
     ValidPtrBool(app->appInGame->gameInstance->Player);
 	return true;

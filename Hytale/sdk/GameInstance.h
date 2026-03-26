@@ -22,26 +22,26 @@ public:
 	Engine* Engine; //0x0018
 	char pad_0020[8]; //0x0020
 	Chat* Chat; //0x0028
-	char pad_0030[64]; //0x0030
-	SceneRenderer* SceneRenderer; //0x0070
-	char pad_0078[136]; //0x0078
-	Time* Time; //0x0100
-	char pad_0108[8]; //0x0108
-	StructBeforeCam* Camera; //0x0110
-	char pad_0118[8]; //0x0118
-	CharacterControllerModule* CharacterControllerModule; //0x0120
-	CameraModule* CameraModule; //0x0128
-	char pad_0130[8]; //0x0130
-	EntityStoreModule* EntityStoreModule; //0x0138
-	InventoryModule* InventoryModule; //0x0140
-	void* InteractionModule; //0x0148
-	char pad_0150[48]; //0x0150
-	void* WeatherModule; //0x0180
-	void* AmbienceFXModule; //0x0188
-	char pad_0190[168]; //0x0190
-	float ResolutionScaleMin; //0x0238
-	float ResolutionScaleMax; //0x023C
-	char pad_0240[52]; //0x0240
+	char pad_0030[72]; //0x0030
+	SceneRenderer* SceneRenderer; //0x0078
+	char pad_0078[136]; //0x0080
+	Time* Time; //0x0108
+	char pad_0108[8]; //0x0110
+	StructBeforeCam* Camera; //0x0118
+	char pad_0118[8]; //0x0120
+	CharacterControllerModule* CharacterControllerModule; //0x0128
+	CameraModule* CameraModule; //0x0130
+	char pad_0130[8]; //0x0138
+	EntityStoreModule* EntityStoreModule; //0x0140
+	InventoryModule* InventoryModule; //0x0148
+	void* InteractionModule; //0x0150
+	char pad_0150[48]; //0x0158
+	void* WeatherModule; //0x0188
+	void* AmbienceFXModule; //0x0190
+	char pad_0190[168]; //0x0198
+	float ResolutionScaleMin; //0x0240
+	float ResolutionScaleMax; //0x0244
+	char pad_0240[52]; //0x0248
 	float underwaterCausticsIntensity; //0x0274
 	float underwaterCausticsScale; //0x0278
 	float underwaterCausticsDistortion; //0x027C

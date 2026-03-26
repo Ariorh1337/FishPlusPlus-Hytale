@@ -7,7 +7,6 @@ void __fastcall Hooks::hkOnUserInput(uint64_t instance, SDL_Event event) {
         return;
 
     SDL_Scancode key{ event.key.scancode };
-    bool shouldCallOriginal = true;
 
     if (event.type == SDL_KEYDOWN) {
         if (event.key.repeat)
