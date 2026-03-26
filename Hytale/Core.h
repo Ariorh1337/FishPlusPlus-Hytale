@@ -52,14 +52,7 @@ inline uint64_t dllBaseEnd;
 inline bool uninjecting = false;
 
 namespace SM { // Signature Methods
-	inline uint64_t DoMoveCycleAddress = 0;
-	inline uint64_t HandleScreenShottingAddress = 0;
-	inline uint64_t OnUserInputAddress = 0;
 	inline uint64_t SetCursorHiddenAddress = 0;
 	inline uint64_t UpdateInputStatesAddress = 0;
-	inline uint64_t WglSwapBuffersAddress = 0;
-	inline uint64_t OnChatAddress = 0;
-	inline uint64_t DrawSceneAddress = 0;
 	inline uint64_t GCToEEInterface_CreateThreadAddress = 0;
-	inline uint64_t DrawEntityCharactersAndItemsAddress = 0;
 }

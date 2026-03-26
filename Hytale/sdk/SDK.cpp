@@ -32,9 +32,9 @@ std::vector<EntityData> getEntities(Entity* localPlayer) {
 		data.entityPtr = entity;
 		
 		if (entityType == Entity::EntityPlayerType::Player)
-			data.name = entity->Name->getName();
+			data.name = entity->Name->getString();
 		else
-			data.name = entityString->getName();
+			data.name = entityString->getString();
 
 		data.entityType = entity->entityType;
 		data.position = entity->Position;

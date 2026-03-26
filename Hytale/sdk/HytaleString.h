@@ -11,7 +11,7 @@ struct HytaleString {
 	int length;
 	char16_t text[64];
 
-	std::string getName() {
+	std::string getString() {
 		int size_needed = WideCharToMultiByte(
 			CP_UTF8, 0,
 			reinterpret_cast<LPCWCH>(text),

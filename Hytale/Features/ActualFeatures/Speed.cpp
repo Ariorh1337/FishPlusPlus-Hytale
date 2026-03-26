@@ -10,14 +10,7 @@ Speed::Speed() : Feature("Speed") {
 	this->speed = this->RegisterSetting<SliderSetting>("Speed", 1.0f, 0.0f, 5.0f);
 }
 
-bool Speed::CanExecute() {
-    if (!Util::IsValidPtr(Util::getLocalPlayer()))
-        return false;;
-    return true;
-}
-
 void Speed::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
-    
     dmc->SpeedMultiplier = 1.0f;
     float yawRad = Util::getLocalPlayer()->yawRad;
     float forwardX = -sin(yawRad);
@@ -42,6 +35,9 @@ void Speed::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
         offset += Vector3(-strafeX * currentSpeed, offset.y, -strafeZ * currentSpeed);
 }
 
+bool Speed::CanExecute() {
+    return Util::isFullyInitialized();
+}
 
 void Speed::Initialize() {
 	Util::log("Initialized Speed feature\n");

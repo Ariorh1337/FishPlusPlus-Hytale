@@ -26,21 +26,10 @@ void __fastcall GCThread(void* pArg) {
 
 
 bool InitSigs() {
-    GetSigByRef(DoMoveCycle, "E8 ? ? ? ? FF CD 75 ? 85 F6 0F 85 ? ? ? ? 48 8B 4B");
-    GetSigByRef(HandleScreenShotting, "E8 ? ? ? ? 4C 8B 7D ? 49 8B 8F ? ? ? ? 39 09");
-    GetSigByRef(OnUserInput, "E8 ? ? ? ? 48 8B 53 ? 48 8B 92 ? ? ? ? 38 12");
     GetSigByRef(SetCursorHidden, "E8 ? ? ? ? 0F B6 4B ? 85 C9 74");
     GetSigByRef(UpdateInputStates, "E8 ? ? ? ? 83 7E ? ? 75 ? 48 83 C4");
-    GetSigByRef(OnChat, "E8 ? ? ? ? 48 8B 4D ? 48 8B 89 ? ? ? ? 48 8B 89");
-    GetSigByRef(DrawScene, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
     GetSigByRef(GCToEEInterface_CreateThread, "E8 ? ? ? ? 0F B6 C0 89 05 ? ? ? ? 85 C0");
-    GetSigByRef(DrawEntityCharactersAndItems, "E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 85");
     
-    SM::WglSwapBuffersAddress = (uint64_t) GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglSwapBuffers");
-    if (!Util::IsValidPtr(SM::WglSwapBuffersAddress)) {
-        Util::log("Failed to get wglSwapBuffers address\n");
-        return false;
-    }
 	Util::log("Finished initializing signatures\n");
     return true;
 }

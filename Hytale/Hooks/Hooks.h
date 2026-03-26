@@ -122,40 +122,56 @@ struct GCInstance {
 	uint64_t pPreviousTransitionFrame; // 0x218 or 536 - Used by reverse P/Invoke to store the previous transition frame for proper unwinding back to native frames
 };
 
+namespace HookData {
+    inline bool initialized = false;
+    inline bool initialized3D = false;
+
+    inline int oldWindowWidth = 0;
+    inline int oldWindowHeight = 0;
+
+    inline std::unique_ptr<Menu> menu;
+    inline std::unique_ptr<FramebufferRenderer> fboRenderer;
+}
+
+using namespace HookData;
+
 namespace Hooks {
-	typedef bool(__fastcall* FrameIterator_IsValid)(GCInstance* a1);
+	typedef bool(__fastcall* FrameIterator_IsValid)(GCInstance* instance);
 	inline FrameIterator_IsValid oFrameIterator_IsValid = nullptr;
+	extern bool __fastcall hkFrameIterator_IsValid(GCInstance* instance);
+
+    typedef BOOL(WINAPI* WglSwapBuffers)(HDC hdc);
+    inline WglSwapBuffers oWglSwapBuffers = nullptr;
+    extern BOOL WINAPI hkWglSwapBuffers(HDC hdc);
 
 	typedef void(__fastcall* DoMoveCycle)(DefaultMovementController* dmc, Vector3 offset);
 	inline DoMoveCycle oDoMoveCycle = nullptr;
+	extern void __fastcall hkDoMoveCycle(DefaultMovementController* dmc, Vector3 offset);
 
 	typedef void(__fastcall* HandleScreenShotting)(App* app);
 	inline HandleScreenShotting oHandleScreenShotting = nullptr;
+	extern void __fastcall hkHandleScreenShotting(App* app);
 
-	typedef void(__fastcall* OnUserInput)(uint64_t a1, SDL_Event a2);
+	typedef void(__fastcall* OnUserInput)(uint64_t instance, SDL_Event event);
 	inline OnUserInput oOnUserInput = nullptr;
+	extern void __fastcall hkOnUserInput(uint64_t instance, SDL_Event event);
 
-	typedef void(__fastcall* SetCursorHidden)(Window* window, bool hidden);
-	inline SetCursorHidden oSetCursorHidden = nullptr;
-
-	typedef void(__fastcall* UpdateInputStates)(uint64_t thisptr, bool skipResetKeys);
-	inline UpdateInputStates oUpdateInputStates = nullptr;
-
-	typedef void(__fastcall* WeatherUpdate)(uint64_t thisptr, float deltaTime);
+	typedef void(__fastcall* WeatherUpdate)(uint64_t instance, float deltaTime);
 	inline WeatherUpdate oWeatherUpdate = nullptr;
+	extern void __fastcall hkWeatherUpdate(uint64_t instance, float deltaTime);
 
-	typedef void(__fastcall* SetActiveHotbarSlot)(uint64_t thisptr, unsigned int slot, bool triggerInteraction);
-	inline SetActiveHotbarSlot oSetActiveHotbarSlot = nullptr;
-
-	typedef void(__fastcall* OnChat)(uint64_t a1, uint64_t a2);
+	typedef void(__fastcall* OnChat)(uint64_t instance, HytaleString* chatString);
 	inline OnChat oOnChat = nullptr;
+	extern void __fastcall hkOnChat(uint64_t instance, HytaleString* chatString);
 
-	typedef void(__fastcall* DrawScene)(GameInstance* a1);
+	typedef void(__fastcall* DrawScene)(GameInstance* instance);
 	inline DrawScene oDrawScene = nullptr;
+	extern void __fastcall hkDrawScene(GameInstance* instance);
 
-    typedef void(__fastcall* DrawEntityCharactersAndItems)(SceneRenderer* a1, bool useOcclusionCulling);
+    typedef void(__fastcall* DrawEntityCharactersAndItems)(SceneRenderer* instance, bool useOcclusionCulling);
 	inline DrawEntityCharactersAndItems oDrawEntityCharactersAndItems = nullptr;
+	extern void __fastcall hkDrawEntityCharactersAndItems(SceneRenderer* instance, bool useOcclusionCulling);
 
 
 	bool CreateHooks();
-}
+};    

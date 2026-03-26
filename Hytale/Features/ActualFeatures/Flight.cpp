@@ -11,8 +11,10 @@ Flight::Flight() : Feature("Flight") {
 }
 
 void Flight::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
+	if (!Util::isFullyInitialized())
+		return;
+
 	if (mode->GetValue() == 1) {
-		
 		dmc->SpeedMultiplier = 1.0f;
 		dmc->clientMovementStates.IsFlying = false;
 		float yawRad = Util::getLocalPlayer()->yawRad;
@@ -24,8 +26,6 @@ void Flight::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
 
 		dmc->Velocity = 0.0f;
 		offset = 0.0f;
-		if (!Util::ShouldInteractWithGame())
-			return;
 		if (InputSystem::IsKeyHeld(SDL_SCANCODE_W))
 			offset += Vector3(forwardX * this->speed->GetValue(), offset.y, forwardZ * this->speed->GetValue());
 		if (InputSystem::IsKeyHeld(SDL_SCANCODE_S)) 
@@ -45,18 +45,13 @@ void Flight::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
 }
 
 void Flight::OnDeactivate() {
-	ValidPtrVoid(Util::getGameInstance());
-	ValidPtrVoid(Util::GetMovementController());
 	DefaultMovementController* dmc = Util::GetMovementController();
+	ValidPtrVoid(dmc);
 	dmc->clientMovementStates.IsFlying = false;
 }
 
 bool Flight::CanExecute() {
-	if (!Util::IsValidPtr(Util::getLocalPlayer()))
-		return false;;
-	if (!Util::IsValidPtr(Util::GetMovementController()))
-		return false;;
-	return true;
+	return Util::isFullyInitialized();
 }
 
 void Flight::Initialize() {
