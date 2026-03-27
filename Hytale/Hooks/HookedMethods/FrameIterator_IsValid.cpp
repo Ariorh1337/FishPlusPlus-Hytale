@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
 #include "../Hooks.h"
 
 bool __fastcall Hooks::hkFrameIterator_IsValid(GCInstance* instance) {

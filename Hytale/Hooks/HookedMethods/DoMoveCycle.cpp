@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
 #include "../Hooks.h"
 #include "Events/EventRegister.h"
 

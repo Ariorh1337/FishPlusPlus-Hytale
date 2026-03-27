@@ -4,6 +4,8 @@
 #include "Core.h"
 #include "Hooks.h"
 
+// Helper macros for creating hooks
+// These macros simplify the process of creating hooks by combining pattern scanning and hook creation into a single step. They also log the addresses found for easier debugging.
 #define CREATE_HOOK(name) \
 if (MH_CreateHook((LPVOID)name##Address, &hk##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
     Util::log("Failed to hook %s\n", #name);\
@@ -24,6 +26,9 @@ if (MH_CreateHook((LPVOID)name##Address, &hk##name, reinterpret_cast<LPVOID*>(&o
     return false;\
 }
 
+/*
+* Creates and registers all hooks
+*/
 bool Hooks::CreateHooks() {
     Util::log("Creating Hooks\n");
 
@@ -33,10 +38,7 @@ bool Hooks::CreateHooks() {
     }
 
     std::uintptr_t WglSwapBuffersAddress = (uint64_t) GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglSwapBuffers");
-    if (!Util::IsValidPtr(WglSwapBuffersAddress)) {
-        Util::log("Failed to get wglSwapBuffers address\n");
-        return false;
-    }
+    ValidPtrBool(WglSwapBuffersAddress);
 
     CREATE_HOOK(WglSwapBuffers);
     CREATE_SIG_HOOK(FrameIterator_IsValid, "48 83 79 ? ? 0F 95 C0 C3 CC CC CC CC CC CC CC 40 53"); // E8 ? ? ? ? 84 C0 0F 85 ? ? ? ? 49 8B 5D
@@ -47,7 +49,6 @@ bool Hooks::CreateHooks() {
     CREATE_SIG_HOOK_BY_REF(OnChat, "E8 ? ? ? ? 48 8B 4D ? 48 8B 89 ? ? ? ? 48 8B 89");
     CREATE_SIG_HOOK_BY_REF(DrawEntityCharactersAndItems, "E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 85");
     CREATE_SIG_HOOK_BY_REF(DrawScene, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
-
 
     MH_EnableHook(MH_ALL_HOOKS);
 

@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
 #include "../Hooks.h"
 
 void __fastcall Hooks::hkOnUserInput(uint64_t instance, SDL_Event event) {
