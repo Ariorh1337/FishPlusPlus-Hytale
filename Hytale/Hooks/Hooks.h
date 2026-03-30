@@ -2,12 +2,8 @@
  * Copyright (c) FishPlusPlus.
  */
 #pragma once
-
 #include "core.h"
-
 #include "Math/Vector3.h"
-#define TARGET_AMD64
-#define TARGET_WINDOWS
 
 enum GCFlag : uint32_t {
     // If this flag is set, each unwind will apply a -1 to the ControlPC.  This is used by EH to ensure

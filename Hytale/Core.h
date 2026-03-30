@@ -38,13 +38,13 @@
 #include "Math/Matrix4x4.h"
 #include "Math/Vector3.h"
 
+// Helper macros for validating pointers
+// These macros check if a pointer is valid before proceeding with the function. If the pointer is invalid, they return an appropriate value (nullptr, void, false, empty, or continue the loop). This helps prevent crashes due to null or invalid pointers.
 #define ValidPtr(ptr) if (!Util::IsValidPtr(ptr)) return nullptr;
 #define ValidPtrVoid(ptr) if (!Util::IsValidPtr(ptr)) return;
 #define ValidPtrBool(ptr) if (!Util::IsValidPtr(ptr)) return false;
 #define ValidPtrEmpty(ptr) if (!Util::IsValidPtr(ptr)) return {};
 #define ValidPtrLoop(ptr) if (!Util::IsValidPtr(ptr)) continue;
-
-//#define NativeGameLogger
 
 inline uint64_t gameBase;
 inline uint64_t dllBase;

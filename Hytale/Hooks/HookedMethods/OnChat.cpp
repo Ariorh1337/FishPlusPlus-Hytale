@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
 #include "../Hooks.h"
 
 void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
