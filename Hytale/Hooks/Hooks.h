@@ -127,6 +127,9 @@ namespace HookData {
 
     inline std::unique_ptr<Menu> menu;
     inline std::unique_ptr<FramebufferRenderer> fboRenderer;
+
+	inline bool queueTeleport = false;
+	inline Vector3 teleportTarget = Vector3(0, 0, 0);
 }
 
 using namespace HookData;

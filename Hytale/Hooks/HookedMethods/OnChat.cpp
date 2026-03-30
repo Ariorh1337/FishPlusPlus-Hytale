@@ -18,9 +18,7 @@ void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
     float z;
 
     if (iss >> x >> y >> z) {
-        GameInstance* instance = Util::getGameInstance();
-        Entity* player = Util::getLocalPlayer();
-        ValidPtrVoid(player);
-        player->SetPositionTeleport(Vector3(x, y, z));
+        HookData::queueTeleport = true;
+		HookData::teleportTarget = Vector3(x, y, z);
     }
 }
