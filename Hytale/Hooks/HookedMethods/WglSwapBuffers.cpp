@@ -4,6 +4,9 @@
 #include "../Hooks.h"
 #include "Features/FeatureHandler.h"
 
+#pragma optimize("", off)
+#pragma runtime_checks("", off)
+
 static void* GetAnyGLFuncAddress(const char* name) {
     void* p = (void*) wglGetProcAddress(name);
     if (p == nullptr || p == (void*) 0x1 || p == (void*) 0x2 ||
@@ -17,6 +20,7 @@ static void* GetAnyGLFuncAddress(const char* name) {
     return p;
 }
 
+__declspec(safebuffers) __declspec(noinline)
 BOOL WINAPI Hooks::hkWglSwapBuffers(HDC hdc) {
     if (!initialized) {
         if (!gladLoadGLLoader((GLADloadproc) GetAnyGLFuncAddress)) {

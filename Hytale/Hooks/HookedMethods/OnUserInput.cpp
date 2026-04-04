@@ -3,6 +3,10 @@
  */
 #include "../Hooks.h"
 
+#pragma optimize("", off)
+#pragma runtime_checks("", off)
+
+__declspec(safebuffers) __declspec(noinline)
 void __fastcall Hooks::hkOnUserInput(uint64_t instance, SDL_Event event) {
     Hooks::oOnUserInput(instance, event);
 

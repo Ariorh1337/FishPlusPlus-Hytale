@@ -5,6 +5,10 @@
 #include "Features/FeatureHandler.h"
 #include "Features/ActualFeatures/WorldModulate.h"
 
+#pragma optimize("", off)
+#pragma runtime_checks("", off)
+
+__declspec(safebuffers) __declspec(noinline)
 void __fastcall Hooks::hkWeatherUpdate(uint64_t instance, float deltaTime) {
     Hooks::oWeatherUpdate(instance, deltaTime);
 

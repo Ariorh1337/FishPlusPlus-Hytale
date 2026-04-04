@@ -4,6 +4,10 @@
 #include "../Hooks.h"
 #include "Events/EventRegister.h"
 
+#pragma optimize("", off)
+#pragma runtime_checks("", off)
+
+__declspec(safebuffers) __declspec(noinline)
 void __fastcall Hooks::hkDrawScene(GameInstance* instance) {
     Hooks::oDrawScene(instance);
     if (!initialized)

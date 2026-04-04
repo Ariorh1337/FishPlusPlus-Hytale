@@ -3,6 +3,10 @@
  */
 #include "../Hooks.h"
 
+#pragma optimize("", off)
+#pragma runtime_checks("", off)
+
+__declspec(safebuffers) __declspec(noinline)
 void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
     std::string message = chatString->getString();
     //Util::log("Chat message: %s\n", message.c_str());

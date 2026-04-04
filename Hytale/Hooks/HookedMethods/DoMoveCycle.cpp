@@ -6,6 +6,10 @@
 
 int teleportTicks = 0;
 
+#pragma optimize("", off)
+#pragma runtime_checks("", off)
+
+__declspec(safebuffers) __declspec(noinline)
 void __fastcall Hooks::hkDoMoveCycle(DefaultMovementController* dmc, Vector3 offset) {
     if (!initialized)
         return Hooks::oDoMoveCycle(dmc, offset);
