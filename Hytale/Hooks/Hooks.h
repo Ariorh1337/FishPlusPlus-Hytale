@@ -135,10 +135,6 @@ namespace HookData {
 using namespace HookData;
 
 namespace Hooks {
-	typedef bool(__fastcall* FrameIterator_IsValid)(GCInstance* instance);
-	inline FrameIterator_IsValid oFrameIterator_IsValid = nullptr;
-	extern bool __fastcall hkFrameIterator_IsValid(GCInstance* instance);
-
     typedef BOOL(WINAPI* WglSwapBuffers)(HDC hdc);
     inline WglSwapBuffers oWglSwapBuffers = nullptr;
     extern BOOL WINAPI hkWglSwapBuffers(HDC hdc);

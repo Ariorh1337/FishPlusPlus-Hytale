@@ -174,10 +174,10 @@
     <ClCompile Include="Features\ActualFeatures\Nametags.cpp" />
     <ClCompile Include="Features\ActualFeatures\NoFall.cpp" />
     <ClCompile Include="Features\ActualFeatures\Speed.cpp" />
+    <ClCompile Include="Hooks\GCPatch.cpp" />
     <ClCompile Include="Hooks\HookedMethods\DoMoveCycle.cpp" />
     <ClCompile Include="Hooks\HookedMethods\DrawEntityCharactersAndItems.cpp" />
     <ClCompile Include="Hooks\HookedMethods\DrawScene.cpp" />
-    <ClCompile Include="Hooks\HookedMethods\FrameIterator_IsValid.cpp" />
     <ClCompile Include="Hooks\HookedMethods\HandleScreenShotting.cpp" />
     <ClCompile Include="Hooks\HookedMethods\OnChat.cpp" />
     <ClCompile Include="Hooks\HookedMethods\OnUserInput.cpp" />
@@ -338,6 +338,7 @@
     <ClInclude Include="Features\ActualFeatures\Nametags.h" />
     <ClInclude Include="Features\ActualFeatures\NoFall.h" />
     <ClInclude Include="Features\ActualFeatures\Speed.h" />
+    <ClInclude Include="Hooks\GCPatch.h" />
     <ClInclude Include="Hooks\Hooks.h" />
     <ClInclude Include="Math\BoundingBox.h" />
     <ClInclude Include="Math\Color.h" />

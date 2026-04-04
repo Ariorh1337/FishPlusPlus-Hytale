@@ -20,7 +20,7 @@ static void* GetAnyGLFuncAddress(const char* name) {
 BOOL WINAPI Hooks::hkWglSwapBuffers(HDC hdc) {
     if (!initialized) {
         if (!gladLoadGLLoader((GLADloadproc) GetAnyGLFuncAddress)) {
-            std::cout << "Failed to initialize GLAD" << std::endl;
+			Util::log("Failed to initialize GLAD\n");
             return -1;
         }
         Shaders::initShaders();

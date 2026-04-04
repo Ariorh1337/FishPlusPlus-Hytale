@@ -123,8 +123,8 @@ uint64_t Util::RelativeVirtualAddress(uint64_t address, int opcode_size = 3, int
 	return (uint64_t) (*(int*) (address + opcode_size) + address + opcode_length);
 }
 
-uint64_t Util::PatternScan(const char* signature) {
-	const auto module_handle = GetModuleHandleW(nullptr); // instead of using the string to find the handle, we're a dll and injected into the process already we can simplify it by using nullptr instead
+uint64_t Util::PatternScan(const char* signature, const char* module) {
+	const auto module_handle = GetModuleHandleA(module); // instead of using the string to find the handle, we're a dll and injected into the process already we can simplify it by using nullptr instead
 
 	static auto pattern_to_byte = [](const char* pattern) {
 		auto bytes = std::vector<int>{ };

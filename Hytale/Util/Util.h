@@ -45,7 +45,7 @@ namespace Util {
     bool IsValidPtr(void* ptr);
     bool IsValidPtr(uint64_t ptr);
     uint64_t RelativeVirtualAddress(uint64_t address, int opcode_size, int opcode_length);
-    uint64_t PatternScan(const char* signature);
+    uint64_t PatternScan(const char* signature, const char* module = "HytaleClient.exe");
 
     bool WorldToScreen(Vector3 pos, Vector2& out);
     Matrix4x4 getViewProjMat();

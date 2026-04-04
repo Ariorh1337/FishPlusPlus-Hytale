@@ -3,6 +3,7 @@
  */
 #include "Core.h"
 #include "Hooks.h"
+#include "GCPatch.h"
 
 // Helper macros for creating hooks
 // These macros simplify the process of creating hooks by combining pattern scanning and hook creation into a single step. They also log the addresses found for easier debugging.
@@ -10,26 +11,57 @@
 if (MH_CreateHook((LPVOID)name##Address, &hk##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
     Util::log("Failed to hook %s\n", #name);\
     return false;\
-}
+} else \
+    allHooks.push_back(std::make_pair((void*)&o##name, (void*)name##Address));
+
 #define CREATE_SIG_HOOK(name, pattern) \
 std::uintptr_t name##Address = Util::PatternScan(pattern);\
 Util::log("Found %s sig at: 0x%llX - 0x%llX = 0x%lX\n", #name, name##Address, gameBase, (name##Address - gameBase));\
-if (MH_CreateHook((LPVOID)name##Address, &hk##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
-    Util::log("Failed to hook %s\n", #name);\
-    return false;\
-}
+CREATE_HOOK(name)
+
 #define CREATE_SIG_HOOK_BY_REF(name, pattern) \
 std::uintptr_t name##Address = Util::RelativeVirtualAddress(Util::PatternScan(pattern), 1, 5);\
 Util::log("Found %s sig at: 0x%llX - 0x%llX = 0x%lX\n", #name, name##Address, gameBase, (name##Address - gameBase));\
-if (MH_CreateHook((LPVOID)name##Address, &hk##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
-    Util::log("Failed to hook %s\n", #name);\
-    return false;\
-}
+CREATE_HOOK(name)
+
+/* --- Vectored Exception Handler REMOVED ---
+ * The old VEH caught ALL access violations at ANY 'movzx eax, byte ptr [rcx+rax]'
+ * (0F B6 04 01) inside the Hytale module. There are 78 such instructions in the binary,
+ * including 17+ inside the Brotli decompression engine. During world loading, the VEH
+ * intercepted legitimate AVs in Brotli, set RAX=2 and skipped the instruction, corrupting
+ * the decompression state. This produced garbage data on the managed heap, causing
+ * FailFast (0xC0000602) in RhpNewArray_Char during the next GC allocation.
+ *
+ * If the ClientMovement validation crash resurfaces (flags-as-pointer AV), fix it with
+ * a targeted NOP patch at the specific validation instruction instead of a global VEH. */
+static PVOID s_vehHandle = nullptr;
+
 
 /*
 * Creates and registers all hooks
 */
 bool Hooks::CreateHooks() {
+    // ═══════════════════════════════════════════════════════════════════════
+    // CRITICAL: Patch the NativeAOT GC stack walker BEFORE creating any hooks.
+    // Without this patch, MinHook trampolines create stack frames with PCs
+    // inside our DLL. The GC can't find these in its method table and calls
+    // RaiseFailFastException (0xC0000602).
+    // ═══════════════════════════════════════════════════════════════════════
+    if (!PatchGCStackWalker()) {
+		Util::log("WARNING: GC patch #1 failed! Hooks on NativeAOT functions may crash due to GC FailFast.\n");
+    }
+
+    // GC-Patch2: Wrap the _1() (vtable[5] UnwindStackFrame) call in fn_KeepUnwinding
+    // with SafeUnwind1. When the NativeAOT unwinder crashes on our trampoline (because
+    // it uses stale method_info), SafeUnwind1 catches the AV and manually unwinds via
+    // RtlLookupFunctionEntry (which finds our RtlAddFunctionTable entries) + RtlVirtualUnwind.
+    // The FailFast code cave is a safety net in case SafeUnwind1 returns 0.
+    if (!PatchGCStackWalkerKeepUnwinding()) {
+		Util::log("WARNING: GC patch #2 failed! Store-Packets may crash due to unwinder AVs.\n");
+    }
+
+    std::vector<std::pair<void*, void*>> allHooks;
+
     Util::log("Creating Hooks\n");
 
     if (MH_Initialize() != MH_OK) {
@@ -41,7 +73,6 @@ bool Hooks::CreateHooks() {
     ValidPtrBool(WglSwapBuffersAddress);
 
     CREATE_HOOK(WglSwapBuffers);
-    CREATE_SIG_HOOK(FrameIterator_IsValid, "48 83 79 ? ? 0F 95 C0 C3 CC CC CC CC CC CC CC 40 53"); // E8 ? ? ? ? 84 C0 0F 85 ? ? ? ? 49 8B 5D
     CREATE_SIG_HOOK(WeatherUpdate, "41 57 41 56 41 55 41 54 57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 44 0F 29 8C 24 ? ? ? ? 0F 57 E4 0F 29 64 24 ? 0F 29 64 24 ? 48 B8"); //E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 80 BB ? ? ? ? ? 75 ? 48 8B 8B ? ? ? ? F3 0F 10 8B ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 8B
     CREATE_SIG_HOOK_BY_REF(DoMoveCycle, "E8 ? ? ? ? FF CE 75 ? 48 8B 4B");
     CREATE_SIG_HOOK_BY_REF(HandleScreenShotting, "E8 ? ? ? ? 4C 8B 7D ? 49 8B 8F ? ? ? ? 39 09");
@@ -52,6 +83,8 @@ bool Hooks::CreateHooks() {
 
     MH_EnableHook(MH_ALL_HOOKS);
 
-    Util::log("All Hooks created and registered successfully\n");
+    RegisterAllTrampolinePages(allHooks);
+
+	Util::log("Finished creating hooks (GC stack-walker patched).\n");
     return true;
 }
