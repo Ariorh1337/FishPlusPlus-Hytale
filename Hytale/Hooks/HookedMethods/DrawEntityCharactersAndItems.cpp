@@ -35,247 +35,205 @@ inline void sub_B36260(u64 a, u64 b) { sub_offset<void(__fastcall*)(u64, u64)>(0
 inline void sub_14763A4() { sub_offset<void(__fastcall*)()>(0x14763A4)(); }
 
 void __fastcall Hooks::hkDrawEntityCharactersAndItems(SceneRenderer* _this, bool flag) {
-    if (!Util::isFullyInitialized())
-        return Hooks::oDrawEntityCharactersAndItems(_this, flag);
+	if (!Util::isFullyInitialized())
+		return Hooks::oDrawEntityCharactersAndItems(_this, flag);
 
 	if (qword_2937CA8 == 0 || qword_2937CB0 == 0 || off_2924E78 == 0) {
-        qword_2937CA8 = (uint64_t)(gameBase + 0x2937CA8);
+		qword_2937CA8 = (uint64_t)(gameBase + 0x2937CA8);
 		qword_2937CB0 = (uint64_t)(gameBase + 0x2937CB0);
 		off_2924E78 = (uint64_t)(gameBase + 0x2924E78);
-		//Util::log("Initialized hkDrawEntityCharactersAndItems globals: qword_2937CA8=0x%llX, qword_2937CB0=0x%llX, off_2924E78=0x%llX\n", qword_2937CA8, qword_2937CB0, off_2924E78);
-    }
+	}
 
+	ContextData* contextData = (ContextData*)(_this->sceneContext->contextData);
+	RenderDevice* renderDevice = _this->renderDevice;
+	DrawList* drawList = _this->drawList;
 
-    u64 a1 = (u64) _this;
+	u32 totalCount = _this->unk_20C + _this->unk_210 + _this->unk_214;
 
-    u64 rbx = a1;
+	uint8_t stack[96]{ };
 
-    u64 rsi = *(u64*) (*(u64*) (rbx + 0x38) + 0x30);
-    u64 rdi = *(u64*) (*(u64*) (rbx + 0x30) + 0x10);
+	auto FAIL = [&](u64 a, u64 b) {
+		sub_B36260(a, b);
+		__debugbreak();
+	};
 
-    u32 r14d = *(u32*) (rbx + 0x20C)
-        + *(u32*) (rbx + 0x210)
-        + *(u32*) (rbx + 0x214);
+	// =========================================================
+	// if (!flag)
+	// =========================================================
+	if (!flag) {
+		u32 index = 0;
 
-    uint8_t stack[96]{ };
+	loc_4DE186:
+		if (index >= _this->drawCount)
+			goto loc_4DE399;
 
-    auto FAIL = [&](u64 a, u64 b) {
-        sub_B36260(a, b);
-        __debugbreak();
-    };
+	loc_4DDFD8:
+		if (*(u64*) (off_2924E78 - 8))
+			sub_14763A4();
 
-    // =========================================================
-    // if (!flag)
-    // =========================================================
-    if (!flag) {
-        r14d = 0;
+	loc_4DDFF4:
+		{
+			u64 rcx = *(u64*) (qword_2937CA8);
+			rcx = *(u64*) (rcx + 0x10);
 
-    loc_4DE186:
-        if (r14d >= *(u32*) (rbx + 0x1B8))
-            goto loc_4DE399;
+			u32 v = contextData->shaderParam;
 
-    loc_4DDFD8:
-        if (*(u64*) (off_2924E78 - 8))
-            sub_14763A4();
+			auto call = (void(__fastcall*)(u64, u64, u64))(*(u64*) (rcx + 0x348));
 
-    loc_4DDFF4:
-        {
-            u64 rcx = *(u64*) (qword_2937CA8);
-            rcx = *(u64*) (rcx + 0x10);
+			sub_14C7B80(stack);
+			call(v, 0, index);
+			sub_14C7BD0(stack);
+		}
 
-            u32 v = *(u32*) (rsi + 0x84);
+		{
+			if (index >= drawList->size)
+				FAIL((u64)drawList, flag);
 
-            auto fn = *(void(__fastcall***)(u64, u64, u64))(rcx);
-            auto call = (void(__fastcall*)(u64, u64, u64))(*(u64*) (rcx + 0x348));
+			DrawListEntry& entry = drawList->entries[index];
 
-            sub_14C7B80(stack);
-            call(v, 0, r14d);
-            sub_14C7BD0(stack);
-        }
+			u32 ctx = contextData->contextValue;
 
-        {
-            u64 list = *(u64*) (rbx + 0x70);
-            if (r14d >= *(u32*) (list + 8))
-                FAIL(list, flag);
+			u64 tbl = *(u64*) (qword_2937CB0);
+			tbl = *(u64*) (tbl + 8);
 
-            u64 entry = list + (u64) r14d * 0x90 + 0x10;
+			auto call = (void(__fastcall*)(u64, u64, u64, u64, u64))(*(u64*) (tbl + 0x278));
 
-            u32 a = *(u32*) (entry + 0x74);
-            u32 b = *(u32*) (entry + 0x78);
-            u16 c = *(u16*) (entry + 0x7C);
+			sub_14C7B80(stack);
+			call(0x8A11, ctx, entry.param_a, entry.param_b, entry.param_c);
+			sub_14C7BD0(stack);
+		}
 
-            u32 ctx = *(u32*) (rsi + 0x74 + 4);
+		{
+			if (index >= drawList->size)
+				FAIL((u64)drawList, flag);
 
-            u64 tbl = *(u64*) (qword_2937CB0);
-            tbl = *(u64*) (tbl + 8);
+			DrawListEntry& entry = drawList->entries[index];
 
-            auto call = (void(__fastcall*)(u64, u64, u64, u64, u64))(*(u64*) (tbl + 0x278));
+			auto call = *(void(__fastcall**)(u64))(renderDevice + 0x250);
 
-            sub_14C7B80(stack);
-            call(0x8A11, ctx, a, b, c);
-            sub_14C7BD0(stack);
-        }
+			sub_14C7B80(stack);
+			call(entry.param_c);
+			sub_14C7BD0(stack);
+		}
 
-        {
-            u64 list = *(u64*) (rbx + 0x70);
-            if (r14d >= *(u32*) (list + 8))
-                FAIL(list, flag);
+		{
+			if (index >= drawList->size)
+				FAIL((u64)drawList, flag);
 
-            u32 val = *(u32*) (list + (u64) r14d * 0x90 + 0x7C);
+			DrawListEntry& entry = drawList->entries[index];
 
-            auto call = *(void(__fastcall**)(u64))(rdi + 0x250);
+			renderDevice->drawCallCount += 1;
+			renderDevice->vertexCount += entry.count;
 
-            sub_14C7B80(stack);
-            call(val);
-            sub_14C7BD0(stack);
-        }
+			auto call = *(void(__fastcall**)(u64, u64, u64, u64))(renderDevice + 0x3E0);
 
-        {
-            u64 list = *(u64*) (rbx + 0x70);
-            if (r14d >= *(u32*) (list + 8))
-                FAIL(list, flag);
+			sub_14C7B80(stack);
+			call(4, entry.count, 0x1403, 0);
+			sub_14C7BD0(stack);
+		}
 
-            u32 count = *(u32*) (list + (u64) r14d * 0x90 + 0x80);
+		index++;
+		goto loc_4DE186;
+	}
 
-            *(u32*) (rdi + 0x438) += 1;
-            *(u32*) (rdi + 0x43C) += count;
+	// =========================================================
+	// else (flag == true)
+	// =========================================================
 
-            auto call = *(void(__fastcall**)(u64, u64, u64, u64))(rdi + 0x3E0);
+	{
+		u32 r15d = 0;
 
-            sub_14C7B80(stack);
-            call(4, count, 0x1403, 0);
-            sub_14C7BD0(stack);
-        }
+	loc_4DE38C:
+		if (r15d >= _this->drawCount)
+			goto loc_4DE399;
 
-        r14d++;
-        goto loc_4DE186;
-    }
+	loc_4DE1A4:
+		{
+			FilterTable* filterTable = _this->filterTable;
 
-    // =========================================================
-    // else (flag == true)
-    // =========================================================
+			if (r15d >= drawList->size)
+				FAIL((u64)drawList, flag);
 
-    {
-        u32 r15d = 0;
+			DrawListEntry& entry = drawList->entries[r15d];
+			u64 idx = entry.filterIndex + totalCount;
 
-    loc_4DE38C:
-        if (r15d >= *(u32*) (rbx + 0x1B8))
-            goto loc_4DE399;
+			if (idx >= filterTable->size)
+				FAIL((u64)filterTable, flag);
 
-    loc_4DE1A4:
-        {
-            u64 table = *(u64*) (rbx + 0xD8);
-            u64 list  = *(u64*) (rbx + 0x70);
+			if (filterTable->filters[idx] != 1) {
+				r15d++;
+				goto loc_4DE38C;
+			}
+		}
 
-            if (r15d >= *(u32*) (list + 8))
-                FAIL(list, flag);
+		if (*(u64*) (off_2924E78 - 8))
+			sub_14763A4();
 
-            u64 idx = *(u16*) (list + (u64) r15d * 0x90 + 0x9C) + r14d;
+	loc_4DE200:
+		{
+			u64 rcx = *(u64*) (qword_2937CA8);
+			rcx = *(u64*) (rcx + 0x10);
 
-            if (idx >= *(u32*) (table + 8))
-                FAIL(table, flag);
+			u32 v = contextData->shaderParam;
 
-            if (*(u32*) (table + 0x10 + idx * 4) != 1) {
-                r15d++;
-                goto loc_4DE38C;
-            }
-        }
+			auto call = (void(__fastcall*)(u64, u64, u64))(*(u64*) (rcx + 0x348));
 
-        if (*(u64*) (off_2924E78 - 8))
-            sub_14763A4();
+			sub_14C7B80(stack);
+			call(v, 0, r15d);
+			sub_14C7BD0(stack);
+		}
 
-    loc_4DE200:
-        {
-            u64 rcx = *(u64*) (qword_2937CA8);
-            rcx = *(u64*) (rcx + 0x10);
+		{
+			if (r15d >= drawList->size)
+				FAIL((u64)drawList, flag);
 
-            u32 v = *(u32*) (rsi + 0x84);
+			DrawListEntry& entry = drawList->entries[r15d];
 
-            auto call = (void(__fastcall*)(u64, u64, u64))(*(u64*) (rcx + 0x348));
+			u32 ctx = contextData->contextValue;
 
-            sub_14C7B80(stack);
-            call(v, 0, r15d);
-            sub_14C7BD0(stack);
-        }
+			u64 tbl = *(u64*) (qword_2937CB0);
+			tbl = *(u64*) (tbl + 8);
 
-        {
-            u64 list = *(u64*) (rbx + 0x70);
-            if (r15d >= *(u32*) (list + 8))
-                FAIL(list, flag);
+			auto call = (void(__fastcall*)(u64, u64, u64, u64, u64))(*(u64*) (tbl + 0x278));
 
-            u64 entry = list + (u64) r15d * 0x90 + 0x10;
+			sub_14C7B80(stack);
+			call(0x8A11, ctx, entry.param_a, entry.param_b, entry.param_c);
+			sub_14C7BD0(stack);
+		}
 
-            u32 a = *(u32*) (entry + 0x74);
-            u32 b = *(u32*) (entry + 0x78);
-            u16 c = *(u16*) (entry + 0x7C);
+		{
+			if (r15d >= drawList->size)
+				FAIL((u64)drawList, flag);
 
-            u32 ctx = *(u32*) (rsi + 0x74 + 4);
+			DrawListEntry& entry = drawList->entries[r15d];
 
-            u64 tbl = *(u64*) (qword_2937CB0);
-            tbl = *(u64*) (tbl + 8);
+			auto call = *(void(__fastcall**)(u64))(renderDevice + 0x250);
 
-            auto call = (void(__fastcall*)(u64, u64, u64, u64, u64))(*(u64*) (tbl + 0x278));
+			sub_14C7B80(stack);
+			call(entry.param_c);
+			sub_14C7BD0(stack);
+		}
 
-            sub_14C7B80(stack);
-            call(0x8A11, ctx, a, b, c);
-            sub_14C7BD0(stack);
-        }
+		{
+			if (r15d >= drawList->size)
+				FAIL((u64)drawList, flag);
 
-        {
-            u64 list = *(u64*) (rbx + 0x70);
-            if (r15d >= *(u32*) (list + 8))
-                FAIL(list, flag);
+			DrawListEntry& entry = drawList->entries[r15d];
 
-            u32 val = *(u32*) (list + (u64) r15d * 0x90 + 0x7C);
+			renderDevice->drawCallCount += 1;
+			renderDevice->vertexCount += entry.count;
 
-            auto call = *(void(__fastcall**)(u64))(rdi + 0x250);
+			auto call = *(void(__fastcall**)(u64, u64, u64, u64))(renderDevice + 0x3E0);
 
-            sub_14C7B80(stack);
-            call(val);
-            sub_14C7BD0(stack);
-        }
+			sub_14C7B80(stack);
+			call(4, entry.count, 0x1403, 0);
+			sub_14C7BD0(stack);
+		}
 
-        {
-            u64 list = *(u64*) (rbx + 0x70);
-            if (r15d >= *(u32*) (list + 8))
-                FAIL(list, flag);
-
-            u32 count = *(u32*) (list + (u64) r15d * 0x90 + 0x80);
-
-            *(u32*) (rdi + 0x438) += 1;
-            *(u32*) (rdi + 0x43C) += count;
-
-            auto call = *(void(__fastcall**)(u64, u64, u64, u64))(rdi + 0x3E0);
-
-            sub_14C7B80(stack);
-            call(4, count, 0x1403, 0);
-            sub_14C7BD0(stack);
-        }
-
-        r15d++;
-        goto loc_4DE38C;
-    }
+		r15d++;
+		goto loc_4DE38C;
+	}
 
 loc_4DE399:
-    return;
-
-
-
-
-
-    /*
-
-    //Render entities through the walls
-    glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(1.0f, -1500000.0f);
-    Hooks::oDrawEntityCharactersAndItems(instance, false);
-    glPolygonOffset(1.0f, 1500000.0f);
-    glDisable(GL_POLYGON_OFFSET_FILL);
-
-
-    fboRenderer->bind();
-
-    Hooks::oDrawEntityCharactersAndItems(instance, false);
-
-    fboRenderer->unbind();*/
+	return;
 }
