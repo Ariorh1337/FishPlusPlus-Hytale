@@ -144,13 +144,13 @@ void SDK::Main() {
 	entities = getEntities(Util::getLocalPlayer());
 	global_mutex.unlock();
 
-	static bool test = false;
+	//static bool test = false;
 
-	if (!test && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance) {
-		test = true;
-		GameInstance* gameInstance = Util::app->appInGame->gameInstance;
-		ScanGameInstance(gameInstance);
-	}
+	//if (!test && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance) {
+	//	test = true;
+	//	GameInstance* gameInstance = Util::app->appInGame->gameInstance;
+	//	ScanGameInstance(gameInstance);
+	//}
 
 
 
