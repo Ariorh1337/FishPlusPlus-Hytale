@@ -24,6 +24,8 @@ if (!Util::IsValidPtr(SM::name##Address)) {                             \
     Util::log("Failed to get %s address\n", #name);                     \
     return false;                                                       \
 }
+
+#define DEFINE_PATTERN(name, pattern) API::name = (API::name##_t)Util::PatternScan(pattern); Util::log("Found " #name " at: 0x%llX\n", API::name);
 /*// Available GC Registered Thread
 void __fastcall GCThread(void* pArg) {
     while (!uninjecting) {
@@ -40,6 +42,7 @@ bool InitSigs() {
     GetMethodSigByRef(endGLContext, "E8 ? ? ? ? 48 8B 75 ? 4C 8D 4E ? 48 8B 5D ? 48 8B 53 ? 44 3B 72");
     GetMethodSigByRef(renderQueueFlush, "E8 ? ? ? ? CC 57 56 55 53 48 83 EC ? 48 8B D9 48 8B F2 41 8B F8");
     GetMethodSigByRef(submitDrawCommands, "E8 ? ? ? ? E9 ? ? ? ? 90 90 90 90 90 90 48 83 79");
+    GetSig(Object_ToString, "48 83 EC ? E8 ? ? ? ? 48 8B 48 ? 48 85 C9 74 ? 48 8B 09 48 85 C9 75 ? 48 8B C8 E8 ? ? ? ? EB ? 48 8B C1 48 8B C8 48 8B 00 48 83 C4 ? 48 FF 60");
 
     GetGlobalSigByRef(g_UniformManager, "48 8B 0D ? ? ? ? 48 8B 49 ? 45 8B 07");
     GetGlobalSigByRef(g_BufferManager, "48 8B 05 ? ? ? ? 48 8B 40 ? 45 8B 51 ? 4C 8B B0 ? ? ? ? 44 8B CA");

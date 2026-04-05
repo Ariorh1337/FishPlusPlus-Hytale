@@ -50,10 +50,10 @@ void originalDrawEntityCharactersAndItems(SceneRenderer* _this) {
         if (*(&SM::g_GlobalStateTableAddress - 1))
             submitDrawCommands();
 
-        beginGLContext(glStateBuffer);
+        //beginGLContext(glStateBuffer);
         setShaderUniform(sceneContext->shaderProgramId, 0, (uint32_t) i);
         bindUniformBufferRange(35345, sceneContext->uniformBufferId, entityDrawTask->AnimationData.InternalId, entityDrawTask->AnimationDataOffset, entityDrawTask->AnimationDataSize);
-        endGLContext(glStateBuffer);
+        //endGLContext(glStateBuffer);
 
         glBindVertexArray(entityDrawTask->VertexArray.InternalId);
         ++renderStats->drawCallCount;
