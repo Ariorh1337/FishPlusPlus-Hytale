@@ -32,3 +32,5 @@ void __fastcall Hooks::hkOnUserInput(uint64_t instance, SDL_Event event) {
         InputSystem::inputMutex.unlock();
     }
 }
+#pragma runtime_checks("", restore)
+#pragma optimize("", on)

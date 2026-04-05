@@ -116,7 +116,7 @@ double Util::GetTime() {
 	return (double)now.QuadPart / (double)freq.QuadPart;
 }
 
-uint64_t Util::RelativeVirtualAddress(uint64_t address, int opcode_size = 3, int opcode_length = 7) {
+uint64_t Util::RelativeVirtualAddress(uint64_t address, int opcode_size, int opcode_length) {
 	if (!address)
 		return 0;
 

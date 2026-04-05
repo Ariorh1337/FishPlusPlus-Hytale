@@ -14,3 +14,5 @@ void __fastcall Hooks::hkHandleScreenShotting(App* app) {
     Hooks::oHandleScreenShotting(app);
     SDK::Main();
 }
+#pragma runtime_checks("", restore)
+#pragma optimize("", on)

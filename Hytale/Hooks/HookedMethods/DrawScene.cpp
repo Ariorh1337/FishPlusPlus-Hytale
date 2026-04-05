@@ -19,3 +19,5 @@ void __fastcall Hooks::hkDrawScene(GameInstance* instance) {
 
     fboRenderer->draw();
 }
+#pragma runtime_checks("", restore)
+#pragma optimize("", on)

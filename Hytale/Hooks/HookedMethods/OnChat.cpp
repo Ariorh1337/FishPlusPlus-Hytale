@@ -26,3 +26,5 @@ void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
 		HookData::teleportTarget = Vector3(x, y, z);
     }
 }
+#pragma runtime_checks("", restore)
+#pragma optimize("", on)

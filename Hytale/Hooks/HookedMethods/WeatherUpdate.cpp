@@ -39,3 +39,5 @@ void __fastcall Hooks::hkWeatherUpdate(uint64_t instance, float deltaTime) {
     if (noFog)
         *(float*) ((uintptr_t) (instance + 0x94)) = 0.0f;
 }
+#pragma runtime_checks("", restore)
+#pragma optimize("", on)

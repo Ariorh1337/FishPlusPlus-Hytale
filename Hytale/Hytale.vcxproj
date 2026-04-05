@@ -390,6 +390,7 @@
     <ClInclude Include="sdk\MoveCmd.h" />
     <ClInclude Include="sdk\MovementVector.h" />
     <ClInclude Include="Math\Vector3.h" />
+    <ClInclude Include="sdk\RenderStructs.h" />
     <ClInclude Include="sdk\SceneRenderer.h" />
     <ClInclude Include="sdk\SDK.h" />
     <ClInclude Include="sdk\Window.h" />

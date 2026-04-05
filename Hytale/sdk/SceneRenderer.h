@@ -4,35 +4,39 @@
 #pragma once
 
 #include "Math/Matrix4x4.h"
+#include "RenderStructs.h"
+
 
 struct SceneRenderer {
-    char pad_0000[0x30];        // 0x000
+	char pad_0000[0x30];                    // 0x000
 
-    void* renderDevice;         // 0x030 -> used for rdi (calls at +0x250, +0x3E0)
+	RenderDevice* renderDevice;             // 0x030 -> contains RenderStats at +0x10
 
-    char pad_0038[0x8];         // 0x038
+	SceneContextContainer* contextContainer;// 0x038 -> contains SceneContext* at +0x30
 
-    void* sceneContext;         // 0x038 -> *(+0x30) chain (rsi source)
+	char pad_0040[0x30];                    // 0x040
 
-    char pad_0040[0x30];        // 0x040
+	EntityList* entityList;                 // 0x070 -> array of EntityDrawData (0x90 stride)
 
-    void* drawList;             // 0x070 -> array base (0x90 stride)
+	char pad_0078[0x60];                    // 0x078
 
-    char pad_0078[0x60];        // 0x078
+	OcclusionFilterTable* occlusionFilter;  // 0x0D8 -> visibility filter table
 
-    void* filterTable;          // 0x0D8 -> used in filtered path
+	char pad_00E0[0xD8];                    // 0x0E0
 
-    char pad_00E0[0xD8];        // 0x0E0
+	uint32_t _entityDrawTaskCount;               // 0x1B8 -> number of entities to draw
 
-    uint32_t drawCount;         // 0x1B8 -> loop limit
+	char pad_01BC[0x50];                    // 0x1BC
 
-    char pad_01BC[0x50];        // 0x1BC
+	uint32_t unk_EntityCount_20C;           // 0x20C
+	uint32_t unk_EntityCount_210;           // 0x210
+	uint32_t unk_EntityCount_214;           // 0x214
 
-    uint32_t unk_20C;           // 0x20C
-    uint32_t unk_210;           // 0x210
-    uint32_t unk_214;           // 0x214
+	char pad_0218[0xF8];                    // 0x218
 
-    char pad_0218[0xF8];        // 0x218
+	Matrix4x4 MPV;                          // 0x310
 
-    Matrix4x4 MPV;              // 0x310
+	int getTotalEntityCount() {
+		return unk_EntityCount_20C + unk_EntityCount_210 + unk_EntityCount_214;
+	}
 };
