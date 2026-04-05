@@ -31,12 +31,11 @@ inline void submitDrawCommands() {
 #pragma optimize("", off)
 #pragma runtime_checks("", off)
 __declspec(safebuffers) __declspec(noinline)
-void originalDrawEntityCharactersAndItems(SceneRenderer* _this, bool useOcclusionCulling) {
+void originalDrawEntityCharactersAndItems(SceneRenderer* _this) {
     uint8_t glStateBuffer[96]{ };
     SceneContext* sceneContext = _this->contextContainer->sceneContext;
     RenderStats* renderStats = _this->renderDevice->renderStats;
     EntityList* entityList = _this->entityList;
-    OcclusionFilterTable* occlusionFilter = _this->occlusionFilter;
     UniformManager* uniformMgrPtr = *(UniformManager**) (SM::g_UniformManagerAddress);
     BufferManager* bufferMgrPtr = *(BufferManager**) (SM::g_BufferManagerAddress);
 
@@ -47,11 +46,6 @@ void originalDrawEntityCharactersAndItems(SceneRenderer* _this, bool useOcclusio
         if (i >= entityList->count)
             return;
         EntityDrawTask* entityDrawTask = &entityList->entities[i];
-        if (entityDrawTask->EntityLocalId >= occlusionFilter->count)
-            continue;
-
-        if (useOcclusionCulling && !occlusionFilter->VisibleOccludees[entityDrawTask->EntityLocalId])
-            continue;
 
         if (*(&SM::g_GlobalStateTableAddress - 1))
             submitDrawCommands();
@@ -75,12 +69,12 @@ void __fastcall Hooks::hkDrawEntityCharactersAndItems(SceneRenderer* _this, bool
 
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0f, -1500000.0f);
-    originalDrawEntityCharactersAndItems(_this, false);
+    originalDrawEntityCharactersAndItems(_this);
     glPolygonOffset(1.0f, 1500000.0f);
     glDisable(GL_POLYGON_OFFSET_FILL);
 
     fboRenderer->bind();
-    originalDrawEntityCharactersAndItems(_this, false);
+    originalDrawEntityCharactersAndItems(_this);
     fboRenderer->unbind();
 }
 #pragma runtime_checks("", restore)
