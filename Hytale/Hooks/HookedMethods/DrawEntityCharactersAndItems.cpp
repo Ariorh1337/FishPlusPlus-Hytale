@@ -35,77 +35,40 @@ void originalDrawEntityCharactersAndItems(SceneRenderer* _this, bool useOcclusio
     uint8_t glStateBuffer[96]{ };
     SceneContext* sceneContext = _this->contextContainer->sceneContext;
     RenderStats* renderStats = _this->renderDevice->renderStats;
-    int totalEntityCount = _this->getTotalEntityCount();
     EntityList* entityList = _this->entityList;
+    OcclusionFilterTable* occlusionFilter = _this->occlusionFilter;
+    UniformManager* uniformMgrPtr = *(UniformManager**) (SM::g_UniformManagerAddress);
+    BufferManager* bufferMgrPtr = *(BufferManager**) (SM::g_BufferManagerAddress);
 
-    if (useOcclusionCulling) {
-        for (int i = 0; i < _this->_entityDrawTaskCount; i++) {
-            OcclusionFilterTable* occlusionFilter = _this->occlusionFilter;
-            if (i >= entityList->count)
-                return;
-            EntityDrawTask* entityDrawTask = &entityList->entities[i];
-            if (entityDrawTask->EntityLocalId >= occlusionFilter->count)
-                return;
+    auto setShaderUniform = (void(__fastcall*)(uint64_t, uint64_t, uint64_t))(uniformMgrPtr->vtable->setShaderUniform);
+    auto bindUniformBufferRange = (void(__fastcall*)(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t))(bufferMgrPtr->vtable->bindUniformBufferRange);
 
-            if (occlusionFilter->VisibleOccludees[entityDrawTask->EntityLocalId] == 1) {
-                if (*(&SM::g_GlobalStateTableAddress - 1))
-                    submitDrawCommands();
-                uint64_t uniformMgrPtr = *(uint64_t*) (SM::g_UniformManagerAddress);
-                uniformMgrPtr = *(uint64_t*) (uniformMgrPtr + 0x10);
-                auto setShaderUniform = (void(__fastcall*)(uint64_t, uint64_t, uint64_t))(*(uint64_t*) (uniformMgrPtr + 0x348));
-                uint32_t shaderProgramId = sceneContext->shaderProgramId;
-                beginGLContext(glStateBuffer);
-                setShaderUniform(shaderProgramId, 0, (uint32_t) i);
-                endGLContext(glStateBuffer);
+    for (int i = 0; i < _this->_entityDrawTaskCount; i++) {
+        if (i >= entityList->count)
+            return;
+        EntityDrawTask* entityDrawTask = &entityList->entities[i];
+        if (entityDrawTask->EntityLocalId >= occlusionFilter->count)
+            continue;
 
-                uint64_t bufferMgrPtr = *(uint64_t*) (SM::g_BufferManagerAddress);
-                bufferMgrPtr = *(uint64_t*) (bufferMgrPtr + 8);
-                auto bindUniformBufferRange = (void(__fastcall*)(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t))(*(uint64_t*) (bufferMgrPtr + 0x278));
+        if (useOcclusionCulling && !occlusionFilter->VisibleOccludees[entityDrawTask->EntityLocalId])
+            continue;
 
-                beginGLContext(glStateBuffer);
-                bindUniformBufferRange(35345, sceneContext->uniformBufferId, entityDrawTask->AnimationData.InternalId, entityDrawTask->AnimationDataOffset, entityDrawTask->AnimationDataSize);
-                endGLContext(glStateBuffer);
-                glBindVertexArray(entityDrawTask->VertexArray.InternalId);
-                ++renderStats->drawCallCount;
-                renderStats->totalIndicesDrawn += entityDrawTask->DataCount;
-                glDrawElements(GL_TRIANGLES, entityDrawTask->DataCount, GL_UNSIGNED_SHORT, 0);
-                sceneContext = sceneContext;
-            }
-        }
-    } else {
-        for (int i = 0; i < _this->_entityDrawTaskCount; i++) {
-            if (*(&SM::g_GlobalStateTableAddress - 1))
-                submitDrawCommands();
-            if ((uint32_t) i >= entityList->count)
-                return;
+        if (*(&SM::g_GlobalStateTableAddress - 1))
+            submitDrawCommands();
 
-            EntityDrawTask* entityDrawTask = &entityList->entities[i];
+        beginGLContext(glStateBuffer);
+        setShaderUniform(sceneContext->shaderProgramId, 0, (uint32_t) i);
+        bindUniformBufferRange(35345, sceneContext->uniformBufferId, entityDrawTask->AnimationData.InternalId, entityDrawTask->AnimationDataOffset, entityDrawTask->AnimationDataSize);
+        endGLContext(glStateBuffer);
 
-            uint64_t uniformMgrPtr = *(uint64_t*) (SM::g_UniformManagerAddress);
-            uniformMgrPtr = *(uint64_t*) (uniformMgrPtr + 0x10);
-            auto setShaderUniform = (void(__fastcall*)(uint64_t, uint64_t, uint64_t))(*(uint64_t*) (uniformMgrPtr + 0x348));
-            uint32_t shaderProgramId = sceneContext->shaderProgramId;
-            beginGLContext(glStateBuffer);
-            setShaderUniform(shaderProgramId, 0, (uint32_t) i);
-            endGLContext(glStateBuffer);
-
-            uint64_t bufferMgrPtr = *(uint64_t*) (SM::g_BufferManagerAddress);
-            bufferMgrPtr = *(uint64_t*) (bufferMgrPtr + 8);
-            auto bindUniformBufferRange = (void(__fastcall*)(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t))(*(uint64_t*) (bufferMgrPtr + 0x278));
-
-            beginGLContext(glStateBuffer);
-            bindUniformBufferRange(35345, sceneContext->uniformBufferId, entityDrawTask->AnimationData.InternalId, entityDrawTask->AnimationDataOffset, entityDrawTask->AnimationDataSize);
-            endGLContext(glStateBuffer);
-            glBindVertexArray(entityDrawTask->VertexArray.InternalId);
-            ++renderStats->drawCallCount;
-            renderStats->totalIndicesDrawn += entityDrawTask->DataCount;
-            glDrawElements(GL_TRIANGLES, entityDrawTask->DataCount, GL_UNSIGNED_SHORT, 0);
-        }
+        glBindVertexArray(entityDrawTask->VertexArray.InternalId);
+        ++renderStats->drawCallCount;
+        renderStats->totalIndicesDrawn += entityDrawTask->DataCount;
+        glDrawElements(GL_TRIANGLES, entityDrawTask->DataCount, GL_UNSIGNED_SHORT, 0);
     }
 }
-#pragma runtime_checks("", restore)
-#pragma optimize("", on)
 
+__declspec(safebuffers) __declspec(noinline)
 void __fastcall Hooks::hkDrawEntityCharactersAndItems(SceneRenderer* _this, bool flag) {
     if (!Util::isFullyInitialized())
         return Hooks::oDrawEntityCharactersAndItems(_this, flag);
@@ -120,3 +83,6 @@ void __fastcall Hooks::hkDrawEntityCharactersAndItems(SceneRenderer* _this, bool
     originalDrawEntityCharactersAndItems(_this, false);
     fboRenderer->unbind();
 }
+#pragma runtime_checks("", restore)
+#pragma optimize("", on)
+

@@ -54,58 +54,50 @@ struct EntityDrawTask {
 
 // Entity list structure
 struct EntityList {
-    char pad_0000[0x8];             // 0x000
-    uint32_t count;                 // 0x008 - number of entities in list
-    char pad_000C[0x4];             // 0x00C
-    EntityDrawTask entities[1];     // 0x010 - variable length array (0x90 stride)
+    char pad_0000[0x8];                 // 0x000
+    uint32_t count;                     // 0x008 - number of entities in list
+    char pad_000C[0x4];                 // 0x00C
+    EntityDrawTask entities[1];         // 0x010 - variable length array (0x90 stride)
 };
 
 // Render device/context wrapper
 struct RenderDevice {
-    char pad_0000[0x10];            // 0x000
-    RenderStats* renderStats;       // 0x010 - pointer to render statistics
+    char pad_0000[0x10];                // 0x000
+    RenderStats* renderStats;           // 0x010 - pointer to render statistics
 };
 
 // Container structure pointed to by SceneRenderer+0x38
 struct SceneContextContainer {
-    char pad_0000[0x30];            // 0x000
-    SceneContext* sceneContext;     // 0x030 - pointer to scene context
+    char pad_0000[0x30];                // 0x000
+    SceneContext* sceneContext;         // 0x030 - pointer to scene context
 };
 
 // Occlusion culling filter table
 struct OcclusionFilterTable {
-    char pad_0000[0x8];             // 0x000
-    uint32_t count;                 // 0x008 - number of entries
-    char pad_000C[0x4];             // 0x00C
-    uint32_t VisibleOccludees[1];    // 0x010 - variable length array (1 = visible)
+    char pad_0000[0x8];                 // 0x000
+    uint32_t count;                     // 0x008 - number of entries
+    char pad_000C[0x4];                 // 0x00C
+    uint32_t VisibleOccludees[1];       // 0x010 - variable length array (1 = visible)
 };
 
 // Uniform manager structure
 struct UniformManagerVTable {
-    char pad_0000[0x348];                                                       // 0x000
-    void(__fastcall* setShaderUniform)(void* thisPtr, uint64_t, uint64_t, uint64_t);         // 0x348
-};
-
-struct UniformManagerInner {
-    UniformManagerVTable* vtable;   // 0x000
+    char pad_0000[0x348];               // 0x000
+    uint64_t setShaderUniform;          // 0x348
 };
 
 struct UniformManager {
-    char pad_0000[0x10];            // 0x000
-    UniformManagerInner* inner;     // 0x010
+    char pad_0000[0x10];                // 0x000
+    UniformManagerVTable* vtable;       // 0x010
 };
 
 // Buffer manager structure
 struct BufferManagerVTable {
-    char pad_0000[0x278];                                                                               // 0x000
-    void(__fastcall* bindUniformBufferRange)(void* thisPtr, int64_t, uint64_t, uint64_t, int64_t, int64_t);       // 0x278
-};
-
-struct BufferManagerInner {
-    BufferManagerVTable* vtable;    // 0x000
+    char pad_0000[0x278];               // 0x000
+	uint64_t bindUniformBufferRange;    // 0x278
 };
 
 struct BufferManager {
-    char pad_0000[0x10];             // 0x000
-    BufferManagerInner* inner;      // 0x008
+    char pad_0000[0x8];                 // 0x000
+    BufferManagerVTable* vtable;        // 0x008
 };
