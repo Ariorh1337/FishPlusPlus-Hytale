@@ -57,5 +57,4 @@ namespace Util {
     void allocate_console();
     void free_console();
     void log(const char* fmt, ...);
-	HytaleString* ObjectToString(void* object);
 }

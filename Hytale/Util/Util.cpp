@@ -90,7 +90,7 @@ Camera* Util::getCamera() {
 	GameInstance* gameInstance = getGameInstance();
 	ValidPtr(gameInstance);
 
-	StructBeforeCam* structBeforeCam = gameInstance->Camera;
+	StructBeforeCam* structBeforeCam = gameInstance->MapModule;
 	ValidPtr(structBeforeCam);
 
 	return structBeforeCam->Camera;
@@ -171,13 +171,4 @@ uint64_t Util::PatternScan(const char* signature, const char* module) {
 	}
 
 	return 0;
-}
-
-HytaleString* Util::ObjectToString(void* object) {
-	using Object_ToString_t = HytaleString*(__fastcall*)(void* object);
-	static Object_ToString_t Object_ToString{ };
-	if (!Object_ToString)
-		Object_ToString = reinterpret_cast<Object_ToString_t>(SM::Object_ToStringAddress);
-
-	return Object_ToString(object);
 }

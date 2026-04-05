@@ -13,35 +13,35 @@
 #include "SceneRenderer.h"
 #include "Chat.h"
 #include "CharacterControllerModule.h"
-#include "ChunkManager.h"
+//#include "ChunkManager.h"
 
 class GameInstance {
 public:
 	char pad_0[0x10];                                   //0x0
 	Entity* Player;                                     //0x10
-	App* App;                                           //0x18
-	Engine* Engine;                                     //0x20
-	Chat* Chat;                                         //0x28
-	void* Notifications;                                //HytaleClient.InGame.Notifications
-	void* HitDetection;                                 //HytaleClient.InGame.HitDetection
-	void* VoiceManager;                                 //HytaleClient.Audio.Voice.VoiceManager
-	void* unkown_atm_0;									
-	void* QuicConnectionToServer;                       //HytaleClient.Networking.Connection.QuicConnectionToServer
-	void* PacketHandler;                                //HytaleClient.Networking.PacketHandler
-	void* Stopwatch;                                    //System.Diagnostics.Stopwatch
-	void* List;                                         //System.Collections.Generic.List`1[System.ValueTuple`2[HytaleClient.Data.InputSystem.InputAction,System.Boolean]]
-	void* some_String;                                  //System.String
-	SceneRenderer* SceneRenderer;                       //0x78
+	void* App;                                          //0x18 HytaleClient.Application.App
+	Engine* Engine;                                     //0x20 HytaleClient.Core.Engine
+	Chat* Chat;                                         //0x28 HytaleClient.InGame.Chat
+	void* Notifications;                                //0x30 HytaleClient.InGame.Notifications
+	void* HitDetection;                                 //0x38 HytaleClient.InGame.HitDetection
+	void* VoiceManager;                                 //0x40 HytaleClient.Audio.Voice.VoiceManager
+	void* unkown_atm_0;									//0x48
+	void* QuicConnectionToServer;                       //0x50 HytaleClient.Networking.Connection.QuicConnectionToServer
+	void* PacketHandler;                                //0x58 HytaleClient.Networking.PacketHandler
+	void* Stopwatch;                                    //0x60 System.Diagnostics.Stopwatch
+	void* List;                                         //0x68 System.Collections.Generic.List`1[System.ValueTuple`2[HytaleClient.Data.InputSystem.InputAction,System.Boolean]]
+	void* some_String;                                  //0x70 System.String
+	SceneRenderer* SceneRenderer;                       //0x78 HytaleClient.Graphics.SceneRenderer
 	char pad_80[0x88];                                  //0x80
-	Time* TimeModule;                                   //0x108
-	void* AudioModule;                                  //0x110
-	StructBeforeCam* MapModule;                         //0x118
-	void* ItemLibraryModule;                            //0x120
-	CharacterControllerModule* CharacterControllerModule; //0x128
-	CameraModule* CameraModule;                         //0x130
-	void* CollisionModule;                              //0x138
-	EntityStoreModule* EntityStoreModule;               //0x140
-	InventoryModule* InventoryModule;                   //0x148
+	Time* TimeModule;                                   //0x108 HytaleClient.InGame.Modules.TimeModule
+	void* AudioModule;                                  //0x110 HytaleClient.InGame.Modules.Audio.AudioModule
+	StructBeforeCam* MapModule;                         //0x118 HytaleClient.InGame.Modules.Map.MapModule
+	void* ItemLibraryModule;                            //0x120 HytaleClient.InGame.Modules.ItemLibraryModule
+	CharacterControllerModule* CharacterControllerModule; //0x128 HytaleClient.InGame.Modules.CharacterController.CharacterControllerModule
+	CameraModule* CameraModule;                         //0x130 HytaleClient.InGame.Modules.Camera.CameraModule
+	void* CollisionModule;                              //0x138 HytaleClient.InGame.Modules.Collision.CollisionModule
+	EntityStoreModule* EntityStoreModule;               //0x140 HytaleClient.InGame.Modules.Entities.EntityStoreModule
+	InventoryModule* InventoryModule;                   //0x148 HytaleClient.InGame.Modules.InventoryModule
 	void* InteractionModule;                            //0x150 HytaleClient.InGame.Modules.Interaction.InteractionModule
 	void* BuilderToolsModule;                           //0x158 HytaleClient.InGame.Modules.BuilderTools.BuilderToolsModule
 	void* MachinimaModule;                              //0x160 HytaleClient.InGame.Modules.Machinima.MachinimaModule
