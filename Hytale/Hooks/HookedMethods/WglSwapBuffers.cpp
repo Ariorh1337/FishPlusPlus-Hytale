@@ -3,6 +3,7 @@
  */
 #include "../Hooks.h"
 #include "Features/FeatureHandler.h"
+#include "Renderer/FrameBufferRenderer/FrameBuffers.h"
 
 
 static void* GetAnyGLFuncAddress(const char* name) {
@@ -32,7 +33,7 @@ BOOL WINAPI Hooks::hkWglSwapBuffers(HDC hdc) {
 
         Renderer2D::InitRenderer();
 
-        fboRenderer = std::make_unique<FramebufferRenderer>(Shaders::postProcess.get());
+        FrameBuffers::initFBOS();
 
         menu = std::make_unique<Menu>(hdc);
 
@@ -55,8 +56,10 @@ BOOL WINAPI Hooks::hkWglSwapBuffers(HDC hdc) {
 
     if (Util::IsValidPtr(Util::app)) {
 
-        if (fboRenderer && ((oldWindowWidth != Util::app->Engine->Window->WindowWidth) || (oldWindowHeight != Util::app->Engine->Window->WindowHeight)))
-            fboRenderer->resize(Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight);
+        if (((oldWindowWidth != Util::app->Engine->Window->WindowWidth) || (oldWindowHeight != Util::app->Engine->Window->WindowHeight))) {
+            FrameBuffers::resizeAll(Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight);
+        }
+            
         oldWindowWidth = Util::app->Engine->Window->WindowWidth;
         oldWindowHeight = Util::app->Engine->Window->WindowHeight;
 

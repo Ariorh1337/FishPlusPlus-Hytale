@@ -328,8 +328,8 @@ bool Util::isFullyInitialized() {
 
 bool Util::ShouldInteractWithGame() {
     ValidPtrBool(app);
-    ValidPtrBool(app->appInGame);
-    ValidPtrBool(app->appInGame->gameInstance);
+    if (app->Stage != AppStage::InGame)
+        return false;
     Chat* chat = app->appInGame->gameInstance->Chat;
     ValidPtrBool(chat);
     if (Menu::isMenuOpen())

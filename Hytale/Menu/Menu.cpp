@@ -113,6 +113,7 @@ void Menu::ListenForKeybinds() {
         return;
 
     for (auto& feature : FeatureHandler::features) {
+        Util::log("Keybind: %i", feature->GetKeybind());
         if (InputSystem::IsKeyPressed(feature->GetKeybind()))
             feature->ToggleState();
     }

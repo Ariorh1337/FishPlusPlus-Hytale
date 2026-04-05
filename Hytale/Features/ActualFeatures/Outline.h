@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
+#pragma once
+
+#include "Features/Feature.h"
+
+#include "Features/Settings/ToggleSetting.h"
+#include "Features/Settings/SliderSetting.h"
+#include "Features/Settings/ColorSetting.h"
+#include "Features/Settings/RecursiveSetting.h"
+
+class Outline : public Feature {
+public:
+	Outline();
+
+	bool CanExecute() override;
+
+	RecursiveSetting* entities;
+	ToggleSetting* entitiesGlow;
+	SliderSetting* entitiesGlowSize;
+	ColorSetting* entitiesColor;
+
+	RecursiveSetting* items;
+	ToggleSetting* itemsGlow;
+	SliderSetting* itemsGlowSize;
+	ColorSetting* itemsColor;
+};

@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
 #include "FramebufferRenderer.h"
 
 FramebufferRenderer::FramebufferRenderer(Shader* shader) {
@@ -64,23 +67,20 @@ void FramebufferRenderer::unbind() {
     glBindFramebuffer(GL_FRAMEBUFFER, lastFBO);
 	glClearColor(lastClearColor[0], lastClearColor[1], lastClearColor[2], lastClearColor[3]);
 }
-void FramebufferRenderer::draw() {
 
+void FramebufferRenderer::draw() {
     ValidPtrVoid(Util::app);
     ValidPtrVoid(Util::app->Engine);
     ValidPtrVoid(Util::app->Engine->Window);
 
     glBindFramebuffer(GL_FRAMEBUFFER, lastFBO);
 
-    GLint lastVAO;
     glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &lastVAO);
-    GLint lastProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &lastProgram);
-    GLint oldViewport[4];
     glGetIntegerv(GL_VIEWPORT, oldViewport);
-    GLboolean depthTest = glIsEnabled(GL_DEPTH_TEST);
-    GLboolean cullFace = glIsEnabled(GL_CULL_FACE);
-    GLboolean blend = glIsEnabled(GL_BLEND);
+    depthTest = glIsEnabled(GL_DEPTH_TEST);
+    cullFace = glIsEnabled(GL_CULL_FACE);
+    blend = glIsEnabled(GL_BLEND);
 
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
@@ -88,20 +88,20 @@ void FramebufferRenderer::draw() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDepthRange(0.0, 1.0);
 
-    int winW = Util::app->Engine->Window->WindowWidth;
-    int winH = Util::app->Engine->Window->WindowHeight;
+    winW = Util::app->Engine->Window->WindowWidth;
+    winH = Util::app->Engine->Window->WindowHeight;
 
     glViewport(0, 0, winW, winH);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    this->shader->bind();
-    this->shader->set("screenTexture", 0);
-    this->shader->set("u_Size", Vector2(winW, winH));
-    this->shader->set("u_Time", (float)Util::GetTime());
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    this->shader->bind();
+    this->shader->set("screenTexture", 0);
+    
 
     glBindFramebuffer(GL_FRAMEBUFFER, lastFBO);
     glUseProgram(lastProgram);

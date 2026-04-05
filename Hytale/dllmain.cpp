@@ -57,6 +57,10 @@ DWORD WINAPI startPoint(LPVOID lpParam) {
         Util::free_console();
         return 0;
     }
+
+    while (!(FindWindowA(nullptr, "Hytale"))) {
+        Sleep(100);
+    }
     
     if (!Hooks::CreateHooks()) {
 		Util::log("Failed to create hooks\n");
@@ -82,8 +86,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
             SIZE_T moduleSize = moduleInfo.SizeOfImage;
             dllBaseEnd = dllBase + moduleSize;
         }
-        return startPoint(0x0);
-        //CreateThread(nullptr, 0, startPoint, 0, 0, nullptr);
+        //return startPoint(0x0);
+        CreateThread(nullptr, 0, startPoint, 0, 0, nullptr);
         //break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:

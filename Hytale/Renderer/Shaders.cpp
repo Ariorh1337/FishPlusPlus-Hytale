@@ -186,6 +186,9 @@ out vec4 FragColor;
 uniform sampler2D u_Texture;
 uniform vec2 u_Size;
 uniform float u_Time;
+uniform vec3 u_OutlineColor;
+uniform bool u_Glow;
+uniform int u_GlowSize;
 
 vec2 directionalWaveNormal(vec2 p, float amp, vec2 dir, float freq, float speed, float time, float k) {
     float a = dot(p, dir) * freq + time * speed;
@@ -213,22 +216,26 @@ void main() {
     if (isMask)
         discard;
 
-    for (int x = -5; x <= 5; x++) {
-        for (int y = -5; y <= 5; y++) {
-            vec4 neighbor = texture(u_Texture, v_TexCoord + v_OneTexel * vec2(x, y));
-            if (mask != neighbor) {
-                float ndist = x * x + y * y - 1.0;
-                dist = min(dist, ndist);
+    if (u_Glow) {
+        for (int x = -u_GlowSize; x <= u_GlowSize; x++) {
+            for (int y = -u_GlowSize; y <= u_GlowSize; y++) {
+                vec4 neighbor = texture(u_Texture, v_TexCoord + v_OneTexel * vec2(x, y));
+                if (mask != neighbor) {
+                    float ndist = x * x + y * y - 1.0;
+                    dist = min(dist, ndist);
+                }
             }
         }
     }
+
+    
 
     for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
             vec4 neighbor = texture(u_Texture, v_TexCoord + v_OneTexel * vec2(x, y));
 
             if (mask != neighbor) {
-                FragColor = vec4(0.5, 0.5, 1.0, 1.0f);
+                FragColor = vec4(u_OutlineColor.x, u_OutlineColor.y, u_OutlineColor.z, 1.0f);
                 return;
             }
         }
@@ -236,9 +243,10 @@ void main() {
 
     float minDist = float(5 * 5);
     float glow = 1.0 - clamp(dist / minDist, 0.0, 1.0);
+    if (!u_Glow)
+        glow = 0.0;
 
-
-    FragColor = vec4(0.5, 0.5, 1.0, glow * 0.5);
+    FragColor = vec4(u_OutlineColor.x, u_OutlineColor.y, u_OutlineColor.z, glow * 0.5);
 })";
 
 
