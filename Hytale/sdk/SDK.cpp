@@ -74,6 +74,57 @@ void setCursorHidden(bool hidden) {
 	SetCursorHidden_method(app->Engine->Window, hidden);
 }
 
+HytaleString* SafeObjectToString(void* ptr) {
+	__try {
+		return Util::ObjectToString(ptr);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER) {
+		return nullptr;
+	}
+}
+
+void* SafeReadPointer(void** ptrLocation) {
+	__try {
+		return *ptrLocation;
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER) {
+		return (void*)-1;
+	}
+}
+
+void ScanGameInstance(GameInstance* gameInstance) {
+	Util::log("=== Scanning GameInstance at 0x%llX ===\n", (uint64_t)gameInstance);
+
+	for (int offset = 0x10; offset < 0x300; offset += 0x8) {
+		void** ptrLocation = (void**)((uint64_t)gameInstance + offset);
+		void* ptr = SafeReadPointer(ptrLocation);
+
+		if (ptr == (void*)-1) {
+			Util::log("Offset 0x%X: Access violation reading pointer\n", offset);
+		}
+		else if (ptr) {
+			HytaleString* obj_name = SafeObjectToString(ptr);
+			if (obj_name) {
+				std::string nameStr = obj_name->getString();
+				Util::log("Offset 0x%X (Ptr: 0x%llX): %s\n",
+					offset,
+					(uint64_t)ptr,
+					nameStr.c_str());
+			}
+			else {
+				Util::log("Offset 0x%X (Ptr: 0x%llX): Exception calling ObjectToString\n",
+					offset,
+					(uint64_t)ptr);
+			}
+		}
+		else {
+			Util::log("Offset 0x%X: nullptr\n", offset);
+		}
+	}
+
+	Util::log("=== End GameInstance scan ===\n");
+}
+
 void SDK::Main() {
 	if (!initialized) {
 		//EventRegister::DoMoveCycleEvent.Subscribe(DoMoveCycle);
@@ -92,4 +143,15 @@ void SDK::Main() {
 	global_mutex.lock();
 	entities = getEntities(Util::getLocalPlayer());
 	global_mutex.unlock();
+
+	//static bool test = false;
+
+	//if (!test && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance) {
+	//	test = true;
+	//	GameInstance* gameInstance = Util::app->appInGame->gameInstance;
+	//	ScanGameInstance(gameInstance);
+	//}
+
+
+
 }
