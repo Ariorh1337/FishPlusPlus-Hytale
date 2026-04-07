@@ -336,7 +336,7 @@ bool Util::ShouldInteractWithGame() {
         return false;
     if (chat->IsOpen)
         return false;
-    if (app->appInGame->IsInOverlay)
+    if (app->appInGame->Overlay != 0)
         return false;
     if (app->appInGame->IsInPause)
         return false;
