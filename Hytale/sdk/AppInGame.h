@@ -7,10 +7,9 @@
 struct AppInGame {
 	char pad[0x10];
 	GameInstance* gameInstance;
-	char pad_0018[72]; //0x0018
-	int32_t IsInPause; //0x0060
-	char pad_0064[8]; //0x0064
-	bool IsInOverlay; //0x006C
-	bool UnknownMouseCheck; //0x006D
-	char pad_006E[6]; //0x006E
+	char pad_0018[80]; //0x0018
+	bool IsInPause; //0x0068
+	char pad_0069[11]; //0x0069
+	uint8_t Overlay; //0x0074
+	char pad_0075[7]; //0x0075
 };
