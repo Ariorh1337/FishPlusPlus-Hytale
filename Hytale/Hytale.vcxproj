@@ -168,6 +168,7 @@
     <ClCompile Include="external\minhook\trampoline.c" />
     <ClCompile Include="Features\ActualFeatures\Outline.cpp" />
     <ClCompile Include="Features\ActualFeatures\WorldModulate.cpp" />
+    <ClCompile Include="Features\ConfigHandler.cpp" />
     <ClCompile Include="Features\Feature.cpp" />
     <ClCompile Include="Features\ActualFeatures\ESP.cpp" />
     <ClCompile Include="Features\FeatureHandler.cpp" />
@@ -325,8 +326,11 @@
     <ClInclude Include="external\minhook\hde\table64.h" />
     <ClInclude Include="external\minhook\minhook.h" />
     <ClInclude Include="external\minhook\trampoline.h" />
+    <ClInclude Include="external\nhollman\json.hpp" />
+    <ClInclude Include="external\nlohman\json.hpp" />
     <ClInclude Include="Features\ActualFeatures\Outline.h" />
     <ClInclude Include="Features\ActualFeatures\WorldModulate.h" />
+    <ClInclude Include="Features\ConfigHandler.h" />
     <ClInclude Include="Features\Feature.h" />
     <ClInclude Include="Features\Setting.h" />
     <ClInclude Include="Features\Settings\ColorSetting.h" />
@@ -396,6 +400,8 @@
     <ClInclude Include="sdk\MoveCmd.h" />
     <ClInclude Include="sdk\MovementVector.h" />
     <ClInclude Include="Math\Vector3.h" />
+    <ClInclude Include="sdk\OptionsHelper.h" />
+    <ClInclude Include="sdk\Paths.h" />
     <ClInclude Include="sdk\RenderStructs.h" />
     <ClInclude Include="sdk\SceneRenderer.h" />
     <ClInclude Include="sdk\SDK.h" />

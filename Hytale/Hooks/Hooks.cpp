@@ -12,7 +12,7 @@ if (MH_CreateHook((LPVOID)name##Address, &hk##name, reinterpret_cast<LPVOID*>(&o
     Util::log("Failed to hook %s\n", #name);\
     return false;\
 } else \
-    allHooks.push_back(std::make_pair((void*)&o##name, (void*)name##Address));
+    allHooks.push_back(std::make_pair((void*)o##name, (void*)name##Address));
 
 #define CREATE_SIG_HOOK(name, pattern) \
 std::uintptr_t name##Address = Util::PatternScan(pattern);\
@@ -50,7 +50,7 @@ bool Hooks::CreateHooks() {
     if (!PatchGCStackWalker()) {
 		Util::log("WARNING: GC patch #1 failed! Hooks on NativeAOT functions may crash due to GC FailFast.\n");
     }
-
+    
     // GC-Patch2: Wrap the _1() (vtable[5] UnwindStackFrame) call in fn_KeepUnwinding
     // with SafeUnwind1. When the NativeAOT unwinder crashes on our trampoline (because
     // it uses stale method_info), SafeUnwind1 catches the AV and manually unwinds via
@@ -59,7 +59,7 @@ bool Hooks::CreateHooks() {
     if (!PatchGCStackWalkerKeepUnwinding()) {
 		Util::log("WARNING: GC patch #2 failed! Store-Packets may crash due to unwinder AVs.\n");
     }
-
+    
     std::vector<std::pair<void*, void*>> allHooks;
 
     Util::log("Creating Hooks\n");
@@ -76,7 +76,7 @@ bool Hooks::CreateHooks() {
     CREATE_SIG_HOOK(WeatherUpdate, "41 57 41 56 41 55 41 54 57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 44 0F 29 8C 24 ? ? ? ? 0F 57 E4 0F 29 64 24 ? 0F 29 64 24 ? 48 B8"); //E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 80 BB ? ? ? ? ? 75 ? 48 8B 8B ? ? ? ? F3 0F 10 8B ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 8B
     CREATE_SIG_HOOK_BY_REF(DoMoveCycle, "E8 ? ? ? ? FF CE 75 ? 48 8B 4B");
     CREATE_SIG_HOOK_BY_REF(HandleScreenShotting, "E8 ? ? ? ? 4C 8B 7D ? 49 8B 8F ? ? ? ? 39 09");
-    CREATE_SIG_HOOK_BY_REF(OnUserInput, "E8 ? ? ? ? 49 8B 47 ? C6 80");
+    CREATE_SIG_HOOK_BY_REF(OnUserInput, "E8 ? ? ? ? 48 8B 53 ? 48 8B 92 ? ? ? ? 38 12");
     CREATE_SIG_HOOK_BY_REF(OnChat, "E8 ? ? ? ? 48 8B 4D ? 48 8B 89 ? ? ? ? 48 8B 89");
     CREATE_SIG_HOOK_BY_REF(DrawEntityCharactersAndItems, "E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 85");
     CREATE_SIG_HOOK_BY_REF(DrawScene, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");

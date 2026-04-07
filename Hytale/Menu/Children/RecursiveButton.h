@@ -15,6 +15,7 @@ public:
 	void Update(float mouseX, float mouseY) override;
 
 	void MouseClicked(float mouseX, float mouseY, int vk);
+	void MouseReleased(float mouseX, float mouseY, int vk);
 
 private:
 	RecursiveBody* body;

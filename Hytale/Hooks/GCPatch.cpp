@@ -755,7 +755,7 @@ void RegisterAllTrampolinePages(const std::vector<std::pair<void*, void*>>& hook
         VirtualProtect((void*) pageBase, 4096, oldProt, &oldProt);
 
         if (RtlAddFunctionTable(pRuntimeFuncArray, (DWORD) count, pageBase)) {
-			Util::log("[Hooks] Registered %d trampolines in UNWIND_INFO table for page 0x%p\n", (int) trampData.size(), (void*) pageBase);
+			Util::log("[Hooks] Registered %i trampolines in UNWIND_INFO table for page 0x%p\n", (int) trampData.size(), (void*) pageBase);
         } else {
 			Util::log("[Hooks] WARNING: RtlAddFunctionTable failed for page 0x%p (error code: %d)\n", (void*) pageBase, GetLastError());
         }

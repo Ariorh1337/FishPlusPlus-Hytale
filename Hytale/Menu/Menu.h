@@ -18,7 +18,7 @@ public:
 	static inline std::unique_ptr<Component> mainComponent;
 	static inline std::unique_ptr<Component> hudComponent;
 
-	inline static bool m_justOpened = false;
+	inline static bool m_justOpened = true;
 	inline static bool m_justClosed = false;
 private:
 

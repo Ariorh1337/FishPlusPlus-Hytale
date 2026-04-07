@@ -55,6 +55,10 @@ bool InitSigs() {
 DWORD WINAPI startPoint(LPVOID lpParam) {
 	Util::allocate_console();
 
+    Globals::optionsHelper = *(OptionsHelper**)Util::RelativeVirtualAddress(Util::PatternScan("48 8B 35 ? ? ? ? 48 8B 56 ? 48 85 D2 75 ? 48 8B 4B"), 3, 7);
+    Globals::paths = *(Paths**)Util::RelativeVirtualAddress(Util::PatternScan("48 8B 0D ? ? ? ? 48 8B 49 ? E8 ? ? ? ? 48 8D 35"), 3, 7);
+    Util::log("Found game directory at: %s\n", Globals::paths->ClientGameDirectory->getString().c_str());
+
     if (!InitSigs()){
         Util::log("Failed to Init Sigs\n");
         Util::free_console();

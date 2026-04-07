@@ -15,6 +15,8 @@
 
 #include "sdk/App.h"
 #include "sdk/DefaultMovementController.h"
+#include "sdk/OptionsHelper.h"
+#include "sdk/Paths.h"
 
 #include "Events/EventSystem.h"
 
@@ -50,6 +52,11 @@ inline uint64_t gameBase;
 inline uint64_t dllBase;
 inline uint64_t dllBaseEnd;
 inline bool uninjecting = false;
+
+namespace Globals {
+	inline OptionsHelper* optionsHelper;
+	inline Paths* paths;
+}
 
 namespace SM { // Signature Methods
 	inline uint64_t SetCursorHiddenAddress = 0;

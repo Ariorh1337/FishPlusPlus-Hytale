@@ -3,6 +3,7 @@
  */
 #include "../Hooks.h"
 #include "Features/FeatureHandler.h"
+#include "Features/ConfigHandler.h"
 #include "Renderer/FrameBufferRenderer/FrameBuffers.h"
 
 
@@ -39,8 +40,22 @@ BOOL WINAPI Hooks::hkWglSwapBuffers(HDC hdc) {
 
         FeatureHandler::Init();
 
+        
+        if (!ConfigHandler::FishDirectoryExists()) {
+            ConfigHandler::CreateFishDirectory();
+            ConfigHandler::SaveConfig("immediateConfig", false);
+        }
+        else {
+            ConfigHandler::LoadConfig("immediateConfig", false);
+        }
+        
+
         initialized = true;
     }
+
+    //Save the config every 2 minutes
+    if ((int)Util::GetTime() % 120 == 0)
+        ConfigHandler::SaveConfig("immediateConfig", false);
 
     static double lastTime = 0.0;
     double currentTime = Util::GetTime();
@@ -81,6 +96,7 @@ BOOL WINAPI Hooks::hkWglSwapBuffers(HDC hdc) {
         Fonts::Figtree->RenderText(std::format("GameInstance: 0x{:x}", reinterpret_cast<uintptr_t>(Util::getGameInstance())), 0.0f, 30.0f, 0.5f, Color::White());
         Fonts::Figtree->RenderText(std::format("LocalPlayer: 0x{:x}", reinterpret_cast<uintptr_t>(Util::getLocalPlayer())), 0.0f, 40.0f, 0.5f, Color::White());
         Fonts::Figtree->RenderText(std::format("DMC: 0x{:x}", reinterpret_cast<uintptr_t>(Util::GetMovementController())), 0.0f, 50.0f, 0.5f, Color::White());
+        Fonts::Figtree->RenderText(std::format("OptionsHelper: 0x{:x}", reinterpret_cast<uintptr_t>(Globals::optionsHelper)), 0.0f, 60.0f, 0.5f, Color::White());
 
         Fonts::Figtree->RenderText(std::format("Fish++ Hytale by LimitlessChicken aka milaq", reinterpret_cast<uintptr_t>(Util::app)), 500.0f, 10.0f, 0.5f, Color::White());
 

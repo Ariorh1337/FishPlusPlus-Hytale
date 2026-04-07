@@ -113,6 +113,34 @@ void ColorSettingControl::Update(float mouseX, float mouseY) {
 	alphaSliderPos = Vector2(x + 4.0f, y + colorPickerSize.y + 8.0f);
 }
 
+void ColorSettingControl::MenuOpened() {
+	auto* s = static_cast<ColorSetting*>(this->parent->setting);
+
+	float r = s->GetValue().r / 255.0f;
+	float g = s->GetValue().g / 255.0f;
+	float b = s->GetValue().b / 255.0f;
+
+	float max = std::max(r, std::max(g, b));
+	float min = std::min(r, std::min(g, b));
+	float delta = max - min;
+
+	if (delta == 0) hue = 0;
+	else if (max == r) hue = 60.0f * fmod(((g - b) / delta), 6.0f);
+	else if (max == g) hue = 60.0f * (((b - r) / delta) + 2.0f);
+	else hue = 60.0f * (((r - g) / delta) + 4.0f);
+
+	if (hue < 0) hue += 360.0f;
+
+	saturation = (max == 0) ? 0 : (delta / max);
+	value = max;
+	alpha = s->GetValue().a;
+
+	hueSliderProgress = hue / 360.0f * hueSliderSize.y;
+	colorPickerProgress.x = saturation * colorPickerSize.x;
+	colorPickerProgress.y = (1.0f - value) * colorPickerSize.y;
+	alphaSliderProgress = alpha / 255.0f * alphaSliderSize.x;
+}
+
 void ColorSettingControl::RenderColorPicker() {
 	auto* s = static_cast<ColorSetting*>(this->parent->setting);
 	Renderer2D::colored->SquareMultiColor(colorPickerPos, colorPickerSize.x, colorPickerSize.y,

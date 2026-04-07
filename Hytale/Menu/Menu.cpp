@@ -83,6 +83,11 @@ void CallComponentFuncs(double deltaTime, Component* component) {
         component->MouseDragged(Util::cursorPosX, Util::cursorPosY, VK_LBUTTON, Util::cursorPosX - prevXPos, Util::cursorPosY - prevYPos);
     }
 
+	if (Menu::m_justOpened)
+        component->MenuOpened();
+    if (Menu::m_justClosed)
+		component->MenuClosed();
+
     component->Update(Util::cursorPosX, Util::cursorPosY);
     component->Render(deltaTime);
 }
@@ -98,14 +103,17 @@ void Menu::Run(double deltaTime) {
 
     CallComponentFuncs(deltaTime, hudComponent.get());
 
-    if (Menu::isMenuOpen())
+    if (Menu::isMenuOpen()) {
         CallComponentFuncs(deltaTime, mainComponent.get());
+        Menu::m_justOpened = false;
+    }
 
 
     lbuttonWasDown = lbuttonDown;
     rbuttonWasDown = rbuttonDown;
     prevXPos = Util::cursorPosX;
     prevYPos = Util::cursorPosY;
+    
 }
 
 void Menu::ListenForKeybinds() {

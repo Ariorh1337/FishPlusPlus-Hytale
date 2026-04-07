@@ -19,8 +19,8 @@ public:
 	virtual void MouseReleased(float mouseX, float mouseY, int virtualKeyCode);
 	virtual void MouseDragged(float mouseX, float mouseY, int virtualKeyCode, float deltaX, float deltaY);
 
-	void MenuOpened();
-	void MenuClosed();
+	virtual void MenuOpened();
+	virtual void MenuClosed();
 
 	void Move(float xDelta, float yDelta);
 
