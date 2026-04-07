@@ -38,7 +38,7 @@ public:
         if (!success)
         {
             glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-            std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << "\n";
+			Util::log("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
         };
 
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -49,7 +49,7 @@ public:
         if (!success)
         {
             glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-            std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << "\n";
+			Util::log("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
         };
 
 
@@ -63,7 +63,7 @@ public:
         if (!success)
         {
             glGetProgramInfoLog(id, 512, NULL, infoLog);
-            std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << "\n";
+			Util::log("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
         }
 
         // delete the shaders as they're linked into our program now and no longer necessary
@@ -91,6 +91,9 @@ public:
     }
     void set(const std::string name, Color value) {
         glUniform3f(glGetUniformLocation(id, name.c_str()), value.r, value.g, value.b);
+    }
+    void set(const std::string name, Vector2 value) {
+        glUniform2f(glGetUniformLocation(id, name.c_str()), value.x, value.y);
     }
 private:
 	uint32_t id;

@@ -3,11 +3,12 @@
  */
 #pragma once
 
+#include <Menu/Component.h>
+
 #include "SettingButton.h"
-#include "FeatureDispatcher/Setting.h"
+#include "Features/Setting.h"
 #include "Math/Color.h"
 #include "Math/Vector2.h"
-#include <Menu/Component.h>
 
 class ColorSettingControl;
 
@@ -45,6 +46,7 @@ private:
 	void MouseClicked(float mouseX, float mouseY, int vk);
 	void MouseReleased(float mouseX, float mouseY, int vk);
 	void MouseDragged(float mouseX, float mouseY, int vk, float deltaX, float deltaY);
+	void MenuOpened() override;
 
 	bool IsMouseHovered(float mouseX, float mouseY, Vector2 min, Vector2 size) {
 		return mouseX >= min.x &&

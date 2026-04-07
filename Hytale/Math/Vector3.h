@@ -2,6 +2,7 @@
  * Copyright (c) FishPlusPlus.
  */
 #pragma once
+#include <cmath>
 
 struct Vector3 {
 	float x;
@@ -41,5 +42,19 @@ struct Vector3 {
 	}
 	Vector3 operator*(float value) const {
 		return Vector3(x * value, y * value, z * value);
+	}
+
+	float length() const {
+		return sqrtf(this->x * this->x + this->y * this->y + this->z * this->z);
+	}
+
+	Vector3 normalized() const {
+		auto const length = this->length();
+		if (length != 0) {
+			auto const inv = 1.0f / length;
+			return { this->x * inv, this->y * inv, this->z * inv };
+		}
+
+		return *this;
 	}
 };

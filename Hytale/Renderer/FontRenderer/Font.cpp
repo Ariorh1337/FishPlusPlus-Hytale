@@ -35,14 +35,14 @@ Font::Font(std::map<char, Character> characters, int size, uint32_t textureID, i
 
 void Font::RenderText(std::string text, float x, float y, float scale, Color color) {
 	
-	/*
+	
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glDepthRange(0.0, 1.0);
-	*/
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 
 	
 	Shaders::text->bind();

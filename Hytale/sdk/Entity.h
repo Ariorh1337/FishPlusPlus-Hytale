@@ -50,28 +50,30 @@ public:
 	float MoveProgress; //0x01E4
 	char pad_01E8[12]; //0x01E8
 	float Scale; //0x01F4
-	char pad_01F8[78]; //0x01F8
+	char pad_01F8[72]; //0x01F8
+	float DisplayHealth; //0x0240
+	char pad_0244[11]; //0x0244
 	bool wasOnGround; //0x0246
 	bool wasInFluid; //0x0247
 	bool wasFalling; //0x0248
 	bool wasJunping; //0x0249
 	bool usable; //0x024A
-	char pad_024B[33]; //0x024B
-	Vector3 OldPos; //0x0264
-	Vector3 NextPos; //0x0270
-	Vector3 Position; //0x027C
-	Vector3 RenderPos; //0x0288
+	char pad_0254[24]; //0x0254
+	Vector3 OldPos; //0x026C
+	Vector3 NextPos; //0x0278
+	Vector3 Position; //0x0284
+	Vector3 RenderPos; //0x0290
 	BoundingBox Hitbox; //0x0294
 	BoundingBox DefaultHitbox;
 	BoundingBox CrouchedHitbox;
 	BoundingBox IDKDefaultHitbox;
 	BoundingBox IDKCrouchedHitbox;
-	char pad_0314[200]; //0x0314
-	float pitchRad; //0x03DC
-	float yawRad; //0x03E0
-	char pad_03E4[4]; //0x03E4
-	float pitchRadOld; //0x03E8
-	float yawRadOld; //0x03EC
+	char pad_0314[208]; //0x0314
+	float pitchRad; //0x03E4
+	float yawRad; //0x03E8
+	char pad_03EC[4]; //0x03EC
+	float pitchRadOld; //0x03F0
+	float yawRadOld; //0x03F4
 	char pad_0388[1268]; //0x0388
 
 	void SetPositionTeleport(Vector3 nextPosition) {

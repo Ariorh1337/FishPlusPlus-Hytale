@@ -16,17 +16,17 @@
 
 FontLoader::FontLoader() {
 	if (FT_Init_FreeType(&m_ft)) {
-		std::cout << "Freetype init failed\n";
+		Util::log("Failed to initialize FreeType\n");
 		return;
 	}
 }
 
-Font FontLoader::LoadFont(Fonts font, int size)
-{
+Font FontLoader::LoadFont(Fonts font, int size) {
 	FT_Face face = nullptr;
 	switch (font) {
 	case Figtree:
-		if (FT_New_Memory_Face(m_ft, FigtreeData, figtreeSize, 0, &face)) {std::cout << "Failed to load font: Figtree\n";}
+		if (FT_New_Memory_Face(m_ft, FigtreeData, figtreeSize, 0, &face)) 
+			Util::log("Failed to load font: Figtree\n");
 		break;
 	}
 
@@ -42,14 +42,14 @@ Font FontLoader::LoadFont(Fonts font, int size)
 
 	for (unsigned char c = 32; c < 128; c++) {
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-			std::cout << "Failed to load character: " << c << "\n";
+			Util::log("Failed to load character: %c\n", c);
 			continue;
 		}
 
 		FT_GlyphSlot g = face->glyph;
 
 		w += g->bitmap.width;
-		h = std::max(h, g->bitmap.rows);
+		h = max(h, g->bitmap.rows);
 	}
 
 	uint32_t texture;

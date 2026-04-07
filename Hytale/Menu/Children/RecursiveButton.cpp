@@ -2,7 +2,7 @@
  * Copyright (c) FishPlusPlus.
  */
 #include "RecursiveButton.h"
-#include "FeatureDispatcher/Settings/RecursiveSetting.h"
+#include "Features/Settings/RecursiveSetting.h"
 
 RecursiveButton::RecursiveButton(Setting<bool>* setting) : SettingButton(setting) {
 	auto body = std::make_unique<RecursiveBody>(this);
@@ -42,7 +42,8 @@ void RecursiveButton::Render(double deltaTime) {
 }
 
 void RecursiveButton::MouseClicked(float mouseX, float mouseY, int vk) {
-	Component::MouseClicked(mouseX, mouseY, vk);
+	if (this->body->open)
+		Component::MouseClicked(mouseX, mouseY, vk);
 	if (!this->IsHovered(mouseX, mouseY))
 		return;
 
@@ -52,6 +53,11 @@ void RecursiveButton::MouseClicked(float mouseX, float mouseY, int vk) {
 	auto* s = static_cast<Setting<bool>*>(this->setting);
 	if (vk == VK_LBUTTON)
 		s->SetValue(!s->GetValue());
+}
+
+void RecursiveButton::MouseReleased(float mouseX, float mouseY, int vk) {
+	if (this->body->open)
+		Component::MouseReleased(mouseX, mouseY, vk);
 }
 
 void RecursiveButton::Update(float mouseX, float mouseY) {

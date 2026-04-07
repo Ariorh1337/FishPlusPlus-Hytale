@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "core.h"
+#include "Features/Setting.h"
 
 class RecursiveBody;
 
@@ -15,6 +15,7 @@ public:
 	void Update(float mouseX, float mouseY) override;
 
 	void MouseClicked(float mouseX, float mouseY, int vk);
+	void MouseReleased(float mouseX, float mouseY, int vk);
 
 private:
 	RecursiveBody* body;

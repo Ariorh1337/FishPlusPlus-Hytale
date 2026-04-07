@@ -4,7 +4,7 @@
 #pragma once
 
 #include "SettingButton.h"
-#include "FeatureDispatcher/Setting.h"
+#include "../../Features/Feature.h"
 #include "Util/InputSystem.h"
 
 class KeybindButton : public SettingButton {

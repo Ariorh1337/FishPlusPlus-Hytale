@@ -8,7 +8,7 @@
 #include "../Style.h"
 #include "Renderer/Renderer2D.h"
 #include "Renderer/FontRenderer/Fonts.h"
-#include "FeatureDispatcher/Settings/KeybindSetting.h"
+#include "Features/Settings/KeybindSetting.h"
 #include "Util/Util.h"
 
 void KeybindButton::Render(double deltaTime) {
@@ -50,7 +50,7 @@ void KeybindButton::Update(float mouseX, float mouseY) {
 
 	auto* s = static_cast<KeybindSetting*>(this->setting);
 	SDL_Scancode key = *InputSystem::keysPressed.begin();
-	if (Util::GetKeyName(key) == "None") {
+	if (Util::GetKeyName(key) == "None" || key == SDL_SCANCODE_ESCAPE) {
 		if (s->isDefaultKeybind && s->parentFeature)
 			s->parentFeature->SetKeybind(SDL_SCANCODE_UNKNOWN);
 		s->SetValue(SDL_SCANCODE_UNKNOWN);

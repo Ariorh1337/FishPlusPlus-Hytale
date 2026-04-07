@@ -315,21 +315,30 @@ const char* Util::GetKeyName(SDL_Scancode key) {
     return name;
 }
 
+bool Util::isFullyInitialized() {
+    ValidPtrBool(app);
+    ValidPtrBool(app->appInGame);
+    if (app->Stage != AppStage::InGame)
+        return false;
+    ValidPtrBool(app->appInGame->gameInstance);
+    ValidPtrBool(app->appInGame->gameInstance->Player);
+	return true;
+
+}
+
 bool Util::ShouldInteractWithGame() {
     ValidPtrBool(app);
-    AppInGame* appInGame = app->appInGame;
-    ValidPtrBool(appInGame);
-    GameInstance* gameInstance = getGameInstance();
-    ValidPtrBool(gameInstance);
-    Chat* chat = gameInstance->Chat;
+    if (app->Stage != AppStage::InGame)
+        return false;
+    Chat* chat = app->appInGame->gameInstance->Chat;
     ValidPtrBool(chat);
     if (Menu::isMenuOpen())
         return false;
     if (chat->IsOpen)
         return false;
-    if (appInGame->IsInOverlay)
+    if (app->appInGame->IsInOverlay)
         return false;
-    if (appInGame->IsInPause)
+    if (app->appInGame->IsInPause)
         return false;
 
     return true;

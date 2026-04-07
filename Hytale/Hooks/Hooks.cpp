@@ -3,228 +3,88 @@
  */
 #include "Core.h"
 #include "Hooks.h"
+#include "GCPatch.h"
 
-typedef int SDL_bool;
-#define SDL_TRUE  1
-#define SDL_FALSE 0
-
-static bool initialized = false;
-static bool initialized3D = false;
-
-static std::unique_ptr<Menu> menu;
-
-#define CREATE_HOOK(name, pattern) \
-std::uint8_t* name##Address = PatternScan(pattern);\
-if (MH_CreateHook(name##Address, &H##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
-    std::cout << "failed to create hook: " << #name << "\n";\
+// Helper macros for creating hooks
+// These macros simplify the process of creating hooks by combining pattern scanning and hook creation into a single step. They also log the addresses found for easier debugging.
+#define CREATE_HOOK(name) \
+if (MH_CreateHook((LPVOID)name##Address, &hk##name, reinterpret_cast<LPVOID*>(&o##name)) != MH_OK) {\
+    Util::log("Failed to hook %s\n", #name);\
     return false;\
-}\
-                                    
+} else \
+    allHooks.push_back(std::make_pair((void*)o##name, (void*)name##Address));
 
-static void* GetAnyGLFuncAddress(const char* name)
-{
-    void* p = (void*)wglGetProcAddress(name);
-    if (p == nullptr || p == (void*)0x1 || p == (void*)0x2 ||
-        p == (void*)0x3 || p == (void*)-1)
-    {
-		static HMODULE module = GetModuleHandleA("opengl32.dll");
-        if (!module)
-            module = LoadLibraryA("opengl32.dll");
+#define CREATE_SIG_HOOK(name, pattern) \
+std::uintptr_t name##Address = Util::PatternScan(pattern);\
+Util::log("Found %s sig at: 0x%llX - 0x%llX = 0x%lX\n", #name, name##Address, gameBase, (name##Address - gameBase));\
+CREATE_HOOK(name)
 
-        p = (void*)GetProcAddress(module, name);
-    }
-    return p;
-}
+#define CREATE_SIG_HOOK_BY_REF(name, pattern) \
+std::uintptr_t name##Address = Util::RelativeVirtualAddress(Util::PatternScan(pattern), 1, 5);\
+Util::log("Found %s sig at: 0x%llX - 0x%llX = 0x%lX\n", #name, name##Address, gameBase, (name##Address - gameBase));\
+CREATE_HOOK(name)
 
-
-typedef BOOL(WINAPI* wglSwapBuffers_t)(HDC hdc);
-wglSwapBuffers_t oWglSwapBuffers = nullptr;
-BOOL WINAPI HWglSwapBuffers(HDC hdc) {
-    if (!initialized) {
-        if (!gladLoadGLLoader((GLADloadproc)GetAnyGLFuncAddress))
-        {
-            std::cout << "Failed to initialize GLAD" << std::endl;
-            return -1;
-        }
-        Shaders::initShaders();
-        Fonts::initFonts();
-
-        Renderer2D::InitRenderer();
-
-        menu = std::make_unique<Menu>(hdc);
-
-        FeatureDispatcher::initFeatures();
-
-        initialized = true;
-    }
-
-    static double lastTime = 0.0;
-    double currentTime = Util::GetTime();
-    double deltaTime = currentTime - lastTime;
-    lastTime = currentTime;
-
-    HWND hwnd = WindowFromDC(hdc);
-    RECT r;
-    POINT current;
-    GetCursorPos(&current);
-    ScreenToClient(hwnd, &current);
-    Util::cursorPosX = current.x;
-    Util::cursorPosY = current.y;
-
-    Util::orthoProjMat = Matrix4x4::Orthographic(0.0f, Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight, 0.0f, -1.0f, 1.0f);
-
-    SDK::Main();
-
-    Fonts::Figtree->RenderText(std::format("App: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app)), 0.0f, 10.0f, 0.5f, Color::White());
-    Fonts::Figtree->RenderText(std::format("AppInGame: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app->appInGame)), 0.0f, 20.0f, 0.5f, Color::White());
-    Fonts::Figtree->RenderText(std::format("GameInstance: 0x{:x}", reinterpret_cast<uintptr_t>(Util::getGameInstance())), 0.0f, 30.0f, 0.5f, Color::White());
-    Fonts::Figtree->RenderText(std::format("LocalPlayer: 0x{:x}", reinterpret_cast<uintptr_t>(Util::getLocalPlayer())), 0.0f, 40.0f, 0.5f, Color::White());
-    Fonts::Figtree->RenderText(std::format("DMC: 0x{:x}", reinterpret_cast<uintptr_t>(Util::GetMovementController())), 0.0f, 50.0f, 0.5f, Color::White());
-
-    Fonts::Figtree->RenderText(std::format("Fish++ Hytale by LimitlessChicken aka milaq", reinterpret_cast<uintptr_t>(Util::app)), 500.0f, 10.0f, 0.5f, Color::White());
-
-    menu->Run(deltaTime);
-
-    InputSystem::keysPressed.clear();
-    InputSystem::keysDepressed.clear();
-
-    return oWglSwapBuffers(hdc);
-}
-
-__int64 __fastcall HDoMoveCycle(__int64 thisptr, Vector3* offset) {
-    DefaultMovementController* dmc = (DefaultMovementController*)thisptr;
-    MoveCycleEvent event(*dmc, *offset);
-    FeatureDispatcher::DispatchEvent(event);
-
-    //if (Util::IsValidPtr(Util::getGameInstance()))
-        //std::cout << Util::getGameInstance()->Chat << "\n";
-
-    return Hooks::oDoMoveCycle(thisptr, offset);
-}
-
-__int64 __fastcall HHandleScreenShotting(__int64 thisptr) {
-    
-    Util::app = (App*)thisptr;
-    
-    
-    if (Menu::isMenuOpen() && Menu::m_justOpened) {
-        Hooks::oSetCursorHidden((__int64)Util::app->Engine->Window, false);
-        Menu::m_justOpened = false;
-    }
-
-    if (!Menu::isMenuOpen() && Menu::m_justClosed) {
-        Util::app->appInGame->UpdateInputStates(true);
-            
-        Menu::m_justClosed = false;
-    }
-
-    return Hooks::oHandleScreenShotting(thisptr);
-}
+/* --- Vectored Exception Handler REMOVED ---
+ * The old VEH caught ALL access violations at ANY 'movzx eax, byte ptr [rcx+rax]'
+ * (0F B6 04 01) inside the Hytale module. There are 78 such instructions in the binary,
+ * including 17+ inside the Brotli decompression engine. During world loading, the VEH
+ * intercepted legitimate AVs in Brotli, set RAX=2 and skipped the instruction, corrupting
+ * the decompression state. This produced garbage data on the managed heap, causing
+ * FailFast (0xC0000602) in RhpNewArray_Char during the next GC allocation.
+ *
+ * If the ClientMovement validation crash resurfaces (flags-as-pointer AV), fix it with
+ * a targeted NOP patch at the specific validation instruction instead of a global VEH. */
+static PVOID s_vehHandle = nullptr;
 
 
-__int64* __fastcall HOnUserInput(__int64 thisptr, int* a2) {
-    SDL_Scancode key = (SDL_Scancode)(a2[6]);
-     
-    if (*a2 == 768) {
-        if (*((bool*)a2 + 37))
-            return Hooks::oOnUserInput(thisptr, a2);
-
-        InputSystem::keysPressed.insert(key);
-        InputSystem::keysHeld.insert(key);
-        InputSystem::keysUnheld.erase(key);
-    }
-
-    if (*(int*)a2 == 769) {
-        InputSystem::keysHeld.erase(key);
-        InputSystem::keysUnheld.insert(key);
-        InputSystem::keysDepressed.insert(key);
-    }
-
-    return Hooks::oOnUserInput(thisptr, a2);
-}
-
-void __fastcall HSetCursorHidden(__int64 thisptr, char hidden) {
-    if (Menu::isMenuOpen()) {
-        return;
-    }
-        
-    Hooks::oSetCursorHidden(thisptr, hidden);
-}
-
-void __fastcall HWeatherUpdate(__int64 thisptr, float deltaTime) {
-
-    Hooks::oWeatherUpdate(thisptr, deltaTime);
-
-    float* vec3 = (float*)((uintptr_t)thisptr + 0x364);
-
-    //vec3[0] = 2.0f;
-
-    //vec32[0] = 2.0f;
-
-}
-
-void __fastcall HSetActiveHotbarSlot(__int64 thisptr, unsigned int slot, bool triggerInteraction) {
-    Hooks::oSetActiveHotbarSlot(thisptr, slot, triggerInteraction);
-}
-
-void __fastcall HOnChat(__int64 thisptr, __int64 a2) {
-    //Temporary teleport feature
-    HytaleString* stringTest = (HytaleString*)a2;
-
-    if (!stringTest->getName().starts_with('!')) {
-        Hooks::oOnChat(thisptr, a2);
-        return;
-    }
-
-    std::string message = stringTest->getName();
-
-    std::istringstream iss(message.substr(1));
-    float x;
-    float y;
-    float z;
-
-    if (iss >> x >> y >> z) {
-        GameInstance* instance = Util::getGameInstance();
-        Entity* player = Util::getLocalPlayer();
-        ValidPtrVoid(player);
-        player->SetPositionTeleport(Vector3(x, y, z));
-    }
-}
-
-void __fastcall HDrawScene(__int64 thisptr) {
-    Hooks::oDrawScene(thisptr);
-
-    Renderer3D renderer3D;
-    Render3DEvent render3DEvent(renderer3D);
-    FeatureDispatcher::DispatchEvent(render3DEvent);
-    renderer3D.Render();
-}
-
+/*
+* Creates and registers all hooks
+*/
 bool Hooks::CreateHooks() {
-    if (MH_Initialize() != MH_OK) {
-        std::cout << "Failed to initialize minhook";
-        return false;
+    // ═══════════════════════════════════════════════════════════════════════
+    // CRITICAL: Patch the NativeAOT GC stack walker BEFORE creating any hooks.
+    // Without this patch, MinHook trampolines create stack frames with PCs
+    // inside our DLL. The GC can't find these in its method table and calls
+    // RaiseFailFastException (0xC0000602).
+    // ═══════════════════════════════════════════════════════════════════════
+    if (!PatchGCStackWalker()) {
+		Util::log("WARNING: GC patch #1 failed! Hooks on NativeAOT functions may crash due to GC FailFast.\n");
     }
-
-    void* pWglSwapBuffers = GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglSwapBuffers");
-    if (MH_CreateHook(pWglSwapBuffers, &HWglSwapBuffers, reinterpret_cast<LPVOID*>(&oWglSwapBuffers)) != MH_OK) {
-        std::cout << "Failed to create hook HWglSwapBuffers";
-        return false;
-    }
-
-    CREATE_HOOK(DoMoveCycle, "55 41 57 41 56 41 55 41 54 57 56 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 48 8D AC 24 ? ? ? ? 33 C0 48 89 85 ? ? ? ? 0F 57 E4 48 B8");
-    CREATE_HOOK(HandleScreenShotting, "55 41 57 41 56 41 55 41 54 57 56 53 48 81 EC ? ? ? ? 48 8D AC 24 ? ? ? ? 33 C0 48 89 45 ? 0F 57 E4 0F 29 65 ? 48 89 45 ? 48 8B D9 48 8B 4B ? 48 8B 49");
-    CREATE_HOOK(OnUserInput, "41 57 41 56 41 55 41 54 57 56 55 53 48 83 EC ? 33 C0 48 89 44 24 ? 0F 57 E4 0F 29 64 24 ? 0F 29 64 24 ? 0F 29 64 24 ? 48 89 44 24 ? 48 8B D9 48 8B F2 8B 3E");
-    CREATE_HOOK(SetCursorHidden, "55 57 56 53 48 83 EC ? 48 8D 6C 24 ? 33 C0 48 89 45 ? 48 89 45 ? 48 8B D9 8B F2");
-    //CREATE_HOOK(UpdateInputStates, "57 56 53 48 83 EC ? 48 8B D9 8B F2 48 8B 4B ? 48 85 C9 0F 84");
-    //CREATE_HOOK(SetActiveHotbarSlot, "55 41 56 57 56 53 48 83 EC ? 48 8D 6C 24 ? 48 8B D9 8B F2 48 83 7B");
-    //CREATE_HOOK(WeatherUpdate, "57 56 55 53 48 83 EC ? 0F 29 74 24 ? 48 8B D9 48 8B F2 48 8B 4B ? 48 8B 89 ? ? ? ? 48 8B 79 ? 80 BB ? ? ? ? ? 74 ? 80 7B ? ? 0F 85 ? ? ? ? 48 8B CF 4C 8D 1D ? ? ? ? 41 FF 13 85 C0 0F 85 ? ? ? ? 0F B6 83 ? ? ? ? 88 83 ? ? ? ? F3 0F 10 76 ? 0F 16 F6 0F 12 36 0F 57 C0 0F 28 CE 0F C6 C8 ? 0F 28 C6 0F C6 C1 ? 0F 59 C0 0F 28 C8 0F C6 C8 ? 0F 58 C8 0F 28 C1 0F C6 C1 ? 0F 58 C1 F3 0F 51 C0 F3 0F 59 05 ? ? ? ? F3 0F 5A C0 E8 ? ? ? ? 0F 28 C8 F2 0F C2 C8 07 66 0F 54 C8 BA ? ? ? ? F2 0F 2C C9 66 0F 2E 05 ? ? ? ? 0F 42 D1 8B F2 0F 57 C0 F3 0F 2A C6 0F C6 C0 ? 0F 5E F0 85 F6 7E ? 8B EE 0F 29 74 24 ? 48 8D 54 24 ? 48 8B CB E8 ? ? ? ? FF CD 75 ? 85 F6 0F 85");
-
-    CREATE_HOOK(OnChat, "56 53 48 83 EC ? 48 8B F1 48 8B DA 38 1B 48 8B CB");
-    CREATE_HOOK(DrawScene, "57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 33 C0 48 89 84 24 ? ? ? ? 48 8B D9");
     
+    // GC-Patch2: Wrap the _1() (vtable[5] UnwindStackFrame) call in fn_KeepUnwinding
+    // with SafeUnwind1. When the NativeAOT unwinder crashes on our trampoline (because
+    // it uses stale method_info), SafeUnwind1 catches the AV and manually unwinds via
+    // RtlLookupFunctionEntry (which finds our RtlAddFunctionTable entries) + RtlVirtualUnwind.
+    // The FailFast code cave is a safety net in case SafeUnwind1 returns 0.
+    if (!PatchGCStackWalkerKeepUnwinding()) {
+		Util::log("WARNING: GC patch #2 failed! Store-Packets may crash due to unwinder AVs.\n");
+    }
+    
+    std::vector<std::pair<void*, void*>> allHooks;
 
+    Util::log("Creating Hooks\n");
+
+    if (MH_Initialize() != MH_OK) {
+        Util::log("Failed to initialize MinHook");
+        return false;
+    }
+
+    std::uintptr_t WglSwapBuffersAddress = (uint64_t) GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglSwapBuffers");
+    ValidPtrBool(WglSwapBuffersAddress);
+
+    CREATE_HOOK(WglSwapBuffers);
+    CREATE_SIG_HOOK(WeatherUpdate, "41 57 41 56 41 55 41 54 57 56 55 53 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 0F 29 BC 24 ? ? ? ? 44 0F 29 84 24 ? ? ? ? 44 0F 29 8C 24 ? ? ? ? 0F 57 E4 0F 29 64 24 ? 0F 29 64 24 ? 48 B8"); //E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 80 BB ? ? ? ? ? 75 ? 48 8B 8B ? ? ? ? F3 0F 10 8B ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 8B
+    CREATE_SIG_HOOK_BY_REF(DoMoveCycle, "E8 ? ? ? ? FF CE 75 ? 48 8B 4B");
+    CREATE_SIG_HOOK_BY_REF(HandleScreenShotting, "E8 ? ? ? ? 4C 8B 7D ? 49 8B 8F ? ? ? ? 39 09");
+    CREATE_SIG_HOOK_BY_REF(OnUserInput, "E8 ? ? ? ? 48 8B 53 ? 48 8B 92 ? ? ? ? 38 12");
+    CREATE_SIG_HOOK_BY_REF(OnChat, "E8 ? ? ? ? 48 8B 4D ? 48 8B 89 ? ? ? ? 48 8B 89");
+    CREATE_SIG_HOOK_BY_REF(DrawEntityCharactersAndItems, "E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 85");
+    CREATE_SIG_HOOK_BY_REF(DrawScene, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
 
     MH_EnableHook(MH_ALL_HOOKS);
+
+    RegisterAllTrampolinePages(allHooks);
+
+	Util::log("Finished creating hooks (GC stack-walker patched).\n");
     return true;
 }

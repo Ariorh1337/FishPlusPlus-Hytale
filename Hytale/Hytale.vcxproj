@@ -123,6 +123,8 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -135,7 +137,6 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;HYTALE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -144,6 +145,10 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <Optimization>Disabled</Optimization>
+      <OmitFramePointers>false</OmitFramePointers>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,16 +166,27 @@
     <ClCompile Include="external\minhook\hde\hde64.c" />
     <ClCompile Include="external\minhook\hook.c" />
     <ClCompile Include="external\minhook\trampoline.c" />
-    <ClCompile Include="FeatureDispatcher\Feature.cpp" />
-    <ClCompile Include="FeatureDispatcher\FeatureDispatcher.cpp" />
-    <ClCompile Include="Features\ESP.cpp" />
-    <ClCompile Include="Features\Flight.cpp" />
-    <ClCompile Include="Features\Nametags.cpp" />
-    <ClCompile Include="Features\NoFall.cpp" />
-    <ClCompile Include="Features\Speed.cpp" />
+    <ClCompile Include="Features\ActualFeatures\Outline.cpp" />
+    <ClCompile Include="Features\ActualFeatures\WorldModulate.cpp" />
+    <ClCompile Include="Features\ConfigHandler.cpp" />
+    <ClCompile Include="Features\Feature.cpp" />
+    <ClCompile Include="Features\ActualFeatures\ESP.cpp" />
+    <ClCompile Include="Features\FeatureHandler.cpp" />
+    <ClCompile Include="Features\ActualFeatures\Flight.cpp" />
+    <ClCompile Include="Features\ActualFeatures\Nametags.cpp" />
+    <ClCompile Include="Features\ActualFeatures\NoFall.cpp" />
+    <ClCompile Include="Features\ActualFeatures\Speed.cpp" />
+    <ClCompile Include="Hooks\GCPatch.cpp" />
+    <ClCompile Include="Hooks\HookedMethods\DoMoveCycle.cpp" />
+    <ClCompile Include="Hooks\HookedMethods\DrawEntityCharactersAndItems.cpp" />
+    <ClCompile Include="Hooks\HookedMethods\DrawScene.cpp" />
+    <ClCompile Include="Hooks\HookedMethods\HandleScreenShotting.cpp" />
+    <ClCompile Include="Hooks\HookedMethods\OnChat.cpp" />
+    <ClCompile Include="Hooks\HookedMethods\OnUserInput.cpp" />
+    <ClCompile Include="Hooks\HookedMethods\WeatherUpdate.cpp" />
+    <ClCompile Include="Hooks\HookedMethods\WglSwapBuffers.cpp" />
     <ClCompile Include="Hooks\Hooks.cpp" />
     <ClCompile Include="Math\Vector4.h" />
-    <ClCompile Include="Memory\Memory.cpp" />
     <ClCompile Include="Menu\Children\ColorButton.cpp" />
     <ClCompile Include="Menu\Children\FeatureButton.cpp" />
     <ClCompile Include="Menu\Children\KeybindButton.cpp" />
@@ -184,6 +200,8 @@
     <ClCompile Include="Renderer\FontRenderer\FontLoader.cpp" />
     <ClCompile Include="Renderer\FontRenderer\Font.cpp" />
     <ClCompile Include="Renderer\FontRenderer\Fonts.cpp" />
+    <ClCompile Include="Renderer\FramebufferRenderer\FramebufferRenderer.cpp" />
+    <ClCompile Include="Renderer\FramebufferRenderer\OutlineFboRenderer.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Renderer2D.cpp" />
     <ClCompile Include="Renderer\Renderer3D.cpp" />
@@ -197,6 +215,7 @@
     <ClCompile Include="Util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Events\EventRegister.h" />
     <ClInclude Include="external\freetype\include\freetype\config\ftconfig.h" />
     <ClInclude Include="external\freetype\include\freetype\config\ftheader.h" />
     <ClInclude Include="external\freetype\include\freetype\config\ftmodule.h" />
@@ -246,6 +265,51 @@
     <ClInclude Include="external\freetype\include\freetype\fttrigon.h" />
     <ClInclude Include="external\freetype\include\freetype\fttypes.h" />
     <ClInclude Include="external\freetype\include\freetype\ftwinfnt.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\autohint.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\cffotypes.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\cfftypes.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\compiler-macros.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftcalc.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftdebug.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftdrv.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftgloadr.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\fthash.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftmemory.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftmmtypes.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftobjs.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftpsprop.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftrfork.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftserv.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftstream.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\fttrace.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\ftvalid.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\psaux.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\pshints.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svbdf.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svcfftl.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svcid.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svfntfmt.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svgldict.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svgxval.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svkern.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svmetric.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svmm.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svotval.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svpfr.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svpostnm.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svprop.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svpscmap.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svpsinfo.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svsfnt.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svttcmap.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svtteng.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svttglyf.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\services\svwinfnt.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\sfnt.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\svginterface.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\t1types.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\tttypes.h" />
+    <ClInclude Include="external\freetype\include\freetype\internal\wofftypes.h" />
     <ClInclude Include="external\freetype\include\freetype\otsvg.h" />
     <ClInclude Include="external\freetype\include\freetype\t1tables.h" />
     <ClInclude Include="external\freetype\include\freetype\ttnameid.h" />
@@ -262,30 +326,31 @@
     <ClInclude Include="external\minhook\hde\table64.h" />
     <ClInclude Include="external\minhook\minhook.h" />
     <ClInclude Include="external\minhook\trampoline.h" />
-    <ClInclude Include="FeatureDispatcher\Event.h" />
-    <ClInclude Include="FeatureDispatcher\Events\MoveCycleEvent.h" />
-    <ClInclude Include="FeatureDispatcher\Events\Render2DEvent.h" />
-    <ClInclude Include="FeatureDispatcher\Events\Render3DEvent.h" />
-    <ClInclude Include="FeatureDispatcher\Feature.h" />
-    <ClInclude Include="FeatureDispatcher\FeatureDispatcher.h" />
-    <ClInclude Include="FeatureDispatcher\Setting.h" />
-    <ClInclude Include="FeatureDispatcher\Settings\ColorSetting.h" />
-    <ClInclude Include="FeatureDispatcher\Settings\KeybindSetting.h" />
-    <ClInclude Include="FeatureDispatcher\Settings\MultiSetting.h" />
-    <ClInclude Include="FeatureDispatcher\Settings\RecursiveSetting.h" />
-    <ClInclude Include="FeatureDispatcher\Settings\SliderSetting.h" />
-    <ClInclude Include="FeatureDispatcher\Settings\ToggleSetting.h" />
-    <ClInclude Include="Features\ESP.h" />
-    <ClInclude Include="Features\Flight.h" />
-    <ClInclude Include="Features\Nametags.h" />
-    <ClInclude Include="Features\NoFall.h" />
-    <ClInclude Include="Features\Speed.h" />
+    <ClInclude Include="external\nhollman\json.hpp" />
+    <ClInclude Include="external\nlohman\json.hpp" />
+    <ClInclude Include="Features\ActualFeatures\Outline.h" />
+    <ClInclude Include="Features\ActualFeatures\WorldModulate.h" />
+    <ClInclude Include="Features\ConfigHandler.h" />
+    <ClInclude Include="Features\Feature.h" />
+    <ClInclude Include="Features\Setting.h" />
+    <ClInclude Include="Features\Settings\ColorSetting.h" />
+    <ClInclude Include="Features\Settings\KeybindSetting.h" />
+    <ClInclude Include="Features\Settings\MultiSetting.h" />
+    <ClInclude Include="Features\Settings\RecursiveSetting.h" />
+    <ClInclude Include="Features\Settings\SliderSetting.h" />
+    <ClInclude Include="Features\Settings\ToggleSetting.h" />
+    <ClInclude Include="Features\ActualFeatures\ESP.h" />
+    <ClInclude Include="Features\FeatureHandler.h" />
+    <ClInclude Include="Features\ActualFeatures\Flight.h" />
+    <ClInclude Include="Features\ActualFeatures\Nametags.h" />
+    <ClInclude Include="Features\ActualFeatures\NoFall.h" />
+    <ClInclude Include="Features\ActualFeatures\Speed.h" />
+    <ClInclude Include="Hooks\GCPatch.h" />
     <ClInclude Include="Hooks\Hooks.h" />
     <ClInclude Include="Math\BoundingBox.h" />
     <ClInclude Include="Math\Color.h" />
     <ClInclude Include="Math\Matrix4x4.h" />
     <ClInclude Include="Math\Vector2.h" />
-    <ClInclude Include="Memory\Memory.h" />
     <ClInclude Include="Menu\Children\ColorButton.h" />
     <ClInclude Include="Menu\Children\FeatureButton.h" />
     <ClInclude Include="Menu\Children\KeybindButton.h" />
@@ -303,6 +368,9 @@
     <ClInclude Include="Renderer\FontRenderer\Fontloader.h" />
     <ClInclude Include="Renderer\FontRenderer\Font.h" />
     <ClInclude Include="Renderer\FontRenderer\Fonts.h" />
+    <ClInclude Include="Renderer\FramebufferRenderer\FramebufferRenderer.h" />
+    <ClInclude Include="Renderer\FramebufferRenderer\FrameBuffers.h" />
+    <ClInclude Include="Renderer\FramebufferRenderer\OutlineFboRenderer.h" />
     <ClInclude Include="Renderer\Mesh.h" />
     <ClInclude Include="Renderer\Renderer2D.h" />
     <ClInclude Include="Renderer\Renderer3D.h" />
@@ -317,6 +385,7 @@
     <ClInclude Include="sdk\CameraModule.h" />
     <ClInclude Include="sdk\CharacterControllerModule.h" />
     <ClInclude Include="sdk\Chat.h" />
+    <ClInclude Include="sdk\ChunkManager.h" />
     <ClInclude Include="sdk\DefaultMovementController.h" />
     <ClInclude Include="sdk\Camera.h" />
     <ClInclude Include="sdk\ClientMovementStates.h" />
@@ -331,9 +400,13 @@
     <ClInclude Include="sdk\MoveCmd.h" />
     <ClInclude Include="sdk\MovementVector.h" />
     <ClInclude Include="Math\Vector3.h" />
+    <ClInclude Include="sdk\OptionsHelper.h" />
+    <ClInclude Include="sdk\Paths.h" />
+    <ClInclude Include="sdk\RenderStructs.h" />
     <ClInclude Include="sdk\SceneRenderer.h" />
     <ClInclude Include="sdk\SDK.h" />
     <ClInclude Include="sdk\Window.h" />
+    <ClInclude Include="Events\EventSystem.h" />
     <ClInclude Include="Util\InputSystem.h" />
     <ClInclude Include="Util\TimeUtil.h" />
     <ClInclude Include="Core.h" />

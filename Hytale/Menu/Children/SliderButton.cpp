@@ -10,7 +10,7 @@
 #include "Menu/Style.h"
 #include "Renderer/Renderer2D.h"
 #include "Renderer/FontRenderer/Fonts.h"
-#include "FeatureDispatcher/Settings/SliderSetting.h"
+#include "Features/Settings/SliderSetting.h"
 
 void SliderButton::Render(double deltaTime) {
 	double fastDeltaTime = deltaTime * 20.0;

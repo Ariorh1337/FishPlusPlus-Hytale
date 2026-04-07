@@ -8,7 +8,7 @@
 #include <memory>
 #include <iostream>
 
-#include "../../FeatureDispatcher/Feature.h"
+#include "../../Features/Feature.h"
 #include "../Style.h"
 
 #include "../../Renderer/Renderer2D.h"

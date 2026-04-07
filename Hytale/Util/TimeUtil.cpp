@@ -40,16 +40,15 @@ SimpleTime Util::HoursToTime(float hours)
     return t;
 }
 
-int64_t Util::BuildTicksFromHours(float hours)
-{
+uint64_t Util::BuildTicksFromHours(float hours){
     SimpleTime t = Util::HoursToTime(hours);
 
-    const int64_t TicksPerSecond = 10'000'000;
-    const int64_t TicksPerMillisecond = 10'000;
+    const uint64_t TicksPerSecond = 10'000'000;
+    const uint64_t TicksPerMillisecond = 10'000;
 
     return
-        (int64_t)t.hour * 3600 * TicksPerSecond +
-        (int64_t)t.minute * 60 * TicksPerSecond +
-        (int64_t)t.second * TicksPerSecond +
-        (int64_t)t.millisecond * TicksPerMillisecond;
+        (uint64_t)t.hour * 3600 * TicksPerSecond +
+        (uint64_t)t.minute * 60 * TicksPerSecond +
+        (uint64_t)t.second * TicksPerSecond +
+        (uint64_t)t.millisecond * TicksPerMillisecond;
 }

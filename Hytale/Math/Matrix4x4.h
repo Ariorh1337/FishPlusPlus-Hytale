@@ -23,4 +23,15 @@ struct Matrix4x4 {
 
         return result;
     }
+
+    bool isValid() const {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (std::isnan(m[i][j]) || std::isinf(m[i][j])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+	}
 };

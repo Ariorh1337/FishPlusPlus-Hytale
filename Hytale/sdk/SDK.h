@@ -15,6 +15,8 @@ struct EntityData {
 namespace SDK {
 	inline std::mutex global_mutex;
 	inline std::vector<EntityData> entities;
+	inline bool initialized = false;
+
 
 	extern void Main();
 }

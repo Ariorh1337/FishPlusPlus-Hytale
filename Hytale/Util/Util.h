@@ -27,7 +27,6 @@ struct SimpleTime
 };
 
 namespace Util {
-
     inline App* app;
     Entity* getLocalPlayer();
     GameInstance* getGameInstance();
@@ -36,18 +35,26 @@ namespace Util {
     CameraModule* getCameraModule();
     inline Matrix4x4 viewProjMat;
     inline Matrix4x4 orthoProjMat;
+	inline bool orthoProjMatInitialized = false;
 
     inline float cursorPosX = 0;
     inline float cursorPosY = 0;
+    inline bool console_allocated = false;
    
     double GetTime();
     bool IsValidPtr(void* ptr);
+    bool IsValidPtr(uint64_t ptr);
+    uint64_t RelativeVirtualAddress(uint64_t address, int opcode_size = 3, int opcode_length = 7);
+    uint64_t PatternScan(const char* signature, const char* module = "HytaleClient.exe");
 
     bool WorldToScreen(Vector3 pos, Vector2& out);
     Matrix4x4 getViewProjMat();
-    std::filesystem::path GetDirectory();
     SimpleTime HoursToTime(float hours);
-    __int64 BuildTicksFromHours(float hours);
+    uint64_t BuildTicksFromHours(float hours);
     const char* GetKeyName(SDL_Scancode key);
     bool ShouldInteractWithGame();
+    bool isFullyInitialized();
+    void allocate_console();
+    void free_console();
+    void log(const char* fmt, ...);
 }

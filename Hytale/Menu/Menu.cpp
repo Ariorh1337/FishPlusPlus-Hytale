@@ -6,8 +6,7 @@
 #include "../Util/Util.h"
 #include "../Util/InputSystem.h"
 
-#include "FeatureDispatcher/FeatureDispatcher.h"
-
+#include "Features/FeatureHandler.h"
 
 static bool lbuttonWasDown = false;
 static bool rbuttonWasDown = false;
@@ -32,7 +31,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
     return oWndProc(hWnd, msg, wParam, lParam);
 }
-
 
 Menu::Menu(HDC hdc) {
     HWND hwnd = WindowFromDC(hdc);
@@ -85,6 +83,11 @@ void CallComponentFuncs(double deltaTime, Component* component) {
         component->MouseDragged(Util::cursorPosX, Util::cursorPosY, VK_LBUTTON, Util::cursorPosX - prevXPos, Util::cursorPosY - prevYPos);
     }
 
+	if (Menu::m_justOpened)
+        component->MenuOpened();
+    if (Menu::m_justClosed)
+		component->MenuClosed();
+
     component->Update(Util::cursorPosX, Util::cursorPosY);
     component->Render(deltaTime);
 }
@@ -100,21 +103,25 @@ void Menu::Run(double deltaTime) {
 
     CallComponentFuncs(deltaTime, hudComponent.get());
 
-    if (Menu::isMenuOpen())
+    if (Menu::isMenuOpen()) {
         CallComponentFuncs(deltaTime, mainComponent.get());
+        Menu::m_justOpened = false;
+    }
 
 
     lbuttonWasDown = lbuttonDown;
     rbuttonWasDown = rbuttonDown;
     prevXPos = Util::cursorPosX;
     prevYPos = Util::cursorPosY;
+    
 }
 
 void Menu::ListenForKeybinds() {
     if (!Util::ShouldInteractWithGame())
         return;
 
-    for (auto& feature : FeatureDispatcher::features) {
+    for (auto& feature : FeatureHandler::features) {
+        Util::log("Keybind: %i", feature->GetKeybind());
         if (InputSystem::IsKeyPressed(feature->GetKeybind()))
             feature->ToggleState();
     }
