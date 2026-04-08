@@ -26,6 +26,10 @@ void Flight::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
 
 		dmc->Velocity = 0.0f;
 		offset = 0.0f;
+
+		if (!Util::ShouldInteractWithGame())
+			return;
+
 		if (InputSystem::IsKeyHeld(SDL_SCANCODE_W))
 			offset += Vector3(forwardX * this->speed->GetValue(), offset.y, forwardZ * this->speed->GetValue());
 		if (InputSystem::IsKeyHeld(SDL_SCANCODE_S)) 

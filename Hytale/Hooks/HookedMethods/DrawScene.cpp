@@ -22,6 +22,20 @@ void __fastcall Hooks::hkDrawScene(GameInstance* instance) {
     EventRegister::Render3DEvent.Invoke(renderer3D);
     renderer3D.Render();
 
+    /*
+    if (Util::app->Stage == AppStage::InGame) {
+        Vector3 playerPos = Util::getLocalPlayer()->Position;
+        Vector3 renderPos((int)std::floor(playerPos.x), (int)std::floor(playerPos.y) - 1, (int)std::floor(playerPos.z));
+        ClientBlockType* block = Util::getGameInstance()->MapModule->GetBlock(renderPos);
+        renderer3D.BoxLines(Vector3((int)std::floor(renderPos.x), (int)std::floor(renderPos.y), (int)std::floor(renderPos.z)), Vector3(1, 1, 1), Color::Normalize(255, 0, 0, 50), Color::Normalize(Color::Red()));
+        Vector2 screenPos;
+        if (Util::WorldToScreen(Vector3(renderPos.x + 0.5f, renderPos.y + 0.5f, renderPos.z + 0.5f), screenPos))
+		    Fonts::Figtree->RenderText(block->Name->getString(), screenPos.x, screenPos.y, 1, Color::White());
+    }
+    */
+
+    
+
     Outline* outline = static_cast<Outline*>(FeatureHandler::GetFeatureFromName("Outline"));
     
 

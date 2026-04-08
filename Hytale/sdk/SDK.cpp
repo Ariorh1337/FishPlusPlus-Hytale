@@ -275,12 +275,13 @@ void SDK::Main() {
 	global_mutex.unlock();
 
 	static int test = 0;
-	if (test < 1 && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance) {
+	if (test < 1 && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance && Util::app->Stage == AppStage::InGame) {
 
 		MapModule* mapModule = (MapModule*)Util::app->appInGame->gameInstance->MapModule;
 		Vector3 playerPos = Util::getLocalPlayer()->Position;
 		int block = mapModule->GetBlock((int)floor(playerPos.x), (int)floor(playerPos.y) - 1, (int)floor(playerPos.z), -67);
 		Util::log("Block ID at player position: %i\n", block);
+		Util::log("Block at player position: %s\n", mapModule->ClientBlockTypes->get(block)->Name->getString().c_str());
 
 		test++;
 	}

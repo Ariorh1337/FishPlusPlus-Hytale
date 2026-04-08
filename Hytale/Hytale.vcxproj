@@ -390,6 +390,7 @@
     <ClInclude Include="sdk\Chunk.h" />
     <ClInclude Include="sdk\ChunkColumn.h" />
     <ClInclude Include="sdk\ChunkData.h" />
+    <ClInclude Include="sdk\ClientBlockType.h" />
     <ClInclude Include="sdk\MapModule.h" />
     <ClInclude Include="sdk\DefaultMovementController.h" />
     <ClInclude Include="sdk\Camera.h" />

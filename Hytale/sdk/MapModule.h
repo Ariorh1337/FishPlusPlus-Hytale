@@ -5,6 +5,7 @@
 #include <cstdint>
 #include "BaseDataTypes/ConcurrentDictionary.h"
 #include "ChunkColumn.h"
+#include "ClientBlockType.h"
 
 class GameInstance;
 class Texture;
@@ -53,7 +54,7 @@ public:
     char pad_0x00[0x8];                                 // 0x00
     void* field_0x08;                                   // 0x08
     GameInstance* GameInstance;                         // 0x10 HytaleClient.InGame.GameInstance
-    void* ClientBlockTypes;                             // 0x18 HytaleClient.Data.Map.ClientBlockType[]
+    Array<ClientBlockType*>* ClientBlockTypes;          // 0x18 HytaleClient.Data.Map.ClientBlockType[]
     void* BlockBreakingDecalDict;                       // 0x20 System.Collections.Generic.Dictionary
     Texture* Texture1;                                  // 0x28 HytaleClient.Graphics.Texture
     Texture* Texture2;                                  // 0x30 HytaleClient.Graphics.Texture
@@ -124,5 +125,14 @@ public:
             return undefinedBlockId;
 
 		return chunk->Data->Blocks->GetBlockID(IndexOfWorldBlockInChunk(worldX, worldY, worldZ), undefinedBlockId);
+    }
+
+    ClientBlockType* GetBlock(int worldX, int worldY, int worldZ) {
+		int blockId = GetBlock(worldX, worldY, worldZ, 1);
+		return ClientBlockTypes->get(blockId);
+    }
+
+    ClientBlockType* GetBlock(Vector3 pos) {
+        return GetBlock((int)std::floor(pos.x), (int)std::floor(pos.y), (int)std::floor(pos.z));
     }
 };
