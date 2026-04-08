@@ -63,6 +63,7 @@ namespace SM { // Signature Methods
 	inline uint64_t UpdateInputStatesAddress = 0;
 	inline uint64_t GCToEEInterface_CreateThreadAddress = 0;
 	inline uint64_t Object_ToStringAddress = 0;
+	inline uint64_t ConcurrentDictionary_TryGetValueAddress = 0;
 
 	inline uint64_t beginGLContextAddress = 0;
 	inline uint64_t endGLContextAddress = 0;

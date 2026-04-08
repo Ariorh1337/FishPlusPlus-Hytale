@@ -3,6 +3,7 @@
  */
 #include "Core.h"
 #include "Hooks/Hooks.h"
+#include "sdk/BaseDataTypes/ConcurrentDictionary.h"
 
 #define GetSig(name, pattern) SM::name##Address = Util::PatternScan(pattern); \
 Util::log("Found %s sig at: 0x%llX - 0x%llX = 0x%lX\n", #name, SM::name##Address, gameBase, (SM::name##Address - gameBase));\
@@ -35,21 +36,21 @@ void __fastcall GCThread(void* pArg) {
 
 
 bool InitSigs() {
-    GetMethodSigByRef(SetCursorHidden, "E8 ? ? ? ? 0F B6 4B ? 85 C9 74");
-    GetMethodSigByRef(UpdateInputStates, "E8 ? ? ? ? 83 7E ? ? 75 ? 48 83 C4");
-    GetMethodSigByRef(GCToEEInterface_CreateThread, "E8 ? ? ? ? 0F B6 C0 89 05 ? ? ? ? 85 C0");
-    GetMethodSigByRef(beginGLContext, "E8 ? ? ? ? 8B 4D ? 44 8B 45 ? 8B 55 ? 41 FF D7");
-    GetMethodSigByRef(endGLContext, "E8 ? ? ? ? 48 8B 75 ? 4C 8D 4E ? 48 8B 5D ? 48 8B 53 ? 44 3B 72");
-    GetMethodSigByRef(renderQueueFlush, "E8 ? ? ? ? CC 57 56 55 53 48 83 EC ? 48 8B D9 48 8B F2 41 8B F8");
-    GetMethodSigByRef(submitDrawCommands, "E8 ? ? ? ? E9 ? ? ? ? 90 90 90 90 90 90 48 83 79");
-    GetSig(Object_ToString, "48 83 EC ? E8 ? ? ? ? 48 8B 48 ? 48 85 C9 74 ? 48 8B 09 48 85 C9 75 ? 48 8B C8 E8 ? ? ? ? EB ? 48 8B C1 48 8B C8 48 8B 00 48 83 C4 ? 48 FF 60");
+	GetMethodSigByRef(SetCursorHidden, "E8 ? ? ? ? 0F B6 4B ? 85 C9 74");
+	GetMethodSigByRef(UpdateInputStates, "E8 ? ? ? ? 83 7E ? ? 75 ? 48 83 C4");
+	GetMethodSigByRef(GCToEEInterface_CreateThread, "E8 ? ? ? ? 0F B6 C0 89 05 ? ? ? ? 85 C0");
+	GetMethodSigByRef(beginGLContext, "E8 ? ? ? ? 8B 4D ? 44 8B 45 ? 8B 55 ? 41 FF D7");
+	GetMethodSigByRef(endGLContext, "E8 ? ? ? ? 48 8B 75 ? 4C 8D 4E ? 48 8B 5D ? 48 8B 53 ? 44 3B 72");
+	GetMethodSigByRef(renderQueueFlush, "E8 ? ? ? ? CC 57 56 55 53 48 83 EC ? 48 8B D9 48 8B F2 41 8B F8");
+	GetMethodSigByRef(submitDrawCommands, "E8 ? ? ? ? E9 ? ? ? ? 90 90 90 90 90 90 48 83 79");
+	GetSig(Object_ToString, "48 83 EC ? E8 ? ? ? ? 48 8B 48 ? 48 85 C9 74 ? 48 8B 09 48 85 C9 75 ? 48 8B C8 E8 ? ? ? ? EB ? 48 8B C1 48 8B C8 48 8B 00 48 83 C4 ? 48 FF 60");
 
-    GetGlobalSigByRef(g_UniformManager, "48 8B 0D ? ? ? ? 48 8B 49 ? 45 8B 07");
-    GetGlobalSigByRef(g_BufferManager, "48 8B 05 ? ? ? ? 48 8B 40 ? 45 8B 51 ? 4C 8B B0 ? ? ? ? 44 8B CA");
-    GetGlobalSigByRef(g_GlobalStateTable, "48 8D 05 ? ? ? ? 48 83 78 ? ? 0F 85 ? ? ? ? 48 8B 0D ? ? ? ? 48 8B 49 ? 45 8B 07");
-    
+	GetGlobalSigByRef(g_UniformManager, "48 8B 0D ? ? ? ? 48 8B 49 ? 45 8B 07");
+	GetGlobalSigByRef(g_BufferManager, "48 8B 05 ? ? ? ? 48 8B 40 ? 45 8B 51 ? 4C 8B B0 ? ? ? ? 44 8B CA");
+	GetGlobalSigByRef(g_GlobalStateTable, "48 8D 05 ? ? ? ? 48 83 78 ? ? 0F 85 ? ? ? ? 48 8B 0D ? ? ? ? 48 8B 49 ? 45 8B 07");
+
 	Util::log("Finished initializing signatures\n");
-    return true;
+	return true;
 }
 
 DWORD WINAPI startPoint(LPVOID lpParam) {

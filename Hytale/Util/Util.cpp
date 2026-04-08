@@ -90,10 +90,10 @@ Camera* Util::getCamera() {
 	GameInstance* gameInstance = getGameInstance();
 	ValidPtr(gameInstance);
 
-	StructBeforeCam* structBeforeCam = gameInstance->MapModule;
-	ValidPtr(structBeforeCam);
+	MapModule* mapModule = gameInstance->MapModule;
+	ValidPtr(mapModule);
 
-	return structBeforeCam->Camera;
+	return (Camera*) mapModule->MapGeometryBuilder; // Don't ask, chicken found some camera values in the MapGeometryBuilder struct and it seems to work fine, maybe they just put the camera there for some reason? who knows
 }
 
 CameraModule* Util::getCameraModule() {
@@ -171,4 +171,13 @@ uint64_t Util::PatternScan(const char* signature, const char* module) {
 	}
 
 	return 0;
+}
+
+HytaleString* Util::ObjectToString(void* object) {
+	using Object_ToString_t = HytaleString * (__fastcall*)(void* object);
+	static Object_ToString_t Object_ToString{ };
+	if (!Object_ToString)
+		Object_ToString = reinterpret_cast<Object_ToString_t>(SM::Object_ToStringAddress);
+
+	return Object_ToString(object);
 }

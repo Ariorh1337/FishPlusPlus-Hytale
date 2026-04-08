@@ -9,8 +9,8 @@
 #include "../Math/Vector3.h"
 #include "../Math/BoundingBox.h"
 
-#include "HytaleString.h"
-#include "Array.h"
+#include "BaseDataTypes/HytaleString.h"
+#include "BaseDataTypes/Array.h"
 
 
 
