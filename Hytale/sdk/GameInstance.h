@@ -13,7 +13,7 @@
 #include "SceneRenderer.h"
 #include "Chat.h"
 #include "CharacterControllerModule.h"
-//#include "ChunkManager.h"
+#include "MapModule.h"
 
 class GameInstance {
 public:
@@ -35,7 +35,7 @@ public:
 	char pad_80[0x88];                                  //0x80
 	Time* TimeModule;                                   //0x108 HytaleClient.InGame.Modules.TimeModule
 	void* AudioModule;                                  //0x110 HytaleClient.InGame.Modules.Audio.AudioModule
-	StructBeforeCam* MapModule;                         //0x118 HytaleClient.InGame.Modules.Map.MapModule
+	MapModule* MapModule;								//0x118 HytaleClient.InGame.Modules.Map.MapModule
 	void* ItemLibraryModule;                            //0x120 HytaleClient.InGame.Modules.ItemLibraryModule
 	CharacterControllerModule* CharacterControllerModule; //0x128 HytaleClient.InGame.Modules.CharacterController.CharacterControllerModule
 	CameraModule* CameraModule;                         //0x130 HytaleClient.InGame.Modules.Camera.CameraModule

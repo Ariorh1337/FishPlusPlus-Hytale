@@ -4,6 +4,7 @@
 #include "../Hooks.h"
 
 #include "Renderer/FrameBufferRenderer/FrameBuffers.h"
+#include "Features/FeatureHandler.h"
 
 #include <cstdint>
 #include <windows.h>
@@ -103,7 +104,12 @@ void __fastcall Hooks::hkDrawEntityCharactersAndItems(SceneRenderer* _this, bool
     if (!Util::isFullyInitialized())
         return Hooks::oDrawEntityCharactersAndItems(_this, flag);
 
-    originalDrawEntityCharactersAndItems(_this);
+
+    Feature* outline = FeatureHandler::GetFeatureFromName("Outline");
+    if(outline->IsActive())
+        originalDrawEntityCharactersAndItems(_this);
+    else 
+		Hooks::oDrawEntityCharactersAndItems(_this, flag);
     
 
 

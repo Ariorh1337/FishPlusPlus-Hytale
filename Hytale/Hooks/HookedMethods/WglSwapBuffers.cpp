@@ -25,6 +25,9 @@ static void* GetAnyGLFuncAddress(const char* name) {
 __declspec(safebuffers) __declspec(noinline)
 BOOL WINAPI Hooks::hkWglSwapBuffers(HDC hdc) {
     if (!initialized) {
+        if (!Util::IsValidPtr(Util::app))
+            return Hooks::oWglSwapBuffers(hdc);
+
         if (!gladLoadGLLoader((GLADloadproc) GetAnyGLFuncAddress)) {
 			Util::log("Failed to initialize GLAD\n");
             return -1;

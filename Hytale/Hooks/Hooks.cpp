@@ -85,6 +85,21 @@ bool Hooks::CreateHooks() {
 
     RegisterAllTrampolinePages(allHooks);
 
+    // ── Verify: check that RtlLookupFunctionEntry finds our registered trampolines ──
+    int verified = 0, failed = 0;
+    for (auto& [tramp, orig] : allHooks) {
+        if (!tramp) continue;
+        DWORD64 imgBase = 0;
+        PRUNTIME_FUNCTION pFunc = RtlLookupFunctionEntry((DWORD64) tramp, &imgBase, NULL);
+        if (pFunc) {
+            verified++;
+        } else {
+            failed++;
+			Util::log("WARNING: RtlLookupFunctionEntry failed for trampoline at 0x%llX\n", (uint64_t) tramp);
+        }
+    }
+    Util::log("[Hooks] UNWIND_INFO verification: %i OK, %i FAILED\n", verified, failed);
+
 	Util::log("Finished creating hooks (GC stack-walker patched).\n");
     return true;
 }
