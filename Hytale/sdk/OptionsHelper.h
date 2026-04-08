@@ -2,7 +2,7 @@
  * Copyright (c) FishPlusPlus.
  */
 #pragma once
-#include "HytaleString.h"
+#include "BaseDataTypes/HytaleString.h"
 
 struct OptionsHelper {
 	char pad_0000[24]; //0x0000
