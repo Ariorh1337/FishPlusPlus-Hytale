@@ -3,16 +3,41 @@
  */
 #pragma once
 #include <cstdint>
+#include <vector>
+#include <string>
 #include "BaseDataTypes/ConcurrentDictionary.h"
 #include "ChunkColumn.h"
 #include "ClientBlockType.h"
+#include "Math/Color.h"
 
 class GameInstance;
 class Texture;
 
+struct RenderBlockInfo {
+	std::vector<int> BlockID;
+	const char* DisplayName;
+	Color BlockColor;
+};
+
+inline std::vector<RenderBlockInfo> ImportantBlocks = {
+	{ { }, "Chest", Color::Normalize(0, 255, 255) },
+	{ { }, "Bench", Color::Normalize(0, 255, 255) },
+	{ { }, "Adamantite", Color::Normalize(255, 0, 255) },
+	//{ { }, "Gold", Color::Normalize(255, 0, 255) },
+	//{ { }, "Silver", Color::Normalize(255, 0, 255) },
+	//{ { }, "Iron", Color::Normalize(255, 0, 255) },
+	//{ { }, "Copper", Color::Normalize(255, 0, 255) },
+	{ { }, "Mithril", Color::Normalize(255, 0, 255) },
+	{ { }, "Cobalt", Color::Normalize(255, 0, 255) },
+	{ { }, "Thorium", Color::Normalize(255, 0, 255) },
+	{ { }, "Treasure", Color::Normalize(255, 0, 255) },
+	//{ { }, "Crystal", Color::Normalize(255, 0, 255) },
+	{ { }, "Gem", Color::Normalize(255, 0, 255) }
+};
+
 struct ChunkPosition {
-    int X;
-    int Y;
+	int X;
+	int Y;
     int Z;
 };
 
@@ -124,7 +149,64 @@ public:
 		return chunk->Data->Blocks->GetBlockID(IndexOfWorldBlockInChunk(worldX, worldY, worldZ), undefinedBlockId);
     }
 
-    ClientBlockType* GetBlockType(Vector3 pos) {
+	std::vector<FishBlockData> FindBlocksInChunkColumn(int worldChunkX, int worldChunkZ, const std::vector<int>& targetBlockIds) {
+		ChunkColumn* column = nullptr;
+		bool found = _chunkColumns->TryGetValue(IndexOfChunkColumn(worldChunkX, worldChunkZ), &column);
+		if (!found || !column->chunks)
+			return {};
+
+		std::vector<FishBlockData> results;
+		for (int y = 0; y < column->chunks->count; y++) {
+			Chunk* chunk = column->chunks->get(y);
+			if (chunk && chunk->Data && chunk->Data->Blocks) {
+				std::vector<FishBlockData> chunkResults = chunk->Data->Blocks->FindBlocks(targetBlockIds);
+				for (FishBlockData& blockData : chunkResults) {
+					// Convert local chunk coordinates to world coordinates
+					int worldX = (worldChunkX << 5) + blockData.x;
+					int worldY = (y << 5) + blockData.y;
+					int worldZ = (worldChunkZ << 5) + blockData.z;
+					results.emplace_back(worldX, worldY, worldZ, blockData.blockId);
+				}
+			}
+		}
+		return results;
+	}
+
+	// Scan a specific section of a single chunk (for incremental scanning)
+	// localMinX/Y/Z and localMaxX/Y/Z are in chunk-local coordinates (0-31)
+	std::vector<FishBlockData> FindBlocksInSingleChunk(int worldChunkX, int worldChunkY, int worldChunkZ, 
+														 const std::vector<int>& targetBlockIds,
+														 int localMinX = 0, int localMaxX = 31,
+														 int localMinY = 0, int localMaxY = 31,
+														 int localMinZ = 0, int localMaxZ = 31) {
+		ChunkColumn* column = nullptr;
+		bool found = _chunkColumns->TryGetValue(IndexOfChunkColumn(worldChunkX, worldChunkZ), &column);
+		if (!found || !column->chunks)
+			return {};
+
+		if (worldChunkY >= column->chunks->count)
+			return {};
+
+		std::vector<FishBlockData> results;
+		Chunk* chunk = column->chunks->get(worldChunkY);
+		if (chunk && chunk->Data && chunk->Data->Blocks) {
+			// Scan only the specified section of the chunk
+			std::vector<FishBlockData> chunkResults = chunk->Data->Blocks->FindBlocksInSection(
+				targetBlockIds, localMinX, localMaxX, localMinY, localMaxY, localMinZ, localMaxZ
+			);
+			for (FishBlockData& blockData : chunkResults) {
+				// Convert local chunk coordinates to world coordinates
+				int worldX = (worldChunkX << 5) + blockData.x;
+				int worldY = (worldChunkY << 5) + blockData.y;
+				int worldZ = (worldChunkZ << 5) + blockData.z;
+				results.emplace_back(worldX, worldY, worldZ, blockData.blockId);
+			}
+		}
+		return results;
+	}
+
+
+	ClientBlockType* GetBlockType(Vector3 pos) {
         int blockId = GetBlockID((int) pos.x, (int) pos.y, (int) pos.z, 1);
         return ClientBlockTypes->get(blockId);
     }
@@ -144,4 +226,14 @@ public:
 		data.paletteAddress = (uint64_t) chunk->Data->Blocks->chunkSection->internalToExternal->list;
         return data;
 	}
+    
+    std::vector<int> getAllImportantBlockIDs() {
+        std::vector<int> allTargetBlockIds;
+        for (const auto& importantBlock : ImportantBlocks) {
+            for (int blockId : importantBlock.BlockID) {
+                allTargetBlockIds.push_back(blockId);
+            }
+        }
+		return allTargetBlockIds;
+    }
 };

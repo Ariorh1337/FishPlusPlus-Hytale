@@ -51,6 +51,21 @@ void Renderer3D::BoxLines(Vector3 pos, Vector3 size, Color insideColor, Color ou
 	Line(pos, pos + Vector3(0, 0, size.z), outlineColor);
 }
 
+void Renderer3D::BoxOutline(Vector3 pos, Vector3 size, Color outlineColor) {
+	Line(pos + Vector3(size.x, 0, size.z), pos + Vector3(size.x, size.y, size.z), outlineColor);
+	Line(pos + Vector3(0, 0, size.z), pos + Vector3(0, size.y, size.z), outlineColor);
+	Line(pos + Vector3(size.x, 0, 0), pos + Vector3(size.x, size.y, 0), outlineColor);
+	Line(pos, pos + Vector3(0, size.y, 0), outlineColor);
+	Line(pos + Vector3(size.x, size.y, size.z), pos + Vector3(size.x, size.y, 0), outlineColor);
+	Line(pos + Vector3(size.x, size.y, size.z), pos + Vector3(0, size.y, size.z), outlineColor);
+	Line(pos + Vector3(0, size.y, 0), pos + Vector3(size.x, size.y, 0), outlineColor);
+	Line(pos + Vector3(0, size.y, 0), pos + Vector3(0, size.y, size.z), outlineColor);
+	Line(pos + Vector3(size.x, 0, size.z), pos + Vector3(size.x, 0, 0), outlineColor);
+	Line(pos + Vector3(size.x, 0, size.z), pos + Vector3(0, 0, size.z), outlineColor);
+	Line(pos, pos + Vector3(size.x, 0, 0), outlineColor);
+	Line(pos, pos + Vector3(0, 0, size.z), outlineColor);
+}
+
 void Renderer3D::BoxLines(Entity* entity, Color insideColor, Color outlineColor) {
 	ValidPtrVoid(entity);
 	if (entity->OldPos == Vector3(0, 0, 0))

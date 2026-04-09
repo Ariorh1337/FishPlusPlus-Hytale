@@ -12,9 +12,17 @@ struct EntityData {
 	bool isLocalPlayer;
 };
 
+struct FilteredBlockResult {
+	Vector3 position;
+	int blockId;
+	const char* displayName;
+	Color color;
+};
+
 namespace SDK {
 	inline std::mutex global_mutex;
 	inline std::vector<EntityData> entities;
+	inline std::vector<FilteredBlockResult> filteredBlocks;
 	inline bool initialized = false;
 
 

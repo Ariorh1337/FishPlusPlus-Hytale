@@ -14,14 +14,40 @@
 
 __declspec(safebuffers) __declspec(noinline)
 void __fastcall Hooks::hkDrawScene(GameInstance* instance) {
-    Hooks::oDrawScene(instance);
-    if (!initialized)
-        return;
+	Hooks::oDrawScene(instance);
+	if (!initialized)
+		return;
 
-    Renderer3D renderer3D;
-    EventRegister::Render3DEvent.Invoke(renderer3D);
+	Renderer3D renderer3D;
+	EventRegister::Render3DEvent.Invoke(renderer3D);
 
-    if (Util::app->Stage == AppStage::InGame) {
+	bool ShowFilteredBlocks = false;
+	if (ShowFilteredBlocks && Util::app->Stage == AppStage::InGame) {
+		// Render all cached filtered blocks from SDK
+		for (const auto& block : SDK::filteredBlocks) {
+			renderer3D.BoxOutline(
+				Vector3((int)block.position.x, (int)block.position.y, (int)block.position.z),
+				Vector3(1, 1, 1),
+				block.color
+			);
+
+/*			// Render block name in world space
+			Vector2 screenPos;
+			if (Util::WorldToScreen(Vector3(block.position.x + 0.5f, block.position.y + 0.5f, block.position.z + 0.5f), screenPos)) {
+				Fonts::Figtree->RenderText(
+					Util::string_format("%s (%i)", block.displayName, block.blockId),
+					screenPos.x,
+					screenPos.y,
+					1,
+					Color::White()
+				);
+			}*/
+		}
+	}
+
+
+    bool ShowBlockAtFeet = false;
+    if (ShowBlockAtFeet && Util::app->Stage == AppStage::InGame) {
         Vector3 renderPos = Util::getLocalPlayer()->Position.toFloor();
 		renderPos.y -= 1; // Adjust to get the block the player is standing on
         ClientBlockType* block = Util::getGameInstance()->MapModule->GetBlockType(renderPos);

@@ -20,6 +20,7 @@ public:
 	void Line(Vector3 p1, Vector3 p2, Color color);
 
 	void BoxLines(Vector3 pos, Vector3 size, Color insideColor, Color outlineColor);
+	void BoxOutline(Vector3 pos, Vector3 size, Color outlineColor);
 	void BoxLines(Entity* entity, Color insideColor, Color outlineColor);
 
 	void Render();
