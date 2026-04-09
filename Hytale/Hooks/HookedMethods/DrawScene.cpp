@@ -21,9 +21,10 @@ void __fastcall Hooks::hkDrawScene(GameInstance* instance) {
 	Renderer3D renderer3D;
 	EventRegister::Render3DEvent.Invoke(renderer3D);
 
-	bool ShowFilteredBlocks = false;
+	bool ShowFilteredBlocks = true;
 	if (ShowFilteredBlocks && Util::app->Stage == AppStage::InGame) {
 		// Render all cached filtered blocks from SDK
+        SDK::filteredBlockMutex.lock();
 		for (const auto& block : SDK::filteredBlocks) {
 			renderer3D.BoxOutline(
 				Vector3((int)block.position.x, (int)block.position.y, (int)block.position.z),
@@ -43,6 +44,7 @@ void __fastcall Hooks::hkDrawScene(GameInstance* instance) {
 				);
 			}*/
 		}
+        SDK::filteredBlockMutex.unlock();
 	}
 
 

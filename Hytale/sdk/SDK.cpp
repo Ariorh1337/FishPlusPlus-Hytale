@@ -269,7 +269,7 @@ static int framesSinceLastScan = 0;
 static const int SCAN_RADIUS = 3;
 static const int SEARCH_INTERVAL_FRAMES = 1;
 static const int MAX_CHUNKS_Y = 8;
-static const int SLICES_PER_CHUNK = 4;
+static const int SLICES_PER_CHUNK = 16;
 
 static std::vector<std::pair<int, int>> spiralOrder;
 static std::vector<int> allTargetBlockIds;
@@ -293,7 +293,7 @@ void InitializeSpiralOrder() {
 	}
 }
 
-void ScanForBlocks() {
+void SDK::ScanForBlocks() {
 	if (Util::app->Stage != AppStage::InGame)
 		return;
 
@@ -431,7 +431,7 @@ void SDK::Main() {
 	global_mutex.unlock();
 
 	// Scan for important blocks
-	ScanForBlocks();
+	//ScanForBlocks();
 
 	static bool createFilter = false;
 	if (!createFilter && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance && Util::app->Stage == AppStage::InGame){
@@ -455,16 +455,15 @@ void SDK::Main() {
 		createFilter = true;
 	}
 
+	
 	/*
 	static int test = 0;
 	if (test < 1 && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance && Util::app->Stage == AppStage::InGame) {
 
-		MapModule* mapModule = (MapModule*)Util::app->appInGame->gameInstance->MapModule;
-		Vector3 playerPos = Util::getLocalPlayer()->Position;
-		int block = mapModule->GetBlockID((int)floor(playerPos.x), (int)floor(playerPos.y) - 1, (int)floor(playerPos.z), -67);
-		Util::log("Block ID at player position: %i\n", block);
-		//Util::log("Block at player position: %s\n", mapModule->ClientBlockTypes->get(block)->Name->getString().c_str());
+		//DBGScan(Util::getGameInstance()->MapModule->MapGeometryBuilder);
+		Util::log("MapGeometryBuilder: 0x%llx\n", (uintptr_t)(Util::getGameInstance()->MapModule->MapGeometryBuilder) + 0x18);
 
 		test++;
-	}*/
+	}
+	*/
 }

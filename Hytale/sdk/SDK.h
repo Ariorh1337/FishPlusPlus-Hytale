@@ -22,9 +22,11 @@ struct FilteredBlockResult {
 namespace SDK {
 	inline std::mutex global_mutex;
 	inline std::vector<EntityData> entities;
+	inline std::mutex filteredBlockMutex;
 	inline std::vector<FilteredBlockResult> filteredBlocks;
 	inline bool initialized = false;
 
+	void ScanForBlocks();
 
 	extern void Main();
 }

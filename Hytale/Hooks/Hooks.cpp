@@ -81,6 +81,8 @@ bool Hooks::CreateHooks() {
     CREATE_SIG_HOOK_BY_REF(DrawEntityCharactersAndItems, "E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 85");
     CREATE_SIG_HOOK_BY_REF(DrawScene, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
 
+    CREATE_SIG_HOOK_BY_REF(RebuildChunk, "E8 ? ? ? ? 48 89 7D ? ? ? ? 00 75")
+
     MH_EnableHook(MH_ALL_HOOKS);
 
     RegisterAllTrampolinePages(allHooks);
