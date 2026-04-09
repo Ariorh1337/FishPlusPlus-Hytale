@@ -433,9 +433,10 @@ void SDK::Main() {
 	// Scan for important blocks
 	//ScanForBlocks();
 
-	static bool createFilter = false;
-	if (!createFilter && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance && Util::app->Stage == AppStage::InGame){
+	if (!filterInitialized && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance && Util::app->Stage == AppStage::InGame){
 		MapModule* mapModule = (MapModule*) Util::app->appInGame->gameInstance->MapModule;
+
+
 		Array<ClientBlockType*>* ClientBlockTypes = mapModule->ClientBlockTypes;
 
 		for (int i = 0; i < ClientBlockTypes->count; i++) {
@@ -452,7 +453,7 @@ void SDK::Main() {
 		Util::log("[SDK] ImportantBlocks population complete. Summary:\n");
 		for (const RenderBlockInfo& filter : ImportantBlocks)
 			Util::log("[SDK]   - %s: %d block IDs found\n", filter.DisplayName, filter.BlockID.size());
-		createFilter = true;
+		filterInitialized = true;
 	}
 
 	

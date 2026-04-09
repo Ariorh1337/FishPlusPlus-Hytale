@@ -14,7 +14,12 @@ void __fastcall Hooks::hkRebuildChunk(void* instance, ChunkColumn* a2, int chunk
 	if (Util::app->Stage != AppStage::InGame)
 		return;
 
+	if (!SDK::filterInitialized)
+		return;
+
 	MapModule* mapModule = Util::getGameInstance()->MapModule;
+	Vector3 pPos = Util::getLocalPlayer()->Position;
+	float maxViewDistance = mapModule->GetMaxViewDistance();
 
 	if (allTargetBlockIds.empty())
 		allTargetBlockIds = mapModule->getAllImportantBlockIDs();
@@ -38,7 +43,18 @@ void __fastcall Hooks::hkRebuildChunk(void* instance, ChunkColumn* a2, int chunk
 				int chunkPosX = b.position.x >= 0 ? b.position.x / 32 : (b.position.x - 31) / 32;
 				int chunkPosY = b.position.y >= 0 ? b.position.y / 32 : (b.position.y - 31) / 32;
 				int chunkPosZ = b.position.z >= 0 ? b.position.z / 32 : (b.position.z - 31) / 32;
-				return chunkPosX == chunkX && chunkPosY == chunkY && chunkPosZ == chunkZ;
+
+				bool isInRebuildChunk = chunkPosX == chunkX && chunkPosY == chunkY && chunkPosZ == chunkZ;
+				if (isInRebuildChunk)
+					return true;
+
+				float dx = b.position.x - pPos.x;
+				float dy = b.position.y - pPos.y;
+				float dz = b.position.z - pPos.z;
+				float distanceSq = dx * dx + dy * dy + dz * dz;
+				bool isOutsideViewDistance = distanceSq > (maxViewDistance * maxViewDistance);
+
+				return isOutsideViewDistance;
 			}
 		),
 		SDK::filteredBlocks.end()

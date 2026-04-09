@@ -22,17 +22,17 @@ struct RenderBlockInfo {
 inline std::vector<RenderBlockInfo> ImportantBlocks = {
 	{ { }, "Chest", Color::Normalize(0, 255, 255) },
 	{ { }, "Bench", Color::Normalize(0, 255, 255) },
-	{ { }, "Adamantite", Color::Normalize(255, 0, 255) },
+	//{ { }, "Adamantite", Color::Normalize(255, 0, 255) },
 	//{ { }, "Gold", Color::Normalize(255, 0, 255) },
 	//{ { }, "Silver", Color::Normalize(255, 0, 255) },
 	//{ { }, "Iron", Color::Normalize(255, 0, 255) },
 	//{ { }, "Copper", Color::Normalize(255, 0, 255) },
-	{ { }, "Mithril", Color::Normalize(255, 0, 255) },
-	{ { }, "Cobalt", Color::Normalize(255, 0, 255) },
-	{ { }, "Thorium", Color::Normalize(255, 0, 255) },
+	//{ { }, "Mithril", Color::Normalize(255, 0, 255) },
+	//{ { }, "Cobalt", Color::Normalize(255, 0, 255) },
+	//{ { }, "Thorium", Color::Normalize(255, 0, 255) },
 	{ { }, "Treasure", Color::Normalize(255, 0, 255) },
 	//{ { }, "Crystal", Color::Normalize(255, 0, 255) },
-	{ { }, "Gem", Color::Normalize(255, 0, 255) }
+	//{ { }, "Gem", Color::Normalize(255, 0, 255) }
 };
 
 struct ChunkPosition {
@@ -112,7 +112,9 @@ public:
     uint16_t* UInt16Array2;                             // 0x90 System.UInt16[]
     ChunkPosition* _updatedChunksPositions;             // 0x98 HytaleClient.InGame.Modules.Map.MapModule+ChunkPosition[]
     void* ClientFluids;                                 // 0xA0 HytaleClient.Data.Map.ClientFluid[]
-    char pad_0xA8[0x38];                                // 0xA8-0xE0 (primitive values)
+    char pad_0xA8[0x10];                                // 0xA8-0xB8 (primitive values)
+	int renderedChunkCount;                             // 0xB8 int
+	char pad_0xBC[0x24];                                // 0xBC
     BlockPosition* _deletedBlockPositions;              // 0xE0 HytaleClient.InGame.Modules.Map.MapModule+BlockPosition[]
     uint8_t* _deletedBlockAge;                          // 0xE8 System.Byte[]
     uint16_t* UInt16Array3;                             // 0xF0 System.UInt16[]
@@ -127,6 +129,10 @@ public:
     int64_t IndexOfChunkColumn(int32_t x, int32_t z) {
         return ((int64_t) x << 32) | (z & 0xFFFFFFFFu); // Validated 
     }
+
+    int GetMaxViewDistance() {
+        return renderedChunkCount * 32;
+	}
 
     Chunk* GetChunk(int worldChunkX, int worldChunkY, int worldChunkZ) {
         ChunkColumn* column = nullptr;

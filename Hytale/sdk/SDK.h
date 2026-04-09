@@ -23,6 +23,7 @@ namespace SDK {
 	inline std::mutex global_mutex;
 	inline std::vector<EntityData> entities;
 	inline std::mutex filteredBlockMutex;
+	inline bool filterInitialized = false;
 	inline std::vector<FilteredBlockResult> filteredBlocks;
 	inline bool initialized = false;
 
