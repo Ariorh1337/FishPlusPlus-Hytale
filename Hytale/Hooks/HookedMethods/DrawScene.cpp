@@ -20,20 +20,32 @@ void __fastcall Hooks::hkDrawScene(GameInstance* instance) {
 
     Renderer3D renderer3D;
     EventRegister::Render3DEvent.Invoke(renderer3D);
-    renderer3D.Render();
 
-    /*
     if (Util::app->Stage == AppStage::InGame) {
-        Vector3 playerPos = Util::getLocalPlayer()->Position;
-        Vector3 renderPos((int)std::floor(playerPos.x), (int)std::floor(playerPos.y) - 1, (int)std::floor(playerPos.z));
-        ClientBlockType* block = Util::getGameInstance()->MapModule->GetBlock(renderPos);
-        renderer3D.BoxLines(Vector3((int)std::floor(renderPos.x), (int)std::floor(renderPos.y), (int)std::floor(renderPos.z)), Vector3(1, 1, 1), Color::Normalize(255, 0, 0, 50), Color::Normalize(Color::Red()));
+        Vector3 renderPos = Util::getLocalPlayer()->Position.toFloor();
+		renderPos.y -= 1; // Adjust to get the block the player is standing on
+        ClientBlockType* block = Util::getGameInstance()->MapModule->GetBlockType(renderPos);
+        renderer3D.BoxLines(Vector3((int)renderPos.x, (int)renderPos.y, (int)renderPos.z), Vector3(1, 1, 1), Color::Normalize(255, 0, 0, 50), Color::Normalize(Color::Red()));
         Vector2 screenPos;
         if (Util::WorldToScreen(Vector3(renderPos.x + 0.5f, renderPos.y + 0.5f, renderPos.z + 0.5f), screenPos))
-		    Fonts::Figtree->RenderText(block->Name->getString(), screenPos.x, screenPos.y, 1, Color::White());
-    }
-    */
+		    Fonts::Figtree->RenderText(Util::string_format("%s (%i)", block->Name->getString().c_str(), block->Id), screenPos.x, screenPos.y, 1, Color::White());
 
+        
+/*		DBGBlockData dbgData = Util::getGameInstance()->MapModule->GetBlockData((int) floor(playerPos.x), (int) floor(playerPos.y) - 1, (int) floor(playerPos.z));
+        if (Util::WorldToScreen(Vector3(renderPos.x + 0.5f, renderPos.y + 0.5f, renderPos.z + 0.5f), screenPos)) {
+			std::string debugText = Util::string_format("%s (ID: %i)", dbgData.blockName.c_str(), dbgData.BlockID);
+            Fonts::Figtree->RenderText(debugText, screenPos.x, screenPos.y, 1, Color::White());
+			std::string debugText2 = Util::string_format("Packed Pos: %i, Unpacked Pos: (%.1f, %.1f, %.1f)", dbgData.packedPos, dbgData.unpackedPos.x, dbgData.unpackedPos.y, dbgData.unpackedPos.z);
+			Fonts::Figtree->RenderText(debugText2, screenPos.x, screenPos.y + 20, 1, Color::White());
+			std::string debugText3 = Util::string_format("Packing Type: %s", dbgData.packingType == BitPackingType::Packed4Bit ? "Packed4Bit" : dbgData.packingType == BitPackingType::Packed8Bit ? "Packed8Bit" : "Packed16Bit");
+			Fonts::Figtree->RenderText(debugText3, screenPos.x, screenPos.y + 40, 1, Color::White());
+			std::string debugText4 = Util::string_format("Palette Address: 0x%llX", dbgData.paletteAddress);
+			Fonts::Figtree->RenderText(debugText4, screenPos.x, screenPos.y + 60, 1, Color::White());
+        }*/
+
+    }
+
+    renderer3D.Render();
     
 
     Outline* outline = static_cast<Outline*>(FeatureHandler::GetFeatureFromName("Outline"));

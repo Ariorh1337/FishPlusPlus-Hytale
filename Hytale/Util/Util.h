@@ -57,6 +57,7 @@ namespace Util {
     void allocate_console();
     void free_console();
     void log(const char* fmt, ...);
+    std::string string_format(const std::string fmt, ...);
 
     HytaleString* ObjectToString(void* object);
 }

@@ -49,6 +49,21 @@ public:
 	Vector3 CameraPosition;                             // 0xCC SOMEHOW chicken found camera position here
 };
 
+enum BitPackingType : int {
+    Packed4Bit = 0,
+    Packed8Bit = 1,
+    Packed16Bit = 2
+};
+
+struct DBGBlockData {
+    int32_t packedPos;
+	Vector3 unpackedPos;
+    int16_t BlockID;
+	std::string blockName;
+	BitPackingType packingType;
+    uint64_t paletteAddress;
+};
+
 class MapModule {
 public:
     char pad_0x00[0x8];                                 // 0x00
@@ -80,15 +95,6 @@ public:
     char pad_100[0x20];                                 // 0x100 padding
     ConcurrentDictionary<int64_t, ChunkColumn*>* _chunkColumns;   // 0x120 ConcurrentDictionary<long, ChunkColumn> _chunkColumns = new ConcurrentDictionary<long, ChunkColumn>();
 
-    /*int WorldToChunk(int worldCoord) {
-        return (worldCoord < 0) ? ((worldCoord + 1) / 32 - 1) : (worldCoord / 32);
-	}
-
-    int WorldToChunkCoord(int worldCoord, int chunk) {
-        int result = worldCoord - (chunk * 32);
-        return result < 0 ? result + 32 : result;
-	}*/
-
     int32_t IndexOfWorldBlockInChunk(int x, int y, int z) {
         return ((y & 0x1F) << 10) | ((z & 0x1F) << 5) | (x & 0x1F);
     }
@@ -97,26 +103,17 @@ public:
         return ((int64_t) x << 32) | (z & 0xFFFFFFFFu); // Validated 
     }
 
-    ChunkColumn* GetChunkColumn(int64_t key) {
-        ChunkColumn* outValue = nullptr;
-		bool found = _chunkColumns->TryGetValue(key, &outValue);
-		return outValue;
-	}
-
-    ChunkColumn* GetChunkColumn(int worldChunkX, int worldChunkZ) {
-        return GetChunkColumn(IndexOfChunkColumn(worldChunkX, worldChunkZ));
-    }
-
     Chunk* GetChunk(int worldChunkX, int worldChunkY, int worldChunkZ) {
-        ChunkColumn* column = GetChunkColumn(worldChunkX, worldChunkZ);
-        if (!column)
+        ChunkColumn* column = nullptr;
+        bool found = _chunkColumns->TryGetValue(IndexOfChunkColumn(worldChunkX, worldChunkZ), &column);
+        if (!found)
 			return nullptr;
 
 		Array<Chunk*>* chunks = column->chunks;
         return chunks->get(worldChunkY);
     }
 
-    int GetBlock(int worldX, int worldY, int worldZ, int undefinedBlockId) {
+    int GetBlockID(int worldX, int worldY, int worldZ, int undefinedBlockId = 1) {
         int worldChunkX = worldX >> 5;
         int worldChunkY = worldY >> 5;
         int worldChunkZ = worldZ >> 5;
@@ -127,12 +124,24 @@ public:
 		return chunk->Data->Blocks->GetBlockID(IndexOfWorldBlockInChunk(worldX, worldY, worldZ), undefinedBlockId);
     }
 
-    ClientBlockType* GetBlock(int worldX, int worldY, int worldZ) {
-		int blockId = GetBlock(worldX, worldY, worldZ, 1);
-		return ClientBlockTypes->get(blockId);
+    ClientBlockType* GetBlockType(Vector3 pos) {
+        int blockId = GetBlockID((int) pos.x, (int) pos.y, (int) pos.z, 1);
+        return ClientBlockTypes->get(blockId);
     }
 
-    ClientBlockType* GetBlock(Vector3 pos) {
-        return GetBlock((int)std::floor(pos.x), (int)std::floor(pos.y), (int)std::floor(pos.z));
-    }
+    DBGBlockData GetBlockData(int worldX, int worldY, int worldZ) {
+        int worldChunkX = worldX >> 5;
+        int worldChunkY = worldY >> 5;
+        int worldChunkZ = worldZ >> 5;
+        Chunk* chunk = GetChunk(worldChunkX, worldChunkY, worldChunkZ);
+
+        DBGBlockData data;
+        data.packedPos = IndexOfWorldBlockInChunk(worldX, worldY, worldZ);
+        data.unpackedPos = Vector3(worldX, worldY, worldZ);
+        data.BlockID = chunk->Data->Blocks->GetBlockID(data.packedPos, 1);
+		data.blockName = ClientBlockTypes->get(data.BlockID)->Name->getString();
+		data.packingType = (BitPackingType) chunk->Data->Blocks->GetPackingType();
+		data.paletteAddress = (uint64_t) chunk->Data->Blocks->chunkSection->internalToExternal->list;
+        return data;
+	}
 };

@@ -57,4 +57,8 @@ struct Vector3 {
 
 		return *this;
 	}
+
+	Vector3 toFloor() const {
+		return Vector3(std::floor(x), std::floor(y), std::floor(z));
+	}
 };

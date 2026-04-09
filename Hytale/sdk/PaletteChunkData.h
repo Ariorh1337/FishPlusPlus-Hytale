@@ -49,6 +49,47 @@ struct PaletteChunkData {
 	void* m_table;										// 0x00
 	IChunkData* chunkSection;							// 0x08
 
+	int GetPackingType() {
+		if (chunkSection == nullptr || chunkSection->isEmpty())
+			return -1; // Undefined
+		int blockDataCount = chunkSection->GetBlockDataCount();
+		if (blockDataCount == 16384)
+			return 0; // 4-bit
+		else if (chunkSection->internalToExternal->count > 256)
+			return 2; // 16-bit
+		else
+			return 1; // 8-bit
+	}
+
+	int GetBlockIDOLD(int32_t idx, int undefinedBlockId) {
+		// mtLen = blockData count
+		// nPal = palette count
+		Abstract4BitPaletteChunkData* data4bit = (Abstract4BitPaletteChunkData*) chunkSection;
+		int* paletteBuf = chunkSection->internalToExternal->list;
+		uint32_t mtLen = data4bit->GetBlockDataCount();
+		int nPal = data4bit->internalToExternal->count;
+		uint8_t* indexData = data4bit->blockData->list;
+
+
+		if (mtLen == 16384) {
+			// 4-bit packing (2 blocks per byte)
+			uint8_t byteVal = indexData[idx / 2];
+			uint8_t palIdx = (idx % 2 == 0) ? (byteVal & 0x0F) : ((byteVal >> 4) & 0x0F);
+			if (palIdx < nPal) return paletteBuf[palIdx];
+		} else {
+			if (nPal > 256) {
+				// 16-bit packing (1 block per short)
+				uint16_t* shortData = (uint16_t*) indexData;
+				uint16_t palIdx = shortData[idx];
+				if (palIdx < nPal) return paletteBuf[palIdx];
+			} else {
+				// 8-bit packing (1 block per byte)
+				uint8_t palIdx = indexData[idx];
+				if (palIdx < nPal) return paletteBuf[palIdx];
+			}
+		}
+	}
+
 	int GetBlockID(int32_t idx, int undefinedBlockId) {
 		if (chunkSection == nullptr || chunkSection->isEmpty())
 			return undefinedBlockId;
@@ -60,7 +101,8 @@ struct PaletteChunkData {
 		if (blockDataCount == 16384) {
 			Abstract4BitPaletteChunkData* data4bit = (Abstract4BitPaletteChunkData*)chunkSection;
 			uint8_t byteVal = data4bit->blockData->get(idx / 2);
-			paletteIdx = (idx % 2 == 0) ? (byteVal & 0x0F) : ((byteVal >> 4) & 0x0F);
+			paletteIdx = (idx % 2 == 0) ? ((byteVal >> 4) & 0x0F) : (byteVal & 0x0F);
+			//paletteIdx = (idx % 2 == 0) ? (byteVal & 0x0F) : ((byteVal >> 4) & 0x0F);
 		} else {
 			if (paletteCount > 256) {
 				Abstract16BitPaletteChunkData* data16bit = (Abstract16BitPaletteChunkData*)chunkSection;
