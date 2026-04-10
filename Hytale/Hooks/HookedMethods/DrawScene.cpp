@@ -22,13 +22,13 @@ void __fastcall Hooks::hkDrawScene(GameInstance* instance) {
 	Renderer3D renderer3D;
 	EventRegister::Render3DEvent.Invoke(renderer3D);
 
-	BlockESP* BlockESP = static_cast<BlockESP*>(FeatureHandler::GetFeatureFromName("BlockESP"));
-	bool ShowFilteredBlocks = BlockESP && BlockESP->IsActive() && BlockESP->CanExecute();
+	BlockESP* blockEsp = static_cast<BlockESP*>(FeatureHandler::GetFeatureFromName("BlockESP"));
+	bool ShowFilteredBlocks = blockEsp && blockEsp->IsActive() && blockEsp->CanExecute();
 	if (ShowFilteredBlocks && Util::app->Stage == AppStage::InGame) {
 		Entity* localPlayer = Util::getLocalPlayer();
 		if (localPlayer) {
-			float maxRadius = BlockESP->radius->GetValue();
-			bool showName = BlockESP->showName->GetValue();
+			float maxRadius = blockEsp->radius->GetValue();
+			bool showName = blockEsp->showName->GetValue();
 			Vector3 playerPos = localPlayer->RenderPos;
 
 			// Render all cached filtered blocks from SDK
