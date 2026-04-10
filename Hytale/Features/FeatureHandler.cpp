@@ -10,6 +10,7 @@
 #include "ActualFeatures/NoFall.h"
 #include "ActualFeatures/WorldModulate.h"
 #include "ActualFeatures/Outline.h"
+#include "ActualFeatures/BlockESP.h"
 
 void InitFeature(std::unique_ptr<Feature> feature, std::string tab) {
 	feature->setCategory(tab);
@@ -28,6 +29,7 @@ void FeatureHandler::Init() {
 	InitFeature(std::make_unique<Nametags>(), "Visuals");
 	InitFeature(std::make_unique<WorldModulate>(), "Visuals");
 	InitFeature(std::make_unique<Outline>(), "Visuals");
+	InitFeature(std::make_unique<BlockESP>(), "Visuals");
 
 	Menu::mainComponent->AddChild(std::make_unique<Tab>("Movement", 200, 200));
 	Menu::mainComponent->AddChild(std::make_unique<Tab>("Visuals", 410, 200));

@@ -170,6 +170,7 @@
     <ClCompile Include="Features\ActualFeatures\WorldModulate.cpp" />
     <ClCompile Include="Features\ConfigHandler.cpp" />
     <ClCompile Include="Features\Feature.cpp" />
+    <ClCompile Include="Features\ActualFeatures\BlockESP.cpp" />
     <ClCompile Include="Features\ActualFeatures\ESP.cpp" />
     <ClCompile Include="Features\FeatureHandler.cpp" />
     <ClCompile Include="Features\ActualFeatures\Flight.cpp" />
@@ -340,6 +341,7 @@
     <ClInclude Include="Features\Settings\RecursiveSetting.h" />
     <ClInclude Include="Features\Settings\SliderSetting.h" />
     <ClInclude Include="Features\Settings\ToggleSetting.h" />
+    <ClInclude Include="Features\ActualFeatures\BlockESP.h" />
     <ClInclude Include="Features\ActualFeatures\ESP.h" />
     <ClInclude Include="Features\FeatureHandler.h" />
     <ClInclude Include="Features\ActualFeatures\Flight.h" />

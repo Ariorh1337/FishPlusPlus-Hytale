@@ -8,6 +8,7 @@
 
 #include "Features/FeatureHandler.h"
 #include "Features/ActualFeatures/Outline.h"
+#include "Features/ActualFeatures/BlockESP.h"
 
 #pragma optimize("", off)
 #pragma runtime_checks("", off)
@@ -21,30 +22,48 @@ void __fastcall Hooks::hkDrawPostEffect(GameInstance* instance) {
 	Renderer3D renderer3D;
 	EventRegister::Render3DEvent.Invoke(renderer3D);
 
-	bool ShowFilteredBlocks = true;
+	BlockESP* blockEsp = static_cast<BlockESP*>(FeatureHandler::GetFeatureFromName("BlockESP"));
+	bool ShowFilteredBlocks = blockEsp && blockEsp->IsActive() && blockEsp->CanExecute();
 	if (ShowFilteredBlocks && Util::app->Stage == AppStage::InGame) {
-		// Render all cached filtered blocks from SDK
-        SDK::filteredBlockMutex.lock();
-		for (const auto& block : SDK::filteredBlocks) {
-			renderer3D.BoxOutline(
-				Vector3((int)block.position.x, (int)block.position.y, (int)block.position.z),
-				Vector3(1, 1, 1),
-				block.color
-			);
+		Entity* localPlayer = Util::getLocalPlayer();
+		if (localPlayer) {
+			float maxRadius = blockEsp->radius->GetValue();
+			bool showName = blockEsp->showName->GetValue();
+			Vector3 playerPos = localPlayer->RenderPos;
 
-/*			// Render block name in world space
-			Vector2 screenPos;
-			if (Util::WorldToScreen(Vector3(block.position.x + 0.5f, block.position.y + 0.5f, block.position.z + 0.5f), screenPos)) {
-				Fonts::Figtree->RenderText(
-					Util::string_format("%s (%i)", block.displayName, block.blockId),
-					screenPos.x,
-					screenPos.y,
-					1,
-					Color::White()
+			// Render all cached filtered blocks from SDK
+			SDK::filteredBlockMutex.lock();
+			for (const auto& block : SDK::filteredBlocks) {
+				Vector3 blockCenter(block.position.x + 0.5f, block.position.y + 0.5f, block.position.z + 0.5f);
+				float dx = blockCenter.x - playerPos.x;
+				float dy = blockCenter.y - playerPos.y;
+				float dz = blockCenter.z - playerPos.z;
+				float distSq = dx * dx + dy * dy + dz * dz;
+
+				if (distSq > maxRadius * maxRadius)
+					continue;
+
+				renderer3D.BoxOutline(
+					Vector3((int)block.position.x, (int)block.position.y, (int)block.position.z),
+					Vector3(1, 1, 1),
+					block.color
 				);
-			}*/
+
+				if (showName) {
+					Vector2 screenPos;
+					if (Util::WorldToScreen(blockCenter, screenPos)) {
+						Fonts::Figtree->RenderText(
+							Util::string_format("%s (%.1fm)", block.displayName, sqrtf(distSq)),
+							screenPos.x,
+							screenPos.y,
+							1,
+							Color::White()
+						);
+					}
+				}
+			}
+			SDK::filteredBlockMutex.unlock();
 		}
-        SDK::filteredBlockMutex.unlock();
 	}
 
 
