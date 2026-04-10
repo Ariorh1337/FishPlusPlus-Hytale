@@ -179,7 +179,7 @@
     <ClCompile Include="Hooks\GCPatch.cpp" />
     <ClCompile Include="Hooks\HookedMethods\DoMoveCycle.cpp" />
     <ClCompile Include="Hooks\HookedMethods\DrawEntityCharactersAndItems.cpp" />
-    <ClCompile Include="Hooks\HookedMethods\DrawScene.cpp" />
+    <ClCompile Include="Hooks\HookedMethods\DrawPostEffect.cpp" />
     <ClCompile Include="Hooks\HookedMethods\HandleScreenShotting.cpp" />
     <ClCompile Include="Hooks\HookedMethods\OnChat.cpp" />
     <ClCompile Include="Hooks\HookedMethods\OnUserInput.cpp" />

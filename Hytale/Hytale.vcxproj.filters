@@ -165,7 +165,7 @@
     <ClCompile Include="Hooks\HookedMethods\OnChat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hooks\HookedMethods\DrawScene.cpp">
+    <ClCompile Include="Hooks\HookedMethods\DrawPostEffect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hooks\HookedMethods\DrawEntityCharactersAndItems.cpp">

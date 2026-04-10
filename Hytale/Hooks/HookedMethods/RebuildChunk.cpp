@@ -6,8 +6,8 @@
 static std::vector<int> allTargetBlockIds;
 
 __declspec(safebuffers) __declspec(noinline)
-void __fastcall Hooks::hkRebuildChunk(void* instance, ChunkColumn* a2, int chunkX, int chunkY, int chunkZ, int64_t a6, int64_t a7, int64_t a8, int64_t a9, int64_t a10, int64_t a11, int64_t a12, int a13, int a14, int64_t* a15) {
-	Hooks::oRebuildChunk(instance, a2, chunkX, chunkY, chunkZ, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
+void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chunkX, int chunkY, int chunkZ, int64_t a6, int64_t a7, int64_t a8, int64_t a9, int64_t a10, int64_t a11, int64_t a12, int a13, int a14, int64_t* a15) {
+	Hooks::oBuildGeometry(instance, a2, chunkX, chunkY, chunkZ, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
 	
 	if (!Util::app)
 		return;

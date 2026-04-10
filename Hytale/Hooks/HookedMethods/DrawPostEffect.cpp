@@ -13,8 +13,8 @@
 #pragma runtime_checks("", off)
 
 __declspec(safebuffers) __declspec(noinline)
-void __fastcall Hooks::hkDrawScene(GameInstance* instance) {
-	Hooks::oDrawScene(instance);
+void __fastcall Hooks::hkDrawPostEffect(GameInstance* instance) {
+	Hooks::oDrawPostEffect(instance);
 	if (!initialized)
 		return;
 

@@ -78,9 +78,8 @@ bool Hooks::CreateHooks() {
     CREATE_SIG_HOOK_BY_REF(OnUserInput, "E8 ? ? ? ? 48 8B 53 ? 48 8B 92 ? ? ? ? 38 12");
     CREATE_SIG_HOOK_BY_REF(OnChat, "E8 ? ? ? ? 48 8B 4D ? 48 8B 89 ? ? ? ? 48 8B 89");
     CREATE_SIG_HOOK_BY_REF(DrawEntityCharactersAndItems, "E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 85");
-    CREATE_SIG_HOOK_BY_REF(DrawScene, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
-
-    CREATE_SIG_HOOK_BY_REF(RebuildChunk, "E8 ? ? ? ? 48 89 7D ? ? ? ? 00 75")
+    CREATE_SIG_HOOK_BY_REF(DrawPostEffect, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
+    CREATE_SIG_HOOK_BY_REF(BuildGeometry, "E8 ? ? ? ? 48 89 7D ? ? ? ? 00 75")
 
     //CREATE_SIG_HOOK(ClassMethod6, "57 56 53 48 83 EC ? 0F 29 74 24 ? 0F 29 7C 24 ? 48 8B D9 48 8B F2 48 8B 4B ? 48 8B 89");
 
