@@ -13,9 +13,7 @@ void __fastcall Hooks::hkDoMoveCycle(DefaultMovementController* dmc, Vector3 off
     if (!initialized)
         return Hooks::oDoMoveCycle(dmc, offset);
 
-
     if (HookData::queueTeleport) {
-        
         HookData::queueTeleport = false;
         teleportTicks = 5;
     }

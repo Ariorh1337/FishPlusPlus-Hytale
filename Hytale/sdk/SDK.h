@@ -6,6 +6,8 @@
 
 struct EntityData {
 	Entity* entityPtr;
+	int networkID;
+	bool player;
 	Entity::EntityType entityType;
 	std::string name;
 	Vector3 position;

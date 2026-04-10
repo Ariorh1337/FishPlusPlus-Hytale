@@ -36,7 +36,6 @@ CREATE_HOOK(name)
  * a targeted NOP patch at the specific validation instruction instead of a global VEH. */
 static PVOID s_vehHandle = nullptr;
 
-
 /*
 * Creates and registers all hooks
 */
@@ -82,6 +81,8 @@ bool Hooks::CreateHooks() {
     CREATE_SIG_HOOK_BY_REF(DrawScene, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
 
     CREATE_SIG_HOOK_BY_REF(RebuildChunk, "E8 ? ? ? ? 48 89 7D ? ? ? ? 00 75")
+
+    //CREATE_SIG_HOOK(ClassMethod6, "57 56 53 48 83 EC ? 0F 29 74 24 ? 0F 29 7C 24 ? 48 8B D9 48 8B F2 48 8B 4B ? 48 8B 89");
 
     MH_EnableHook(MH_ALL_HOOKS);
 

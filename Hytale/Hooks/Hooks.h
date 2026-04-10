@@ -170,10 +170,9 @@ namespace Hooks {
 	inline DrawEntityCharactersAndItems oDrawEntityCharactersAndItems = nullptr;
 	extern void __fastcall hkDrawEntityCharactersAndItems(SceneRenderer* instance, bool useOcclusionCulling);
 
-    typedef void(__fastcall* RebuildChunk)(void* instance, ChunkColumn* a2, int chunkX, int chunkY, int chunkZ, int64_t a6, int64_t a7, int64_t a8, int64_t a9, int64_t a10, int64_t a11, int64_t a12, int a13, int a14, int64_t* a15);
-    inline RebuildChunk oRebuildChunk = nullptr;
-    extern void __fastcall hkRebuildChunk(void* instance, ChunkColumn* a2, int chunkX, int chunkY, int chunkZ, int64_t a6, int64_t a7, int64_t a8, int64_t a9, int64_t a10, int64_t a11, int64_t a12, int a13, int a14, int64_t* a15);
-
+	typedef void(__fastcall* RebuildChunk)(void* instance, ChunkColumn* a2, int chunkX, int chunkY, int chunkZ, int64_t a6, int64_t a7, int64_t a8, int64_t a9, int64_t a10, int64_t a11, int64_t a12, int a13, int a14, int64_t* a15);
+	inline RebuildChunk oRebuildChunk = nullptr;
+	extern void __fastcall hkRebuildChunk(void* instance, ChunkColumn* a2, int chunkX, int chunkY, int chunkZ, int64_t a6, int64_t a7, int64_t a8, int64_t a9, int64_t a10, int64_t a11, int64_t a12, int a13, int a14, int64_t* a15);
 
 	bool CreateHooks();
 };    

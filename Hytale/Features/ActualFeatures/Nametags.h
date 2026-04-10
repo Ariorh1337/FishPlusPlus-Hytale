@@ -4,11 +4,15 @@
 #pragma once
 #include "Features/Feature.h"
 
+#include "Features/Settings/ToggleSetting.h"
+
 class Nametags : public Feature {
 public:
-	Nametags() : Feature("Nametags") {};
+	Nametags();
 	void OnRender3D(Renderer3D& renderer3D);
 	bool CanExecute() override;
 	void Initialize() override;
+
+	ToggleSetting* NPCTags;
 	
 };

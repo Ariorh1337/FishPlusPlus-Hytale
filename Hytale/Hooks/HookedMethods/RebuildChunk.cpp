@@ -33,35 +33,6 @@ void __fastcall Hooks::hkRebuildChunk(void* instance, ChunkColumn* a2, int chunk
 
 	void** instanceArray = reinterpret_cast<void**>(instance);
 	void* v95 = instanceArray[3];
-
-	SDK::filteredBlockMutex.lock();
-	SDK::filteredBlocks.erase(
-		std::remove_if(
-			SDK::filteredBlocks.begin(),
-			SDK::filteredBlocks.end(),
-			[&](const FilteredBlockResult& b) {
-				int chunkPosX = b.position.x >= 0 ? b.position.x / 32 : (b.position.x - 31) / 32;
-				int chunkPosY = b.position.y >= 0 ? b.position.y / 32 : (b.position.y - 31) / 32;
-				int chunkPosZ = b.position.z >= 0 ? b.position.z / 32 : (b.position.z - 31) / 32;
-
-				bool isInRebuildChunk = chunkPosX == chunkX && chunkPosY == chunkY && chunkPosZ == chunkZ;
-				if (isInRebuildChunk)
-					return true;
-
-				float dx = b.position.x - pPos.x;
-				float dy = b.position.y - pPos.y;
-				float dz = b.position.z - pPos.z;
-				float distanceSq = dx * dx + dy * dy + dz * dz;
-				bool isOutsideViewDistance = distanceSq > (maxViewDistance * maxViewDistance);
-
-				return isOutsideViewDistance;
-			}
-		),
-		SDK::filteredBlocks.end()
-	);
-
-	SDK::filteredBlockMutex.unlock();
-
 	
 	std::vector<FilteredBlockResult> newBlocks;
 
@@ -116,7 +87,32 @@ void __fastcall Hooks::hkRebuildChunk(void* instance, ChunkColumn* a2, int chunk
 		num += 68;
 	}
 
+
 	SDK::filteredBlockMutex.lock();
+	SDK::filteredBlocks.erase(
+		std::remove_if(
+			SDK::filteredBlocks.begin(),
+			SDK::filteredBlocks.end(),
+			[&](const FilteredBlockResult& b) {
+		int chunkPosX = b.position.x >= 0 ? b.position.x / 32 : (b.position.x - 31) / 32;
+		int chunkPosY = b.position.y >= 0 ? b.position.y / 32 : (b.position.y - 31) / 32;
+		int chunkPosZ = b.position.z >= 0 ? b.position.z / 32 : (b.position.z - 31) / 32;
+
+		bool isInRebuildChunk = chunkPosX == chunkX && chunkPosY == chunkY && chunkPosZ == chunkZ;
+		if (isInRebuildChunk)
+			return true;
+
+		float dx = b.position.x - pPos.x;
+		float dy = b.position.y - pPos.y;
+		float dz = b.position.z - pPos.z;
+		float distanceSq = dx * dx + dy * dy + dz * dz;
+		bool isOutsideViewDistance = distanceSq > (maxViewDistance * maxViewDistance);
+
+		return isOutsideViewDistance;
+	}
+		),
+		SDK::filteredBlocks.end()
+	);
 	SDK::filteredBlocks.insert(SDK::filteredBlocks.end(), newBlocks.begin(), newBlocks.end());
 	SDK::filteredBlockMutex.unlock();
 	

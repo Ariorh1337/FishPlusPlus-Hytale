@@ -22,11 +22,6 @@ struct EntityAssetStruct {
 class Entity
 {
 public:
-
-	enum EntityPlayerType {
-		Other = -1,
-		Player = 1
-	};
 	enum EntityType {
 		None,
 		Character,
@@ -43,14 +38,16 @@ public:
 	char pad_00A0[96]; //0x00A0
 	HytaleString* Name; //0x0100
 	char pad_0108[192]; //0x0108
-	EntityPlayerType entityPlayerType; //0x01C8
+	int networkId; //0x01C8
 	char pad_01CC[8]; //0x01CC
 	EntityType entityType; // 0x01D4
 	char pad_01D8[12]; //0x01D8
 	float MoveProgress; //0x01E4
 	char pad_01E8[12]; //0x01E8
 	float Scale; //0x01F4
-	char pad_01F8[72]; //0x01F8
+	char pad_01F8[52]; //0x01F8
+	int isPlayer; //0x22C
+	char pad_0230[16]; //0x0230
 	float DisplayHealth; //0x0240
 	char pad_0244[11]; //0x0244
 	bool wasOnGround; //0x0246
@@ -81,6 +78,10 @@ public:
 		NextPos = nextPosition;
 		MoveProgress = 1.0f;
 		Position = NextPos;
+	}
+
+	bool IsAPlayer() {
+		return isPlayer == 1;
 	}
 
 }; //Size: 0x087C

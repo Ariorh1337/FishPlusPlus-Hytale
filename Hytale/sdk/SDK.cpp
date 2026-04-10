@@ -32,8 +32,6 @@ std::vector<EntityData> getEntities(Entity* localPlayer) {
 		Entity* entity = entityArray->get(i);
 		ValidPtrLoop(entity);
 
-		Entity::EntityPlayerType entityType = entity->entityPlayerType;
-
 		EntityAssetStruct* assetStruct = entity->AssetNameStruct;
 		ValidPtrLoop(assetStruct);
 
@@ -42,13 +40,13 @@ std::vector<EntityData> getEntities(Entity* localPlayer) {
 
 		EntityData data;
 		data.entityPtr = entity;
-		
-		if (entityType == Entity::EntityPlayerType::Player)
+		data.player = entity->IsAPlayer();
+		if (data.player)
 			data.name = entity->Name->getString();
 		else
 			data.name = entityString->getString();
-
 		data.entityType = entity->entityType;
+		data.networkID = entity->networkId;
 		data.position = entity->Position;
 		data.isLocalPlayer = (entity == localPlayer);
 
@@ -435,8 +433,6 @@ void SDK::Main() {
 
 	if (!filterInitialized && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance && Util::app->Stage == AppStage::InGame){
 		MapModule* mapModule = (MapModule*) Util::app->appInGame->gameInstance->MapModule;
-
-
 		Array<ClientBlockType*>* ClientBlockTypes = mapModule->ClientBlockTypes;
 
 		for (int i = 0; i < ClientBlockTypes->count; i++) {
@@ -454,6 +450,9 @@ void SDK::Main() {
 		for (const RenderBlockInfo& filter : ImportantBlocks)
 			Util::log("[SDK]   - %s: %d block IDs found\n", filter.DisplayName, filter.BlockID.size());
 		filterInitialized = true;
+
+		ICameraController* cameraController = Util::getGameInstance()->CameraModule->Controller;
+		Util::log("CameraController: 0x%llx\n", (uintptr_t) cameraController);
 	}
 
 	
