@@ -30,3 +30,6 @@ Configs are stored in your Hytale game folder usually in
 >AppData\Roaming\Hytale\install\release\package\game\latest\Client\Fish++
 
 There is also a separate config that gets saved every 2 minutes. It will not overwrite the ones you manually save
+
+## Discord
+[Discord Server](https://discord.gg/4uj596FZ9v)
