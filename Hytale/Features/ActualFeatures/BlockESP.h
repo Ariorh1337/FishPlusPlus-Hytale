@@ -7,9 +7,9 @@
 #include "Features/Settings/SliderSetting.h"
 #include "Features/Settings/ToggleSetting.h"
 
-class ChestESP : public Feature {
+class BlockESP : public Feature {
 public:
-	ChestESP();
+	BlockESP();
 	bool CanExecute() override;
 	void Initialize() override;
 

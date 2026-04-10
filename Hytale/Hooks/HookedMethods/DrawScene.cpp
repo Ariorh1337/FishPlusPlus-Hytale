@@ -8,7 +8,7 @@
 
 #include "Features/FeatureHandler.h"
 #include "Features/ActualFeatures/Outline.h"
-#include "Features/ActualFeatures/ChestESP.h"
+#include "Features/ActualFeatures/BlockESP.h"
 
 #pragma optimize("", off)
 #pragma runtime_checks("", off)
@@ -22,13 +22,13 @@ void __fastcall Hooks::hkDrawScene(GameInstance* instance) {
 	Renderer3D renderer3D;
 	EventRegister::Render3DEvent.Invoke(renderer3D);
 
-	ChestESP* chestEsp = static_cast<ChestESP*>(FeatureHandler::GetFeatureFromName("ChestESP"));
-	bool ShowFilteredBlocks = chestEsp && chestEsp->IsActive() && chestEsp->CanExecute();
+	BlockESP* BlockESP = static_cast<BlockESP*>(FeatureHandler::GetFeatureFromName("BlockESP"));
+	bool ShowFilteredBlocks = BlockESP && BlockESP->IsActive() && BlockESP->CanExecute();
 	if (ShowFilteredBlocks && Util::app->Stage == AppStage::InGame) {
 		Entity* localPlayer = Util::getLocalPlayer();
 		if (localPlayer) {
-			float maxRadius = chestEsp->radius->GetValue();
-			bool showName = chestEsp->showName->GetValue();
+			float maxRadius = BlockESP->radius->GetValue();
+			bool showName = BlockESP->showName->GetValue();
 			Vector3 playerPos = localPlayer->RenderPos;
 
 			// Render all cached filtered blocks from SDK
