@@ -5,6 +5,12 @@
 
 static std::vector<int> allTargetBlockIds;
 
+struct LookupEntry {
+	bool valid;
+	const char* name;
+	Color color;
+};
+
 __declspec(safebuffers) __declspec(noinline)
 void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chunkX, int chunkY, int chunkZ, int64_t a6, int64_t a7, int64_t a8, int64_t a9, int64_t a10, int64_t a11, int64_t a12, int a13, int a14, int64_t* a15) {
 	Hooks::oBuildGeometry(instance, a2, chunkX, chunkY, chunkZ, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
@@ -33,7 +39,21 @@ void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chun
 
 	void** instanceArray = reinterpret_cast<void**>(instance);
 	void* v95 = instanceArray[3];
-	
+
+
+	static LookupEntry lookupTable[5745] = {};
+	static bool initializedLookupTable = false;
+	if (!initializedLookupTable) {
+		for (const auto& importantBlock : ImportantBlocks) {
+			for (int id : importantBlock.BlockID) {
+				lookupTable[id].valid = true;
+				lookupTable[id].name = importantBlock.DisplayName;
+				lookupTable[id].color = importantBlock.BlockColor;
+			}
+		}
+		initializedLookupTable = true;
+	}
+
 	std::vector<FilteredBlockResult> newBlocks;
 
 	for (int i = 0; i < 32; i++) {
@@ -62,21 +82,16 @@ void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chun
 				int worldY = chunkY * 32 + y;
 				int worldZ = chunkZ * 32 + z;
 				
-			
-				for (const auto& importantBlock : ImportantBlocks) {
-					for (int id : importantBlock.BlockID) {
-						if (blockId == id) {
-							FilteredBlockResult result;
-							result.position = Vector3((float)worldX, (float)worldY, (float)worldZ);
-							result.blockId = blockId;
-							result.displayName = importantBlock.DisplayName;
-							result.color = importantBlock.BlockColor;
-							newBlocks.push_back(result);
-							break;
-						}
+				auto& entry = lookupTable[blockId];
 
-					}
+				if (entry.valid) {
+					FilteredBlockResult result;
+					result.position = Vector3((float)worldX, (float)worldY, (float)worldZ);
+					result.blockId = blockId;
+					result.displayName = entry.name;
+					result.color = entry.color;
 
+					newBlocks.push_back(result);
 				}
 
 				num++;
@@ -86,6 +101,7 @@ void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chun
 		}
 		num += 68;
 	}
+
 
 
 	SDK::filteredBlockMutex.lock();
