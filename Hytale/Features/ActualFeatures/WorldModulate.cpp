@@ -21,7 +21,7 @@ WorldModulate::WorldModulate() : Feature("WorldModulate") {
 }
 
 bool WorldModulate::CanExecute() {
-    if (!Util::IsValidPtr(Util::getLocalPlayer()))
+    if (Util::app->Stage != AppStage::InGame)
         return false;;
     return true;
 }

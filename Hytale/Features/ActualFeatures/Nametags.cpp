@@ -32,7 +32,7 @@ void Nametags::OnRender3D(Renderer3D& renderer3D) {
 }
 
 bool Nametags::CanExecute() {
-	if (!Util::IsValidPtr(Util::getLocalPlayer()))
+	if (Util::app->Stage != AppStage::InGame)
 		return false;
 	return true;
 }

@@ -10,6 +10,7 @@
 class BlockESP : public Feature {
 public:
 	BlockESP();
+	void OnRender3D(Renderer3D& renderer3D);
 	bool CanExecute() override;
 	void Initialize() override;
 

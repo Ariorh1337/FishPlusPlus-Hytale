@@ -22,51 +22,6 @@ void __fastcall Hooks::hkDrawPostEffect(GameInstance* instance) {
 	Renderer3D renderer3D;
 	EventRegister::Render3DEvent.Invoke(renderer3D);
 
-	BlockESP* blockEsp = static_cast<BlockESP*>(FeatureHandler::GetFeatureFromName("BlockESP"));
-	bool ShowFilteredBlocks = blockEsp && blockEsp->IsActive() && blockEsp->CanExecute();
-	if (ShowFilteredBlocks && Util::app->Stage == AppStage::InGame) {
-		Entity* localPlayer = Util::getLocalPlayer();
-		if (localPlayer) {
-			float maxRadius = blockEsp->radius->GetValue();
-			bool showName = blockEsp->showName->GetValue();
-			Vector3 playerPos = localPlayer->RenderPos;
-
-			// Render all cached filtered blocks from SDK
-			SDK::filteredBlockMutex.lock();
-			for (const auto& block : SDK::filteredBlocks) {
-				Vector3 blockCenter(block.position.x + 0.5f, block.position.y + 0.5f, block.position.z + 0.5f);
-				float dx = blockCenter.x - playerPos.x;
-				float dy = blockCenter.y - playerPos.y;
-				float dz = blockCenter.z - playerPos.z;
-				float distSq = dx * dx + dy * dy + dz * dz;
-
-				if (distSq > maxRadius * maxRadius)
-					continue;
-
-				renderer3D.BoxOutline(
-					Vector3((int)block.position.x, (int)block.position.y, (int)block.position.z),
-					Vector3(1, 1, 1),
-					block.color
-				);
-
-				if (showName) {
-					Vector2 screenPos;
-					if (Util::WorldToScreen(blockCenter, screenPos)) {
-						Fonts::Figtree->RenderText(
-							Util::string_format("%s (%.1fm)", block.displayName, sqrtf(distSq)),
-							screenPos.x,
-							screenPos.y,
-							1,
-							Color::White()
-						);
-					}
-				}
-			}
-			SDK::filteredBlockMutex.unlock();
-		}
-	}
-
-
     bool ShowBlockAtFeet = false;
     if (ShowBlockAtFeet && Util::app->Stage == AppStage::InGame) {
         Vector3 renderPos = Util::getLocalPlayer()->Position.toFloor();
