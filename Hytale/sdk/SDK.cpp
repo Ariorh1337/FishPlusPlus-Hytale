@@ -471,7 +471,12 @@ void SDK::Main() {
 		filterInitialized = true;
 
 		ICameraController* cameraController = Util::getGameInstance()->CameraModule->Controller;
-		Util::log("CameraController: 0x%llx\n", (uintptr_t) cameraController);
+		Util::log("CameraController: 0x%llX\n", (uintptr_t) cameraController);
+		Util::log("MapModule: 0x%llX\n", (uintptr_t) mapModule); //99662D50
+
+		BlockPlacementPreview* module = Util::getGameInstance()->InteractionModule->BlockPreview;
+		DBGScan(module);
+
 	}
 
 	

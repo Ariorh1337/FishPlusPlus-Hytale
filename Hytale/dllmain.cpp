@@ -49,6 +49,7 @@ bool InitSigs() {
 	GetGlobalSigByRef(g_BufferManager, "48 8B 05 ? ? ? ? 48 8B 40 ? 45 8B 51 ? 4C 8B B0 ? ? ? ? 44 8B CA");
 	GetGlobalSigByRef(g_GlobalStateTable, "48 8D 05 ? ? ? ? 48 83 78 ? ? 0F 85 ? ? ? ? 48 8B 0D ? ? ? ? 48 8B 49 ? 45 8B 07");
 
+
 	Util::log("Finished initializing signatures\n");
 	return true;
 }

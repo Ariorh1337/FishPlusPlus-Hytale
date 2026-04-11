@@ -174,5 +174,10 @@ namespace Hooks {
 	inline BuildGeometry oBuildGeometry = nullptr;
 	extern void __fastcall hkBuildGeometry(void* instance, ChunkColumn* a2, int chunkX, int chunkY, int chunkZ, int64_t a6, int64_t a7, int64_t a8, int64_t a9, int64_t a10, int64_t a11, int64_t a12, int a13, int a14, int64_t* a15);
 
+
+    typedef void(__fastcall* SetClientBlock)(void* instance, int x, int y, int z, uint32_t newID, int arg6, int arg7, bool notify);
+    inline SetClientBlock oSetClientBlock = nullptr;
+    extern void __fastcall hkSetClientBlock(void* instance, int x, int y, int z, uint32_t newID, int arg6, int arg7, bool notify);
+
 	bool CreateHooks();
 };    

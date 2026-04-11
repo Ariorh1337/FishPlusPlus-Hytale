@@ -36,6 +36,28 @@ CREATE_HOOK(name)
  * a targeted NOP patch at the specific validation instruction instead of a global VEH. */
 static PVOID s_vehHandle = nullptr;
 
+HytaleString* TempToString(void* ptr) {
+    __try {
+        return Util::ObjectToString(ptr);
+    } __except (EXCEPTION_EXECUTE_HANDLER) {
+        return nullptr;
+    }
+}
+
+
+
+
+void __fastcall Hooks::hkSetClientBlock(void* instance, int x, int y, int z, uint32_t newID, int arg6, int arg7, bool notify) {
+	Util::log("SetClientBlock called with x=%d, y=%d, z=%d, newID=%d\n", x, y, z, newID);
+	Util::log("Other args: arg6=%d, arg7=%d, notify=%d\n", arg6, arg7, notify);
+
+    HytaleString* instanceName = TempToString((void*) instance);
+    Util::log("%s: %s @ 0x%llX\n", "instance", instanceName ? instanceName->getString().c_str() : "nullptr", instance);
+    
+	Hooks::oSetClientBlock(instance, x, y, z, newID, arg6, arg7, notify);
+}
+
+
 /*
 * Creates and registers all hooks
 */
@@ -79,7 +101,9 @@ bool Hooks::CreateHooks() {
     CREATE_SIG_HOOK_BY_REF(OnChat, "E8 ? ? ? ? 48 8B 4D ? 48 8B 89 ? ? ? ? 48 8B 89");
     CREATE_SIG_HOOK_BY_REF(DrawEntityCharactersAndItems, "E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 85");
     CREATE_SIG_HOOK_BY_REF(DrawPostEffect, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
-    CREATE_SIG_HOOK_BY_REF(BuildGeometry, "E8 ? ? ? ? 48 89 7D ? ? ? ? 00 75")
+    CREATE_SIG_HOOK_BY_REF(BuildGeometry, "E8 ? ? ? ? 48 89 7D ? ? ? ? 00 75");
+
+    //CREATE_SIG_HOOK_BY_REF(SetClientBlock, "E8 ? ? ? ? 48 8B CB 8B D6 44 8B C7 45 8B CE 48 83 C4");
 
     //CREATE_SIG_HOOK(ClassMethod6, "57 56 53 48 83 EC ? 0F 29 74 24 ? 0F 29 7C 24 ? 48 8B D9 48 8B F2 48 8B 4B ? 48 8B 89");
 

@@ -14,6 +14,7 @@
 #include "Chat.h"
 #include "CharacterControllerModule.h"
 #include "MapModule.h"
+#include "InteractionModule.h"
 
 class GameInstance {
 public:
@@ -42,7 +43,7 @@ public:
 	void* CollisionModule;                              //0x138 HytaleClient.InGame.Modules.Collision.CollisionModule
 	EntityStoreModule* EntityStoreModule;               //0x140 HytaleClient.InGame.Modules.Entities.EntityStoreModule
 	InventoryModule* InventoryModule;                   //0x148 HytaleClient.InGame.Modules.InventoryModule
-	void* InteractionModule;                            //0x150 HytaleClient.InGame.Modules.Interaction.InteractionModule
+	InteractionModule* InteractionModule;               //0x150 HytaleClient.InGame.Modules.Interaction.InteractionModule
 	void* BuilderToolsModule;                           //0x158 HytaleClient.InGame.Modules.BuilderTools.BuilderToolsModule
 	void* MachinimaModule;                              //0x160 HytaleClient.InGame.Modules.Machinima.MachinimaModule
 	void* FXModule;                                     //0x168 HytaleClient.InGame.Modules.FXModule
