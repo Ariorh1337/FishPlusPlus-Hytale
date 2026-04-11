@@ -25,7 +25,7 @@ public:
 	void* Notifications;                                //0x30 HytaleClient.InGame.Notifications
 	void* HitDetection;                                 //0x38 HytaleClient.InGame.HitDetection
 	void* VoiceManager;                                 //0x40 HytaleClient.Audio.Voice.VoiceManager
-	void* unkown_atm_0;									//0x48
+	void* ServerSettings;								//0x48 HytaleClient.Data.ServerSettings
 	void* QuicConnectionToServer;                       //0x50 HytaleClient.Networking.Connection.QuicConnectionToServer
 	void* PacketHandler;                                //0x58 HytaleClient.Networking.PacketHandler
 	void* Stopwatch;                                    //0x60 System.Diagnostics.Stopwatch

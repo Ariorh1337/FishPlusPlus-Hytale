@@ -22,7 +22,7 @@ void SliderButton::Render(double deltaTime) {
 	else
 		m_activePercent -= (float)fastDeltaTime / 1.5f;
 
-	Color textColor = Color::Blend(Style::moduleTextActiveColor, Color::White(), m_activePercent);
+	Color textColor = Color::Blend(Style::featureTextActiveColor, Color::White(), m_activePercent);
 
 	Renderer2D::colored->Square(Vector2(x, y), m_UIProgress, height, Color::Normalize(Style::sliderColor));
 	Renderer2D::colored->Render();

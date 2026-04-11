@@ -14,8 +14,8 @@ void RecursiveButton::Render(double deltaTime) {
 	double fastDeltaTime = deltaTime * 20.0;
 
 	m_hoverAlpha += (m_hovered ? 50.0f : -50.0f) * fastDeltaTime;
-	if (m_hoverAlpha > Style::moduleHoverColor.a)
-		m_hoverAlpha = Style::moduleHoverColor.a;
+	if (m_hoverAlpha > Style::featureHoverColor.a)
+		m_hoverAlpha = Style::featureHoverColor.a;
 	if (m_hoverAlpha < 0)
 		m_hoverAlpha = 0;
 
@@ -28,10 +28,17 @@ void RecursiveButton::Render(double deltaTime) {
 	else
 		m_activePercent -= (float)fastDeltaTime / 1.5f;
 
-	Color hoverColor(Style::moduleHoverColor.r, Style::moduleHoverColor.g, Style::moduleHoverColor.b, m_hoverAlpha);
-	Color boxColor = Color::Blend(Style::recursiveColor, hoverColor, m_activePercent);
+	Color topColor = Color(Style::recursiveColor.r, Style::recursiveColor.g, Style::recursiveColor.b, m_hoverAlpha);
+	Color bottomColor = Color(Style::featureHoverColor.r, Style::featureHoverColor.g, Style::featureHoverColor.b, m_hoverAlpha);
 
-	Renderer2D::colored->Square(Vector2(x, y), width, height, Color::Normalize(boxColor));
+	Color hoverColor(Style::featureHoverColor.r, Style::featureHoverColor.g, Style::featureHoverColor.b, m_hoverAlpha);
+
+	Color boxColor = Color::Blend(hoverColor, Style::recursiveColor, m_activePercent);
+	Color boxColorBottom = Color::Blend(bottomColor, Style::recursiveGradColor, m_activePercent);
+
+	Renderer2D::colored->SquareMultiColor(Vector2(x, y), width, height, 
+		Color::Normalize(boxColor), Color::Normalize(boxColor),
+		Color::Normalize(boxColorBottom), Color::Normalize(boxColorBottom));
 	Renderer2D::colored->Render();
 
 	Fonts::Figtree->RenderText(this->setting->GetName(), x + Style::settingsNamePadding.x, y + Style::settingsNamePadding.y, 1.0f, Color::Normalize(Color::White()));

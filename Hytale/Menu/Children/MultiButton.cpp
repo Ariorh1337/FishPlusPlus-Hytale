@@ -15,12 +15,17 @@ void MultiButton::Render(double deltaTime) {
 	auto* s = static_cast<MultiSetting*>(this->setting);
 
 	m_hoverAlpha += (m_hovered ? 50.0f : -50.0f) * fastDeltaTime;
-	if (m_hoverAlpha > Style::moduleHoverColor.a)
-		m_hoverAlpha = Style::moduleHoverColor.a;
+	if (m_hoverAlpha > Style::featureHoverColor.a)
+		m_hoverAlpha = Style::featureHoverColor.a;
 	if (m_hoverAlpha < 0)
 		m_hoverAlpha = 0;
 
-	Renderer2D::colored->Square(Vector2(x, y), width, height, Color::Normalize(Style::moduleHoverColor.r, Style::moduleHoverColor.g, Style::moduleHoverColor.b, m_hoverAlpha));
+	Color topColor = Color(Style::featureHoverColor.r, Style::featureHoverColor.g, Style::featureHoverColor.b, m_hoverAlpha);
+	Color bottomColor = Color(Style::featureHoverGradColor.r, Style::featureHoverGradColor.g, Style::featureHoverGradColor.b, m_hoverAlpha);
+
+	Renderer2D::colored->SquareMultiColor(Vector2(x, y), width, height,
+		Color::Normalize(topColor), Color::Normalize(topColor),
+		Color::Normalize(bottomColor), Color::Normalize(bottomColor));
 	Renderer2D::colored->Render();
 
 	Fonts::Figtree->RenderText(s->GetName(), x + Style::settingsNamePadding.x, y + Style::settingsNamePadding.y, 1.0f, Color::Normalize(Color::White()));
