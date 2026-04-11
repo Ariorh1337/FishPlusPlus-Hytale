@@ -1,4 +1,12 @@
+#define NOMINMAX
+#include <algorithm>
+#include <Windows.h>
+
 #include "../Hooks.h"
+
+
+
+
 
 #pragma optimize("", off)
 #pragma runtime_checks("", off)
@@ -20,8 +28,12 @@ void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chun
 	if (Util::app->Stage != AppStage::InGame)
 		return;
 
-	if (!SDK::filterInitialized)
+	static bool initializedLookupTable = false;
+
+	if (!SDK::filterInitialized) {
+		initializedLookupTable = false;
 		return;
+	}
 
 	MapModule* mapModule = Util::getGameInstance()->MapModule;
 	Vector3 pPos = Util::getLocalPlayer()->Position;
@@ -41,16 +53,28 @@ void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chun
 	void* v95 = instanceArray[3];
 
 
-	static LookupEntry lookupTable[5745] = {};
-	static bool initializedLookupTable = false;
+	static std::vector<LookupEntry> lookupTable;
 	if (!initializedLookupTable) {
+		int maxId = 0;
+
 		for (const auto& importantBlock : ImportantBlocks) {
 			for (int id : importantBlock.BlockID) {
-				lookupTable[id].valid = true;
-				lookupTable[id].name = importantBlock.DisplayName;
-				lookupTable[id].color = importantBlock.BlockColor;
+				maxId = std::max(maxId, id);
 			}
 		}
+
+		lookupTable.resize(maxId + 1);
+
+		for (const auto& importantBlock : ImportantBlocks) {
+			for (int id : importantBlock.BlockID) {
+				lookupTable[id] = {
+					true,
+					importantBlock.DisplayName,
+					importantBlock.BlockColor
+				};
+			}
+		}
+
 		initializedLookupTable = true;
 	}
 
@@ -81,17 +105,19 @@ void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chun
 				int worldX = chunkX * 32 + x;
 				int worldY = chunkY * 32 + y;
 				int worldZ = chunkZ * 32 + z;
-				
-				auto& entry = lookupTable[blockId];
+			
 
-				if (entry.valid) {
-					FilteredBlockResult result;
-					result.position = Vector3((float)worldX, (float)worldY, (float)worldZ);
-					result.blockId = blockId;
-					result.displayName = entry.name;
-					result.color = entry.color;
+				if (blockId < lookupTable.size()) {
+					auto& entry = lookupTable[blockId];
+					if (entry.valid) {
+						FilteredBlockResult result;
+						result.position = Vector3((float)worldX, (float)worldY, (float)worldZ);
+						result.blockId = blockId;
+						result.displayName = entry.name;
+						result.color = entry.color;
 
-					newBlocks.push_back(result);
+						newBlocks.push_back(result);
+					}
 				}
 
 				num++;

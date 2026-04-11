@@ -27,7 +27,6 @@ namespace SDK {
 	inline std::mutex filteredBlockMutex;
 	inline bool filterInitialized = false;
 	inline std::vector<FilteredBlockResult> filteredBlocks;
-	inline bool initialized = false;
 
 	void ScanForBlocks();
 

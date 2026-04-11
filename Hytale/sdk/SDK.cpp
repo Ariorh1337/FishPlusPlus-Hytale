@@ -409,12 +409,9 @@ void SDK::ScanForBlocks() {
 	}
 }
 
-void SDK::Main() {
-	if (!initialized) {
-		//EventRegister::DoMoveCycleEvent.Subscribe(DoMoveCycle);
-		initialized = true;
-	}
+bool gameInstanceValid = false;
 
+void SDK::Main() {
 	if (Menu::isMenuOpen() && Util::app->Engine->Window->IsCursorHidden) {
 		setCursorHidden(false);
 	}
@@ -435,8 +432,15 @@ void SDK::Main() {
 		MapModule* mapModule = (MapModule*) Util::app->appInGame->gameInstance->MapModule;
 		Array<ClientBlockType*>* ClientBlockTypes = mapModule->ClientBlockTypes;
 
+		for (RenderBlockInfo& filter : ImportantBlocks) {
+			filter.BlockID.clear();
+		}
+
 		for (int i = 0; i < ClientBlockTypes->count; i++) {
 			ClientBlockType* blockType = ClientBlockTypes->get(i);
+			if (blockType->Id == 5) {
+				Util::log("Block id 5: %s\n", blockType->Name->getString().c_str());
+			}
 			if (blockType) {
 				std::string blockName = blockType->Name->getString();
 				for (RenderBlockInfo& filter : ImportantBlocks) {
