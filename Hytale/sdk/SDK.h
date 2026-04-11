@@ -30,5 +30,6 @@ namespace SDK {
 
 	void ScanForBlocks();
 
+	extern void Reset();
 	extern void Main();
 }

@@ -409,7 +409,16 @@ void SDK::ScanForBlocks() {
 	}
 }
 
-bool gameInstanceValid = false;
+void SDK::Reset() {
+	filterInitialized = false;
+
+	SDK::filteredBlockMutex.lock();
+	filteredBlocks.clear();
+	SDK::filteredBlockMutex.unlock();
+	for (RenderBlockInfo& filter : ImportantBlocks)
+		filter.BlockID.clear();
+
+}
 
 void SDK::Main() {
 	if (Menu::isMenuOpen() && Util::app->Engine->Window->IsCursorHidden) {
@@ -420,6 +429,12 @@ void SDK::Main() {
 		UpdateInputStates(true);
 		Menu::m_justClosed = false;
 	}
+
+	if (Util::app->Stage != AppStage::InGame) {
+		Reset();
+		return;
+	}
+
 
 	global_mutex.lock();
 	entities = getEntities(Util::getLocalPlayer());
