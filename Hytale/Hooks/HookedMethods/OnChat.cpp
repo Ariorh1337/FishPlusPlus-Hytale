@@ -47,6 +47,21 @@ void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
 
 	if (command.starts_with("config "))
         configCommand(command.substr(7));
+
+    if (command.starts_with("place ")) {
+        std::string cmd = message.substr(6);
+        std::istringstream iss(cmd);
+        int x;
+        int y;
+        int z;
+        int id;
+        if (iss >> x >> y >> z >> id) {
+            //Hooks::oSetClientBlock(Util::getGameInstance()->MapModule, x, y, z, (int)id, 0, 0, true);
+        }
+        
+    }
+        
+        
 }
 #pragma runtime_checks("", restore)
 #pragma optimize("", on)
