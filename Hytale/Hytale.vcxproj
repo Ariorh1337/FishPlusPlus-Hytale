@@ -167,6 +167,7 @@
     <ClCompile Include="external\minhook\hook.c" />
     <ClCompile Include="external\minhook\trampoline.c" />
     <ClCompile Include="Features\ActualFeatures\Outline.cpp" />
+    <ClCompile Include="Features\ActualFeatures\Tracers.cpp" />
     <ClCompile Include="Features\ActualFeatures\WorldModulate.cpp" />
     <ClCompile Include="Features\ConfigHandler.cpp" />
     <ClCompile Include="Features\Feature.cpp" />
@@ -331,6 +332,7 @@
     <ClInclude Include="external\nhollman\json.hpp" />
     <ClInclude Include="external\nlohman\json.hpp" />
     <ClInclude Include="Features\ActualFeatures\Outline.h" />
+    <ClInclude Include="Features\ActualFeatures\Tracers.h" />
     <ClInclude Include="Features\ActualFeatures\WorldModulate.h" />
     <ClInclude Include="Features\ConfigHandler.h" />
     <ClInclude Include="Features\Feature.h" />

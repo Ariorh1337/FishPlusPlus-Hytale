@@ -71,7 +71,10 @@ public:
 	char pad_03EC[4]; //0x03EC
 	float pitchRadOld; //0x03F0
 	float yawRadOld; //0x03F4
-	char pad_0388[1268]; //0x0388
+	char pad_xxxx[4]; //0x03EC
+	float renderPitchRad;
+	float renderYawRad;
+	char pad_0388[1268];
 
 	void SetPositionTeleport(Vector3 nextPosition) {
 		OldPos = Position;

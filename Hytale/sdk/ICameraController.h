@@ -8,7 +8,9 @@
 struct ICameraController {
 	char pad_0000[32]; //0x0000
 	Vector3 PositionFirstPerson; //0x0020
-	char pad_002C[60]; //0x002C
+	char pad_002C[20]; //0x002C
+	Vector3 ThirdPersonRot; //0x0040
+	char pad_004C[28]; //0x004C
 	// 0x5C float Distance from player to camera Left & Right (Read-Only)
 	// 0x60 float Distance from player to camera Forward & Backward (Read-Only)
 	Vector3 PositionThirdPerson; //0x0068

@@ -4,6 +4,9 @@
 #pragma once
 #include <cmath>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 struct Vector3 {
 	float x;
 	float y;
@@ -60,5 +63,10 @@ struct Vector3 {
 
 	Vector3 toFloor() const {
 		return Vector3(std::floor(x), std::floor(y), std::floor(z));
+	}
+
+	Vector3 RadToDeg() const {
+		constexpr float radToDeg = 180.0f / (float)M_PI;
+		return { x * radToDeg, y * radToDeg, z * radToDeg };
 	}
 };

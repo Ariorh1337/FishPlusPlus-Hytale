@@ -9,7 +9,8 @@
 class Camera
 {
 public:
-	char pad_0000[204]; //0x0000
+	char pad_0000[192]; //0x0000
+	Vector3 CameraRotRad; //0x00C0
 	Vector3 Position; //0x00CC
 	char pad_00D8[872]; //0x00D8
 }; //Size: 0x0440
