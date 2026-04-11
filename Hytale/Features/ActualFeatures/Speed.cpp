@@ -23,16 +23,27 @@ void Speed::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
     dmc->Velocity.z = 0.0f;
     offset.x = 0.0f;
     offset.z = 0.0f;
+
+    Vector3 move = Vector3(0.0f, 0.0f, 0.0f);
+
     float currentSpeed = this->speed->GetValue();
 
+    if (!Util::ShouldInteractWithGame())
+        return;
+
     if (InputSystem::IsKeyHeld(SDL_SCANCODE_W))
-        offset += Vector3(forwardX * currentSpeed, offset.y, forwardZ * currentSpeed);
+        move += Vector3(forwardX, 0.0f, forwardZ);
     if (InputSystem::IsKeyHeld(SDL_SCANCODE_S))
-        offset += Vector3(-forwardX * currentSpeed, offset.y, -forwardZ * currentSpeed);
+        move += Vector3(-forwardX, 0.0f, -forwardZ);
     if (InputSystem::IsKeyHeld(SDL_SCANCODE_A))
-        offset += Vector3(strafeX * currentSpeed, offset.y, strafeZ * currentSpeed);
+        move += Vector3(strafeX, 0.0f, strafeZ);
     if (InputSystem::IsKeyHeld(SDL_SCANCODE_D))
-        offset += Vector3(-strafeX * currentSpeed, offset.y, -strafeZ * currentSpeed);
+        move += Vector3(-strafeX, 0.0f, -strafeZ);
+
+    move = move.normalized();
+
+    offset.x = move.x * speed->GetValue();
+    offset.z = move.z * speed->GetValue();
 }
 
 bool Speed::CanExecute() {

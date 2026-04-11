@@ -26,22 +26,31 @@ void Flight::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
 
 		dmc->Velocity = 0.0f;
 		offset = 0.0f;
+		Vector3 move = Vector3(0.0f, 0.0f, 0.0f);
 
 		if (!Util::ShouldInteractWithGame())
 			return;
 
 		if (InputSystem::IsKeyHeld(SDL_SCANCODE_W))
-			offset += Vector3(forwardX * this->speed->GetValue(), offset.y, forwardZ * this->speed->GetValue());
+			move += Vector3(forwardX, 0.0f, forwardZ);
 		if (InputSystem::IsKeyHeld(SDL_SCANCODE_S)) 
-			offset += Vector3(-forwardX * this->speed->GetValue(), offset.y, -forwardZ * this->speed->GetValue());
+			move += Vector3(-forwardX, 0.0f, -forwardZ);
 		if (InputSystem::IsKeyHeld(SDL_SCANCODE_A))
-			offset += Vector3(strafeX * this->speed->GetValue(), offset.y, strafeZ * this->speed->GetValue());
+			move += Vector3(strafeX, 0.0f, strafeZ);
 		if (InputSystem::IsKeyHeld(SDL_SCANCODE_D))
-			offset += Vector3(-strafeX * this->speed->GetValue(), offset.y, -strafeZ * this->speed->GetValue());
+			move += Vector3(-strafeX, 0.0f, -strafeZ);
+
 		if (InputSystem::IsKeyHeld(SDL_SCANCODE_SPACE))
 			offset.y = speed->GetValue();
 		if (InputSystem::IsKeyHeld(SDL_SCANCODE_LSHIFT))
 			offset.y = -speed->GetValue();
+
+		move = move.normalized();
+
+		offset.x = move.x * speed->GetValue();
+		offset.z = move.z * speed->GetValue();
+
+
 	} else {
 		dmc->SpeedMultiplier = this->speed->GetValue();
 		dmc->clientMovementStates.IsFlying = true;
