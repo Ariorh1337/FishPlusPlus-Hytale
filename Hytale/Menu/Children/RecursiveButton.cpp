@@ -33,8 +33,8 @@ void RecursiveButton::Render(double deltaTime) {
 
 	Color hoverColor(Style::featureHoverColor.r, Style::featureHoverColor.g, Style::featureHoverColor.b, m_hoverAlpha);
 
-	Color boxColor = Color::Blend(hoverColor, Style::recursiveColor, m_activePercent);
-	Color boxColorBottom = Color::Blend(bottomColor, Style::recursiveGradColor, m_activePercent);
+	Color boxColor = Color::Blend(Style::recursiveColor, hoverColor, m_activePercent);
+	Color boxColorBottom = Color::Blend(Style::recursiveGradColor, bottomColor, m_activePercent);
 
 	Renderer2D::colored->SquareMultiColor(Vector2(x, y), width, height, 
 		Color::Normalize(boxColor), Color::Normalize(boxColor),
