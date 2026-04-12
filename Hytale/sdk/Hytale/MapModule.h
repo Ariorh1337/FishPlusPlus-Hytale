@@ -26,12 +26,6 @@ struct ChunkPosition {
     int Z;
 };
 
-struct BlockPosition {
-    int X;
-    int Y;
-    int Z;
-};
-
 class MapGeometryBuilder {
 public:
     char pad_0x00[0x8];                                 // 0x00
@@ -100,7 +94,7 @@ public:
     char pad_0xA8[0x10];                                // 0xA8-0xB8 (primitive values)
 	int renderedChunkCount;                             // 0xB8 int
 	char pad_0xBC[0x24];                                // 0xBC
-    BlockPosition* _deletedBlockPositions;              // 0xE0 HytaleClient.InGame.Modules.Map.MapModule+BlockPosition[]
+    void* _deletedBlockPositions;              // 0xE0 HytaleClient.InGame.Modules.Map.MapModule+BlockPosition[]
     uint8_t* _deletedBlockAge;                          // 0xE8 System.Byte[]
     uint16_t* UInt16Array3;                             // 0xF0 System.UInt16[]
     void* _commitedBlockPositionsFromCamera;            // 0xF8 System.Numerics.Vector3[]

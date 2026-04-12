@@ -6,6 +6,7 @@
 #include "Events/EventRegister.h"
 #include "Features/FeatureHandler.h"
 #include "Features/ActualFeatures/BlockESP.h"
+#include "Packets/ClientBlockPlace.h"
 #include "Hooks/Hooks.h"
 #include <fstream>
 #include <shlobj.h>
@@ -85,6 +86,27 @@ void setCursorHidden(bool hidden) {
 		return;
 	}
 	SetCursorHidden_method(app->Engine->Window, hidden);
+}
+
+void* RhpNewFast(void* pMethodTable) {
+	using m_RhpNewFast = void*(*)(void*);
+	static m_RhpNewFast RhpNewFast_method{ };
+	if (!RhpNewFast_method)
+		RhpNewFast_method = reinterpret_cast<m_RhpNewFast>(SM::RhpNewFastAddress);
+	return RhpNewFast_method(pMethodTable);
+}
+
+void SendPacketImmediate(void* packet) {
+	using m_SendPacketImmediate = void(*)(void*, void*);
+	static m_SendPacketImmediate SendPacketImmediate_method{};
+	if (!SendPacketImmediate_method)
+		SendPacketImmediate_method = reinterpret_cast<m_SendPacketImmediate>(SM::SendPacketImmediateAddress);
+	App* app = Util::app;
+	if (!app || !app->Engine || app->Stage != AppStage::InGame || !app->appInGame->gameInstance->QuicConnectionToServer) {
+		Util::log("Invalid app or connection pointer\n");
+		return;
+	}
+	SendPacketImmediate_method(app->appInGame->gameInstance->QuicConnectionToServer, packet);
 }
 
 class MethodTable {
@@ -358,14 +380,25 @@ void SDK::Main() {
 		blockESP->refreshList->SetValue(false);
 	}
 
-	/*
+	
 	static int test = 0;
 	if (test < 1 && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance && Util::app->Stage == AppStage::InGame) {
 
 		//DBGScan(Util::getGameInstance()->MapModule->MapGeometryBuilder);
-		Util::log("MapGeometryBuilder: 0x%llx\n", (uintptr_t)(Util::getGameInstance()->MapModule->MapGeometryBuilder) + 0x18);
+		//Util::log("MapGeometryBuilder: 0x%llx\n", (uintptr_t)(Util::getGameInstance()->MapModule->MapGeometryBuilder) + 0x18);
 
+		ClientPlaceBlock* ClientPlaceBlockPacket = (ClientPlaceBlock*)RhpNewFast((void*)MT::ClientPlaceBlock);
+		BlockPosition position(-2906, 118, -99842);
+		BlockRotation rotation = BlockRotation();
+		ClientPlaceBlockPacket->position = &position;
+		ClientPlaceBlockPacket->rotation = &rotation;
+		ClientPlaceBlockPacket->placedBlockId = 1;
+		ClientPlaceBlockPacket->quickReplace = true;
+
+		//SendPacketImmediate(ClientPlaceBlockPacket);
+
+	
 		test++;
 	}
-	*/
+	
 }

@@ -352,6 +352,8 @@
     <ClInclude Include="Features\ActualFeatures\Speed.h" />
     <ClInclude Include="Hooks\GCPatch.h" />
     <ClInclude Include="Hooks\Hooks.h" />
+    <ClInclude Include="Math\BlockPosition.h" />
+    <ClInclude Include="Math\BlockRotation.h" />
     <ClInclude Include="Math\BoundingBox.h" />
     <ClInclude Include="Math\Color.h" />
     <ClInclude Include="Math\Matrix4x4.h" />
@@ -419,6 +421,7 @@
     <ClInclude Include="sdk\Hytale\PaletteChunkData.h" />
     <ClInclude Include="sdk\Hytale\RenderStructs.h" />
     <ClInclude Include="sdk\Hytale\SceneRenderer.h" />
+    <ClInclude Include="sdk\Packets\ClientBlockPlace.h" />
     <ClInclude Include="sdk\SDK.h" />
     <ClInclude Include="sdk\Hytale\Window.h" />
     <ClInclude Include="Events\EventSystem.h" />
