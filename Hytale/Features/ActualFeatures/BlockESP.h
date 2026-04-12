@@ -14,6 +14,22 @@ public:
 	bool CanExecute() override;
 	void Initialize() override;
 
+	bool IsBlockImportant(int settingID);
+
 	SliderSetting* radius;
 	ToggleSetting* showName;
+	ToggleSetting* showChests;
+	ToggleSetting* showBenches;
+	ToggleSetting* showAdamantite;
+	ToggleSetting* showGold;
+	ToggleSetting* showSilver;
+	ToggleSetting* showIron;
+	ToggleSetting* showCopper;
+	ToggleSetting* showMithril;
+	ToggleSetting* showCobalt;
+	ToggleSetting* showThorium;
+	ToggleSetting* showTreasure;
+	ToggleSetting* showCrystals;
+	ToggleSetting* showGems;
+	ToggleSetting* refreshList;
 };

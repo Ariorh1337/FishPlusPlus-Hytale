@@ -118,6 +118,12 @@ struct GCInstance {
 	uint64_t pPreviousTransitionFrame; // 0x218 or 536 - Used by reverse P/Invoke to store the previous transition frame for proper unwinding back to native frames
 };
 
+struct LookupEntry {
+    bool valid;
+    const char* name;
+    Color color;
+};
+
 namespace HookData {
     inline bool initialized = false;
     inline bool initialized3D = false;
@@ -130,9 +136,28 @@ namespace HookData {
 
 	inline bool queueTeleport = false;
 	inline Vector3 teleportTarget = Vector3(0, 0, 0);
-
     
     inline std::vector<Vector3> goodtestBlock;
+	inline void* PlaceBlockInteraction = nullptr;
+    inline void* Context = nullptr;
+
+    inline std::vector<LookupEntry> lookupTable;
+    inline std::vector<int> allTargetBlockIds;
+    inline std::vector<RenderBlockInfo> ImportantBlocks = {
+        { { }, "Chest", Color::Normalize(0, 255, 255), 0 },
+        { { }, "Bench", Color::Normalize(0, 255, 255), 1 },
+        { { }, "Adamantite", Color::Normalize(255, 0, 255), 2 },
+        { { }, "Gold", Color::Normalize(255, 0, 255), 3 },
+        { { }, "Silver", Color::Normalize(255, 0, 255), 4 },
+        { { }, "Iron", Color::Normalize(255, 0, 255), 5 },
+        { { }, "Copper", Color::Normalize(255, 0, 255), 6 },
+        { { }, "Mithril", Color::Normalize(255, 0, 255), 7 },
+        { { }, "Cobalt", Color::Normalize(255, 0, 255), 8 },
+        { { }, "Thorium", Color::Normalize(255, 0, 255), 9 },
+        { { }, "Treasure", Color::Normalize(255, 0, 255), 10 },
+        { { }, "Crystal", Color::Normalize(255, 0, 255), 11 },
+        { { }, "Gem", Color::Normalize(255, 0, 255), 12 }
+    };
 }
 
 using namespace HookData;
@@ -178,6 +203,11 @@ namespace Hooks {
     typedef void(__fastcall* SetClientBlock)(void* instance, int x, int y, int z, uint32_t newID, int arg6, int arg7, bool notify);
     inline SetClientBlock oSetClientBlock = nullptr;
     extern void __fastcall hkSetClientBlock(void* instance, int x, int y, int z, uint32_t newID, int arg6, int arg7, bool notify);
+
+
+    typedef bool(__fastcall* TryPlaceBlock)(void* PlaceBlockInteraction, void* GameInstance, int ClickType, bool alwaysFalse, void* InteractionContext, void* ClientBlockType);
+    inline TryPlaceBlock oTryPlaceBlock = nullptr;
+    extern bool __fastcall hkTryPlaceBlock(void* PlaceBlockInteraction, void* GameInstance, int ClickType, bool alwaysFalse, void* InteractionContext, void* ClientBlockType);
 
 	bool CreateHooks();
 };    

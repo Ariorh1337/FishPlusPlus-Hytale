@@ -4,7 +4,7 @@
 #include "core.h"
 #include "Util.h"
 
-#include "../sdk/Entity.h"
+#include "../sdk/Hytale/Entity.h"
 
 void Util::allocate_console() {
 	if (console_allocated)

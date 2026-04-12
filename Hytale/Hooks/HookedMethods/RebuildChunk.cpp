@@ -4,21 +4,8 @@
 
 #include "../Hooks.h"
 
-
-
-
-
 #pragma optimize("", off)
 #pragma runtime_checks("", off)
-
-static std::vector<int> allTargetBlockIds;
-
-struct LookupEntry {
-	bool valid;
-	const char* name;
-	Color color;
-};
-
 __declspec(safebuffers) __declspec(noinline)
 void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chunkX, int chunkY, int chunkZ, int64_t a6, int64_t a7, int64_t a8, int64_t a9, int64_t a10, int64_t a11, int64_t a12, int a13, int a14, int64_t* a15) {
 	Hooks::oBuildGeometry(instance, a2, chunkX, chunkY, chunkZ, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
@@ -29,7 +16,6 @@ void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chun
 		return;
 
 	static bool initializedLookupTable = false;
-
 	if (!SDK::filterInitialized) {
 		initializedLookupTable = false;
 		return;
@@ -39,8 +25,6 @@ void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chun
 	Vector3 pPos = Util::getLocalPlayer()->Position;
 	float maxViewDistance = mapModule->GetMaxViewDistance();
 
-	if (allTargetBlockIds.empty())
-		allTargetBlockIds = mapModule->getAllImportantBlockIDs();
 	if (allTargetBlockIds.empty())
 		return;
 
@@ -53,8 +37,7 @@ void __fastcall Hooks::hkBuildGeometry(void* instance, ChunkColumn* a2, int chun
 	void* v95 = instanceArray[3];
 
 
-	static std::vector<LookupEntry> lookupTable;
-	if (!initializedLookupTable) {
+	if (!initializedLookupTable || lookupTable.empty()) {
 		int maxId = 0;
 
 		for (const auto& importantBlock : ImportantBlocks) {

@@ -37,6 +37,10 @@ void FeatureHandler::Init() {
 	Menu::mainComponent->AddChild(std::make_unique<Tab>("Visuals", 410, 200));
 }
 
+bool FeatureHandler::FeaturesLoaded() {
+	return !features.empty();
+}
+
 Feature* FeatureHandler::GetFeatureFromName(std::string name) {
 	for (auto& feature : features) {
 		if (name == feature->GetName())

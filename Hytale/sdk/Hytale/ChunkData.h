@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include "PaletteChunkData.h"
-#include "BaseDataTypes/Dictionary.h"
+#include "sdk/BaseDataTypes/Dictionary.h"
 
 struct InteractionStateInfo {
 	int BlockId;

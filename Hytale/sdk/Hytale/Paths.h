@@ -2,7 +2,7 @@
  * Copyright (c) FishPlusPlus.
  */
 #pragma once
-#include "BaseDataTypes/HytaleString.h"
+#include "sdk/BaseDataTypes/HytaleString.h"
 
 struct Paths {
 	char pad_0000[8]; //0x0000

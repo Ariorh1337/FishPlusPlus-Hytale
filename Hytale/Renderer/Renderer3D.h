@@ -7,7 +7,7 @@
 
 #include "Mesh.h"
 #include "../Math/Vector3.h"
-#include "../sdk/Entity.h"
+#include "../sdk/Hytale/Entity.h"
 
 class Renderer3D {
 public:

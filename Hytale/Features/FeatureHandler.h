@@ -7,4 +7,5 @@ namespace FeatureHandler {
 	void Init();
 
 	Feature* GetFeatureFromName(std::string name);
+	bool FeaturesLoaded();
 }

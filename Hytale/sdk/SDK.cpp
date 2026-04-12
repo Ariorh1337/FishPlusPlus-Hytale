@@ -4,6 +4,9 @@
 #include "SDK.h"
 
 #include "Events/EventRegister.h"
+#include "Features/FeatureHandler.h"
+#include "Features/ActualFeatures/BlockESP.h"
+#include "Hooks/Hooks.h"
 #include <fstream>
 #include <shlobj.h>
 #include <algorithm>
@@ -256,160 +259,9 @@ void ScanObject(void* object) {
 	Util::log("=== Finished scan ===\n");
 }
 
-// Block scanning state
-static int playerCenterChunkX = INT_MIN;
-static int playerCenterChunkZ = INT_MIN;
-static int scanIndex = 0;
-static int scanChunkY = 0;
-static int scanSlice = 0;
-static int framesSinceLastScan = 0;
-
-static const int SCAN_RADIUS = 3;
-static const int SEARCH_INTERVAL_FRAMES = 1;
-static const int MAX_CHUNKS_Y = 8;
-static const int SLICES_PER_CHUNK = 16;
-
-static std::vector<std::pair<int, int>> spiralOrder;
-static std::vector<int> allTargetBlockIds;
-
-void InitializeSpiralOrder() {
-	if (!spiralOrder.empty()) return;
-
-	spiralOrder.push_back({0, 0});
-
-	int layer = 1;
-	while (layer <= SCAN_RADIUS) {
-		for (int z = -layer + 1; z <= layer; z++)
-			spiralOrder.push_back({layer, z});
-		for (int x = layer - 1; x >= -layer; x--)
-			spiralOrder.push_back({x, layer});
-		for (int z = layer - 1; z >= -layer; z--)
-			spiralOrder.push_back({-layer, z});
-		for (int x = -layer + 1; x < layer; x++)
-			spiralOrder.push_back({x, -layer});
-		layer++;
-	}
-}
-
-void SDK::ScanForBlocks() {
-	if (Util::app->Stage != AppStage::InGame)
-		return;
-
-	MapModule* mapModule = Util::getGameInstance()->MapModule;
-	if (!mapModule)
-		return;
-
-	if (allTargetBlockIds.empty())
-		allTargetBlockIds = mapModule->getAllImportantBlockIDs();
-	if (allTargetBlockIds.empty())
-		return;
-
-	Vector3 playerPos = Util::getLocalPlayer()->Position;
-	int currentPlayerChunkX = (int)floor(playerPos.x) >> 5;
-	int currentPlayerChunkZ = (int)floor(playerPos.z) >> 5;
-
-	InitializeSpiralOrder();
-
-	// Player moved to new chunk - cleanup out-of-bounds blocks
-	if (currentPlayerChunkX != playerCenterChunkX || currentPlayerChunkZ != playerCenterChunkZ) {
-		playerCenterChunkX = currentPlayerChunkX;
-		playerCenterChunkZ = currentPlayerChunkZ;
-
-		int minChunkX = playerCenterChunkX - SCAN_RADIUS;
-		int maxChunkX = playerCenterChunkX + SCAN_RADIUS;
-		int minChunkZ = playerCenterChunkZ - SCAN_RADIUS;
-		int maxChunkZ = playerCenterChunkZ + SCAN_RADIUS;
-
-		SDK::filteredBlocks.erase(
-			std::remove_if(SDK::filteredBlocks.begin(), SDK::filteredBlocks.end(),
-				[minChunkX, maxChunkX, minChunkZ, maxChunkZ](const FilteredBlockResult& block) {
-					int blockChunkX = (int)floor(block.position.x) >> 5;
-					int blockChunkZ = (int)floor(block.position.z) >> 5;
-					return blockChunkX < minChunkX || blockChunkX > maxChunkX ||
-						   blockChunkZ < minChunkZ || blockChunkZ > maxChunkZ;
-				}),
-			SDK::filteredBlocks.end()
-		);
-
-		scanIndex = 0;
-		scanChunkY = 0;
-		scanSlice = 0;
-	}
-
-	framesSinceLastScan++;
-	if (framesSinceLastScan < SEARCH_INTERVAL_FRAMES)
-		return;
-
-	framesSinceLastScan = 0;
-
-	if (scanIndex >= spiralOrder.size())
-		scanIndex = 0;
-
-	auto [offsetX, offsetZ] = spiralOrder[scanIndex];
-	int scanChunkX = playerCenterChunkX + offsetX;
-	int scanChunkZ = playerCenterChunkZ + offsetZ;
-
-	// Calculate slice bounds in local chunk coordinates (0-31)
-	int sliceMinX = scanSlice * 8;        // 0, 8, 16, 24
-	int sliceMaxX = sliceMinX + 7;        // 7, 15, 23, 31
-
-	// Remove old results from this chunk slice before scanning
-	int minY = scanChunkY * 32;
-	int maxY = (scanChunkY + 1) * 32 - 1;
-	int minX = scanChunkX * 32 + sliceMinX;
-	int maxX = scanChunkX * 32 + sliceMaxX;
-	int minZ = scanChunkZ * 32;
-	int maxZ = minZ + 31;
-
-	SDK::filteredBlocks.erase(
-		std::remove_if(SDK::filteredBlocks.begin(), SDK::filteredBlocks.end(),
-			[minX, maxX, minY, maxY, minZ, maxZ](const FilteredBlockResult& block) {
-				return block.position.x >= minX && block.position.x <= maxX &&
-					   block.position.y >= minY && block.position.y <= maxY &&
-					   block.position.z >= minZ && block.position.z <= maxZ;
-			}),
-		SDK::filteredBlocks.end()
-	);
-
-	// Scan only the specific slice (8 blocks wide in X, full Y and Z for this chunk)
-	std::vector<FishBlockData> foundBlocks = mapModule->FindBlocksInSingleChunk(
-		scanChunkX, scanChunkY, scanChunkZ, allTargetBlockIds,
-		sliceMinX, sliceMaxX,  // X bounds (local chunk coords)
-		0, 31,                  // Y bounds (full chunk height)
-		0, 31                   // Z bounds (full chunk depth)
-	);
-
-	// Add found blocks directly (no filtering needed - already scanned only the slice)
-	for (const auto& blockData : foundBlocks) {
-		for (const auto& importantBlock : ImportantBlocks) {
-			auto it = std::find(importantBlock.BlockID.begin(), importantBlock.BlockID.end(), blockData.blockId);
-			if (it != importantBlock.BlockID.end()) {
-				FilteredBlockResult result;
-				result.position = Vector3((float)blockData.x, (float)blockData.y, (float)blockData.z);
-				result.blockId = blockData.blockId;
-				result.displayName = importantBlock.DisplayName;
-				result.color = importantBlock.BlockColor;
-				SDK::filteredBlocks.push_back(result);
-				break;
-			}
-		}
-	}
-
-	// Advance scan position
-	scanSlice++;
-	if (scanSlice >= SLICES_PER_CHUNK) {
-		scanSlice = 0;
-		scanChunkY++;
-		if (scanChunkY >= MAX_CHUNKS_Y) {
-			scanChunkY = 0;
-			scanIndex++;
-			if (scanIndex >= spiralOrder.size())
-				scanIndex = 0;
-		}
-	}
-}
-
 void SDK::Reset() {
+	if (!filterInitialized)
+		return;
 	filterInitialized = false;
 
 	SDK::filteredBlockMutex.lock();
@@ -417,7 +269,8 @@ void SDK::Reset() {
 	SDK::filteredBlockMutex.unlock();
 	for (RenderBlockInfo& filter : ImportantBlocks)
 		filter.BlockID.clear();
-
+	allTargetBlockIds.clear();
+	lookupTable.clear();
 }
 
 void SDK::Main() {
@@ -430,56 +283,81 @@ void SDK::Main() {
 		Menu::m_justClosed = false;
 	}
 
-	if (Util::app->Stage != AppStage::InGame) {
+	if (!Util::app || !Util::app->appInGame || !Util::app->appInGame->gameInstance || Util::app->Stage != AppStage::InGame) {
 		Reset();
 		return;
 	}
 
+	if (!FeatureHandler::FeaturesLoaded()) {
+		Reset();
+		return;
+	}
 
 	global_mutex.lock();
 	entities = getEntities(Util::getLocalPlayer());
 	global_mutex.unlock();
 
+
+	static bool firstScan = true;
+	if (InputSystem::IsKeyPressed(SDL_SCANCODE_HOME))
+		firstScan = true;
+
+	if (firstScan) {
+		ItemLibraryModule* itemLibrary = Util::getGameInstance()->ItemLibraryModule;
+		//Dictionary<HytaleString*, void*>* itemsDict = itemLibrary->_items;
+		//std::vector<HytaleString*> keys = itemsDict->GetKeys();
+
+		/*for (HytaleString* key : keys) {
+			void* value = itemsDict->GetValue(key);
+			if (value) {
+				HytaleString* name = key;
+				std::string nameStr = name->getString();
+				Util::log("Item: %s\n", nameStr.c_str());
+			}
+		}*/
+
+
+
+
+
+
+		firstScan = false;
+	}
+
+
+
 	// Scan for important blocks
 	//ScanForBlocks();
-
-	if (!filterInitialized && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance && Util::app->Stage == AppStage::InGame){
+	if (BlockESP* blockESP = (BlockESP*) FeatureHandler::GetFeatureFromName("BlockESP"); blockESP != nullptr && blockESP->refreshList != nullptr && (blockESP->refreshList->GetValue() || !filterInitialized)) {
+		Reset();
 		MapModule* mapModule = (MapModule*) Util::app->appInGame->gameInstance->MapModule;
 		Array<ClientBlockType*>* ClientBlockTypes = mapModule->ClientBlockTypes;
 
-		for (RenderBlockInfo& filter : ImportantBlocks) {
-			filter.BlockID.clear();
-		}
-
 		for (int i = 0; i < ClientBlockTypes->count; i++) {
 			ClientBlockType* blockType = ClientBlockTypes->get(i);
-			if (blockType->Id == 5) {
-				Util::log("Block id 5: %s\n", blockType->Name->getString().c_str());
-			}
 			if (blockType) {
 				std::string blockName = blockType->Name->getString();
 				for (RenderBlockInfo& filter : ImportantBlocks) {
-					if (blockName.find(filter.DisplayName) != std::string::npos)
+					if (blockName.find(filter.DisplayName) != std::string::npos && blockESP->IsBlockImportant(filter.settingIndex)) {
 						filter.BlockID.push_back(blockType->Id);
+						allTargetBlockIds.push_back(blockType->Id);
+					}
 				}
 			}
 		}
 
 		Util::log("[SDK] ImportantBlocks population complete. Summary:\n");
-		for (const RenderBlockInfo& filter : ImportantBlocks)
-			Util::log("[SDK]   - %s: %d block IDs found\n", filter.DisplayName, filter.BlockID.size());
+		for (const RenderBlockInfo& filter : ImportantBlocks) {
+			if (blockESP->IsBlockImportant(filter.settingIndex))
+				Util::log("[SDK]   - %s: %d block IDs found\n", filter.DisplayName, filter.BlockID.size());
+			else 
+				Util::log("[SDK]   - %s: %d block IDs found (ignored due to settings)\n", filter.DisplayName, filter.BlockID.size());
+		}
+		Util::log("[SDK] Total important block IDs: %d\n", allTargetBlockIds.size());
 		filterInitialized = true;
-
-		ICameraController* cameraController = Util::getGameInstance()->CameraModule->Controller;
-		Util::log("CameraController: 0x%llX\n", (uintptr_t) cameraController);
-		Util::log("MapModule: 0x%llX\n", (uintptr_t) mapModule); //99662D50
-
-		BlockPlacementPreview* module = Util::getGameInstance()->InteractionModule->BlockPreview;
-		DBGScan(module);
-
+		blockESP->refreshList->SetValue(false);
 	}
 
-	
 	/*
 	static int test = 0;
 	if (test < 1 && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance && Util::app->Stage == AppStage::InGame) {

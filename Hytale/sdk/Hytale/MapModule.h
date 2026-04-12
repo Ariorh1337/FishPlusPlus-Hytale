@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
-#include "BaseDataTypes/ConcurrentDictionary.h"
+#include "sdk/BaseDataTypes/ConcurrentDictionary.h"
 #include "ChunkColumn.h"
 #include "ClientBlockType.h"
 #include "Math/Color.h"
@@ -17,22 +17,7 @@ struct RenderBlockInfo {
 	std::vector<int> BlockID;
 	const char* DisplayName;
 	Color BlockColor;
-};
-
-inline std::vector<RenderBlockInfo> ImportantBlocks = {
-	{ { }, "Chest", Color::Normalize(0, 255, 255) },
-	{ { }, "Bench", Color::Normalize(0, 255, 255) },
-	//{ { }, "Adamantite", Color::Normalize(255, 0, 255) },
-	//{ { }, "Gold", Color::Normalize(255, 0, 255) },
-	//{ { }, "Silver", Color::Normalize(255, 0, 255) },
-	//{ { }, "Iron", Color::Normalize(255, 0, 255) },
-	//{ { }, "Copper", Color::Normalize(255, 0, 255) },
-	//{ { }, "Mithril", Color::Normalize(255, 0, 255) },
-	//{ { }, "Cobalt", Color::Normalize(255, 0, 255) },
-	//{ { }, "Thorium", Color::Normalize(255, 0, 255) },
-	{ { }, "Treasure", Color::Normalize(255, 0, 255) },
-	//{ { }, "Crystal", Color::Normalize(255, 0, 255) },
-	//{ { }, "Gem", Color::Normalize(255, 0, 255) }
+	int settingIndex = -1; // Optional index for user settings, default is -1 (no setting)
 };
 
 struct ChunkPosition {
@@ -232,14 +217,4 @@ public:
 		data.paletteAddress = (uint64_t) chunk->Data->Blocks->chunkSection->internalToExternal->list;
         return data;
 	}
-    
-    std::vector<int> getAllImportantBlockIDs() {
-        std::vector<int> allTargetBlockIds;
-        for (const auto& importantBlock : ImportantBlocks) {
-            for (int blockId : importantBlock.BlockID) {
-                allTargetBlockIds.push_back(blockId);
-            }
-        }
-		return allTargetBlockIds;
-    }
 };

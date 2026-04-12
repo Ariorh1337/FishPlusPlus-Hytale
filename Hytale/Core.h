@@ -13,10 +13,10 @@
 #include <psapi.h>
 #include <winnt.h>
 
-#include "sdk/App.h"
-#include "sdk/DefaultMovementController.h"
-#include "sdk/OptionsHelper.h"
-#include "sdk/Paths.h"
+#include "sdk/Hytale/App.h"
+#include "sdk/Hytale/DefaultMovementController.h"
+#include "sdk/Hytale/OptionsHelper.h"
+#include "sdk/Hytale/Paths.h"
 
 #include "Events/EventSystem.h"
 

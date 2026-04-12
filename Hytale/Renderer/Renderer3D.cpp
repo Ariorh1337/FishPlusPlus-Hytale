@@ -68,8 +68,8 @@ void Renderer3D::BoxOutline(Vector3 pos, Vector3 size, Color outlineColor) {
 
 void Renderer3D::BoxLines(Entity* entity, Color insideColor, Color outlineColor) {
 	ValidPtrVoid(entity);
-	if (entity->OldPos == Vector3(0, 0, 0))
-		entity->OldPos = entity->Position;
+	if (entity->PreviousPosition == Vector3(0, 0, 0))
+		entity->PreviousPosition = entity->Position;
 
 	BoxLines(entity->RenderPos + entity->Hitbox.min, entity->Hitbox.max - entity->Hitbox.min, insideColor, outlineColor);
 }

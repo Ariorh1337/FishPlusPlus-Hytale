@@ -6,13 +6,8 @@
 #include <string>
 #include <Windows.h>
 
-#include "../Math/Vector3.h"
-#include "../Math/BoundingBox.h"
-
-#include "BaseDataTypes/HytaleString.h"
-#include "BaseDataTypes/Array.h"
-
-
+#include "Math/Vector3.h"
+#include "Math/BoundingBox.h"
 
 struct EntityAssetStruct {
 	char pad[0x8];
@@ -56,7 +51,7 @@ public:
 	bool wasJunping; //0x0249
 	bool usable; //0x024A
 	char pad_0254[24]; //0x0254
-	Vector3 OldPos; //0x026C
+	Vector3 PreviousPosition; //0x026C
 	Vector3 NextPos; //0x0278
 	Vector3 Position; //0x0284
 	Vector3 RenderPos; //0x0290
@@ -77,7 +72,7 @@ public:
 	char pad_0388[1268];
 
 	void SetPositionTeleport(Vector3 nextPosition) {
-		OldPos = Position;
+		PreviousPosition = Position;
 		NextPos = nextPosition;
 		MoveProgress = 1.0f;
 		Position = NextPos;

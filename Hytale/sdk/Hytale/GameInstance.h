@@ -2,7 +2,10 @@
  * Copyright (c) FishPlusPlus.
  */
 #pragma once
-
+#include "sdk/BaseDataTypes/HytaleString.h"
+#include "sdk/BaseDataTypes/Array.h"
+#include "sdk/BaseDataTypes/Dictionary.h"
+#include "sdk/BaseDataTypes/ConcurrentDictionary.h"
 #include "Entity.h"
 #include "Camera.h"
 #include "Time.h"
@@ -15,6 +18,7 @@
 #include "CharacterControllerModule.h"
 #include "MapModule.h"
 #include "InteractionModule.h"
+#include "ItemLibraryModule.h"
 
 class GameInstance {
 public:
@@ -37,7 +41,7 @@ public:
 	Time* TimeModule;                                   //0x108 HytaleClient.InGame.Modules.TimeModule
 	void* AudioModule;                                  //0x110 HytaleClient.InGame.Modules.Audio.AudioModule
 	MapModule* MapModule;								//0x118 HytaleClient.InGame.Modules.Map.MapModule
-	void* ItemLibraryModule;                            //0x120 HytaleClient.InGame.Modules.ItemLibraryModule
+	ItemLibraryModule* ItemLibraryModule;               //0x120 HytaleClient.InGame.Modules.ItemLibraryModule
 	CharacterControllerModule* CharacterControllerModule; //0x128 HytaleClient.InGame.Modules.CharacterController.CharacterControllerModule
 	CameraModule* CameraModule;                         //0x130 HytaleClient.InGame.Modules.Camera.CameraModule
 	void* CollisionModule;                              //0x138 HytaleClient.InGame.Modules.Collision.CollisionModule

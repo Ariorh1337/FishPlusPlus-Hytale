@@ -11,12 +11,12 @@
 #include "../Math/Vector2.h"
 
 #include "InputSystem.h"
-#include "../sdk/Camera.h"
-#include "../sdk/CameraModule.h"
-#include "../sdk/GameInstance.h"
-#include "../sdk/DefaultMovementController.h"
-#include "../sdk/App.h"
-#include "../sdk/Entity.h"
+#include "../sdk/Hytale/Camera.h"
+#include "../sdk/Hytale/CameraModule.h"
+#include "../sdk/Hytale/GameInstance.h"
+#include "../sdk/Hytale/DefaultMovementController.h"
+#include "../sdk/Hytale/App.h"
+#include "../sdk/Hytale/Entity.h"
 
 struct SimpleTime
 {
