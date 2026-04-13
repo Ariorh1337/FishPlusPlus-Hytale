@@ -1,0 +1,44 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
+#include "Scaffold.h"
+#include "core.h"
+#include "sdk/Packets/ClientBlockPlace.h"
+
+Scaffold::Scaffold() : Feature("Scaffold") {
+
+}
+
+void Scaffold::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
+	if (!Util::isFullyInitialized())
+		return;
+
+	GameInstance* gameInstance = Util::getGameInstance();
+	Entity* localPlayer = gameInstance->Player;
+	if (!localPlayer || !localPlayer->PrimaryItem || !localPlayer->PrimaryItem->IsBlock())
+		return;
+
+	MapModule* mapModule = gameInstance->MapModule;
+	Vector3 feetPos = localPlayer->Position.toFloor().add(0, -1, 0);
+	int blockID = mapModule->GetBlockID((int) feetPos.x, (int) feetPos.y, (int) feetPos.z, 0);
+	if (dmc->clientMovementStates.IsCrouching) {
+		if (blockID == 0 || blockID == 1) {
+			feetPos.y -= 1;
+			int blockIDCrouched = mapModule->GetBlockID((int) feetPos.x, (int) feetPos.y, (int) feetPos.z, 0);
+			if (blockIDCrouched == 0 || blockIDCrouched == 1)
+				ClientPlaceBlockPacket::Send(feetPos, localPlayer->PrimaryItem->BlockId);
+		}
+	} else {
+		if (blockID == 0 || blockID == 1)
+			ClientPlaceBlockPacket::Send(feetPos, localPlayer->PrimaryItem->BlockId);
+	}
+}
+
+bool Scaffold::CanExecute() {
+	return Util::isFullyInitialized();
+}
+
+void Scaffold::Initialize() {
+	RegisterEvent(this);
+	Util::log("Initialized Flight feature\n");
+}

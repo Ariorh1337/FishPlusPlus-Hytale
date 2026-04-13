@@ -123,7 +123,7 @@ public:
         return chunks->get(worldChunkY);
     }
 
-    int GetBlockID(int worldX, int worldY, int worldZ, int undefinedBlockId = 1) {
+    int GetBlockID(int worldX, int worldY, int worldZ, int undefinedBlockId = 0) {
         int worldChunkX = worldX >> 5;
         int worldChunkY = worldY >> 5;
         int worldChunkZ = worldZ >> 5;

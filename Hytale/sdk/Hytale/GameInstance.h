@@ -31,7 +31,7 @@ public:
 	void* HitDetection;                                 //0x38 HytaleClient.InGame.HitDetection
 	void* VoiceManager;                                 //0x40 HytaleClient.Audio.Voice.VoiceManager
 	void* ServerSettings;								//0x48 HytaleClient.Data.ServerSettings
-	void* QuicConnectionToServer;                       //0x50 HytaleClient.Networking.Connection.QuicConnectionToServer
+	void* ConnectionToServer;							//0x50 HytaleClient.Networking.Connection.ConnectionToServer
 	void* PacketHandler;                                //0x58 HytaleClient.Networking.PacketHandler
 	void* Stopwatch;                                    //0x60 System.Diagnostics.Stopwatch
 	void* List;                                         //0x68 System.Collections.Generic.List`1[System.ValueTuple`2[HytaleClient.Data.InputSystem.InputAction,System.Boolean]]

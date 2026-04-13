@@ -38,7 +38,6 @@ void __fastcall GCThread(void* pArg) {
 bool InitSigs() {
 	GetMethodSigByRef(SetCursorHidden, "E8 ? ? ? ? 0F B6 4B ? 85 C9 74");
 	GetMethodSigByRef(UpdateInputStates, "E8 ? ? ? ? 83 7E ? ? 75 ? 48 83 C4");
-    GetSig(SendPacketImmediate, "55 41 57 41 56 41 55 41 54 57 56 53 48 81 EC ? ? ? ? 48 8D AC 24 ? ? ? ? 0F 57 E4 0F 29 65 ? 0F 29 65 ? 0F 29 65 ? 0F 29 65 ? 33 C0 48 89 45 ? 48 89 4D ? 48 8B D9");
 	GetMethodSigByRef(GCToEEInterface_CreateThread, "E8 ? ? ? ? 0F B6 C0 89 05 ? ? ? ? 85 C0");
 	GetMethodSigByRef(beginGLContext, "E8 ? ? ? ? 8B 4D ? 44 8B 45 ? 8B 55 ? 41 FF D7");
 	GetMethodSigByRef(endGLContext, "E8 ? ? ? ? 48 8B 75 ? 4C 8D 4E ? 48 8B 5D ? 48 8B 53 ? 44 3B 72");
@@ -50,8 +49,10 @@ bool InitSigs() {
 	GetGlobalSigByRef(g_BufferManager, "48 8B 05 ? ? ? ? 48 8B 40 ? 45 8B 51 ? 4C 8B B0 ? ? ? ? 44 8B CA");
 	GetGlobalSigByRef(g_GlobalStateTable, "48 8D 05 ? ? ? ? 48 83 78 ? ? 0F 85 ? ? ? ? 48 8B 0D ? ? ? ? 48 8B 49 ? 45 8B 07");
 
-    GetSig(RhpNewFast, "8B 15 ? ? ? ? 65 48 8B 04 25 ? ? ? ? ? ? ? ? BA")
-    MT::ClientPlaceBlock = Util::RelativeVirtualAddress(Util::PatternScan("48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8B F8 48 8B 43 ? 48 89 85 ? ? ? ? 48 8D 4F ? 48 8B 95 ? ? ? ? E8 ? ? ? ? 48 8B 85"), 3, 7);
+    GetSig(RhpNewFast, "8B 15 ? ? ? ? 65 48 8B 04 25 ? ? ? ? ? ? ? ? BA");
+
+
+    GetSig(SendPacketImmediate, "55 41 57 41 56 41 55 41 54 57 56 53 48 81 EC ? ? ? ? 48 8D AC 24 ? ? ? ? 0F 57 E4 0F 29 65 ? 0F 29 65 ? 0F 29 65 ? 0F 29 65 ? 33 C0 48 89 45 ? 48 89 4D ? 48 8B D9"); //48 8b d9 48 8b f2 48 8d 0d ? ? ? ? e8 ? ? ? ? 48 89 85 ? ? ? ? 48 8d 48 08 48 8b d3 e8 ? ? ? ? 48 85 f6
 
 
 	Util::log("Finished initializing signatures\n");

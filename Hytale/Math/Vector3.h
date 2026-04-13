@@ -47,6 +47,17 @@ struct Vector3 {
 		return Vector3(x * value, y * value, z * value);
 	}
 
+	Vector3 clone() {
+		return Vector3(x, y, z);
+	}
+
+	Vector3& add(float x, float y, float z) {
+		this->x += x;
+		this->y += y;
+		this->z += z;
+		return *this;
+	}
+
 	float length() const {
 		return sqrtf(this->x * this->x + this->y * this->y + this->z * this->z);
 	}

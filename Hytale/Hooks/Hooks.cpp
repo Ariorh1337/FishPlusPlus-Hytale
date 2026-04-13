@@ -35,15 +35,6 @@ CREATE_HOOK(name)
  * If the ClientMovement validation crash resurfaces (flags-as-pointer AV), fix it with
  * a targeted NOP patch at the specific validation instruction instead of a global VEH. */
 static PVOID s_vehHandle = nullptr;
-
-HytaleString* TempToString(void* ptr) {
-    __try {
-        return Util::ObjectToString(ptr);
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-        return nullptr;
-    }
-}
-
 /*
 * Creates and registers all hooks
 */
@@ -88,8 +79,6 @@ bool Hooks::CreateHooks() {
     CREATE_SIG_HOOK_BY_REF(DrawEntityCharactersAndItems, "E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 85");
     CREATE_SIG_HOOK_BY_REF(DrawPostEffect, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
     CREATE_SIG_HOOK_BY_REF(BuildGeometry, "E8 ? ? ? ? 48 89 7D ? ? ? ? 00 75");
-
-    //CREATE_SIG_HOOK(ClassMethod6, "57 56 53 48 83 EC ? 0F 29 74 24 ? 0F 29 7C 24 ? 48 8B D9 48 8B F2 48 8B 4B ? 48 8B 89");
 
     MH_EnableHook(MH_ALL_HOOKS);
 

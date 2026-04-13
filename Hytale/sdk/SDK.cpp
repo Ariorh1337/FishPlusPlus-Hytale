@@ -54,13 +54,10 @@ std::vector<EntityData> getEntities(Entity* localPlayer) {
 		data.position = entity->Position;
 		data.isLocalPlayer = (entity == localPlayer);
 
-		//printf("Entity %d: %s - 0x%llX\n", i, name.c_str(), entity);
-
 		entities.push_back(data);
 	}
 	return entities;
 }
-
 
 void UpdateInputStates(bool skipResetKeys) {
 	using m_UpdateInputStates = uint64_t(*)(AppInGame* AppGame, bool skipResetKeys);
@@ -86,27 +83,6 @@ void setCursorHidden(bool hidden) {
 		return;
 	}
 	SetCursorHidden_method(app->Engine->Window, hidden);
-}
-
-void* RhpNewFast(void* pMethodTable) {
-	using m_RhpNewFast = void*(*)(void*);
-	static m_RhpNewFast RhpNewFast_method{ };
-	if (!RhpNewFast_method)
-		RhpNewFast_method = reinterpret_cast<m_RhpNewFast>(SM::RhpNewFastAddress);
-	return RhpNewFast_method(pMethodTable);
-}
-
-void SendPacketImmediate(void* packet) {
-	using m_SendPacketImmediate = void(*)(void*, void*);
-	static m_SendPacketImmediate SendPacketImmediate_method{};
-	if (!SendPacketImmediate_method)
-		SendPacketImmediate_method = reinterpret_cast<m_SendPacketImmediate>(SM::SendPacketImmediateAddress);
-	App* app = Util::app;
-	if (!app || !app->Engine || app->Stage != AppStage::InGame || !app->appInGame->gameInstance->QuicConnectionToServer) {
-		Util::log("Invalid app or connection pointer\n");
-		return;
-	}
-	SendPacketImmediate_method(app->appInGame->gameInstance->QuicConnectionToServer, packet);
 }
 
 class MethodTable {
@@ -253,7 +229,6 @@ HytaleString* SafeObjectToString(void* ptr) {
 void ScanObject(void* object) {
 	HytaleString* scan_obj_name = SafeObjectToString(object);
 	Util::log("=== Scanning %s at 0x%llX ===\n", scan_obj_name->getString().c_str(), (uint64_t) object);
-
 	for (int offset = 0x8; offset < 0x300; offset += 0x8) {
 		void** ptrLocation = (void**) ((uint64_t) object + offset);
 		void* ptr = SafeReadPointer(ptrLocation);
@@ -277,7 +252,6 @@ void ScanObject(void* object) {
 			Util::log("Offset 0x%X: nullptr\n", offset);
 		}
 	}
-
 	Util::log("=== Finished scan ===\n");
 }
 
@@ -319,37 +293,15 @@ void SDK::Main() {
 	entities = getEntities(Util::getLocalPlayer());
 	global_mutex.unlock();
 
-
-	static bool firstScan = true;
-	if (InputSystem::IsKeyPressed(SDL_SCANCODE_HOME))
-		firstScan = true;
-
-	if (firstScan) {
-		ItemLibraryModule* itemLibrary = Util::getGameInstance()->ItemLibraryModule;
-		//Dictionary<HytaleString*, void*>* itemsDict = itemLibrary->_items;
-		//std::vector<HytaleString*> keys = itemsDict->GetKeys();
-
-		/*for (HytaleString* key : keys) {
-			void* value = itemsDict->GetValue(key);
-			if (value) {
-				HytaleString* name = key;
-				std::string nameStr = name->getString();
-				Util::log("Item: %s\n", nameStr.c_str());
-			}
-		}*/
-
-
-
-
-
-
+	static bool firstScan = false;
+	if (firstScan || (GetAsyncKeyState(VK_F5) & 1)) {
+		if (ClientItemBase* primaryItem = Util::getGameInstance()->Player->PrimaryItem; primaryItem && primaryItem->IsBlock()) {
+			Vector3 pos = Util::getLocalPlayer()->Position.add(0, -1, 0);
+			ClientPlaceBlockPacket::Send(pos, primaryItem->BlockId);
+		}
 		firstScan = false;
 	}
 
-
-
-	// Scan for important blocks
-	//ScanForBlocks();
 	if (BlockESP* blockESP = (BlockESP*) FeatureHandler::GetFeatureFromName("BlockESP"); blockESP != nullptr && blockESP->refreshList != nullptr && (blockESP->refreshList->GetValue() || !filterInitialized)) {
 		Reset();
 		MapModule* mapModule = (MapModule*) Util::app->appInGame->gameInstance->MapModule;
@@ -367,38 +319,7 @@ void SDK::Main() {
 				}
 			}
 		}
-
-		Util::log("[SDK] ImportantBlocks population complete. Summary:\n");
-		for (const RenderBlockInfo& filter : ImportantBlocks) {
-			if (blockESP->IsBlockImportant(filter.settingIndex))
-				Util::log("[SDK]   - %s: %d block IDs found\n", filter.DisplayName, filter.BlockID.size());
-			else 
-				Util::log("[SDK]   - %s: %d block IDs found (ignored due to settings)\n", filter.DisplayName, filter.BlockID.size());
-		}
-		Util::log("[SDK] Total important block IDs: %d\n", allTargetBlockIds.size());
 		filterInitialized = true;
 		blockESP->refreshList->SetValue(false);
 	}
-
-	
-	static int test = 0;
-	if (test < 1 && Util::app && Util::app->appInGame && Util::app->appInGame->gameInstance && Util::app->Stage == AppStage::InGame) {
-
-		//DBGScan(Util::getGameInstance()->MapModule->MapGeometryBuilder);
-		//Util::log("MapGeometryBuilder: 0x%llx\n", (uintptr_t)(Util::getGameInstance()->MapModule->MapGeometryBuilder) + 0x18);
-
-		ClientPlaceBlock* ClientPlaceBlockPacket = (ClientPlaceBlock*)RhpNewFast((void*)MT::ClientPlaceBlock);
-		BlockPosition position(-2906, 118, -99842);
-		BlockRotation rotation = BlockRotation();
-		ClientPlaceBlockPacket->position = &position;
-		ClientPlaceBlockPacket->rotation = &rotation;
-		ClientPlaceBlockPacket->placedBlockId = 1;
-		ClientPlaceBlockPacket->quickReplace = true;
-
-		//SendPacketImmediate(ClientPlaceBlockPacket);
-
-	
-		test++;
-	}
-	
 }

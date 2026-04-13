@@ -12,4 +12,10 @@ struct BlockPosition {
 		this->y = y;
 		this->z = z;
 	}
+
+	BlockPosition(Vector3 vec) {
+		this->x = (int)vec.x;
+		this->y = (int)vec.y;
+		this->z = (int)vec.z;
+	}
 };

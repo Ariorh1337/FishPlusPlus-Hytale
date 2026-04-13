@@ -46,28 +46,7 @@ void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
         tpCommand(command.substr(3));
 
 	if (command.starts_with("config "))
-        configCommand(command.substr(7));
-
-    if (command.starts_with("place")) {
-		Util::log("Attempting to place block from chat command\n");
-		Util::log("Context pointer: 0x%llX\n", (uint64_t) Context);
-		Util::log("ClientBlockType pointer: 0x%llX\n", (uint64_t) Util::getGameInstance()->MapModule->ClientBlockTypes->get(728));
-		Util::log("PlaceBlockInteraction pointer: 0x%llX\n", (uint64_t) PlaceBlockInteraction);
-        Hooks::oTryPlaceBlock(PlaceBlockInteraction, Util::getGameInstance(), 0, false, Context, Util::getGameInstance()->MapModule->ClientBlockTypes->get(728));
-
-        std::string cmd = message.substr(6);
-        std::istringstream iss(cmd);
-        int x;
-        int y;
-        int z;
-        int id;
-        if (iss >> x >> y >> z >> id) {
-            //Hooks::oSetClientBlock(Util::getGameInstance()->MapModule, x, y, z, (int)id, 0, 0, true);
-        }
-        
-    }
-        
-        
+        configCommand(command.substr(7));        
 }
 #pragma runtime_checks("", restore)
 #pragma optimize("", on)
