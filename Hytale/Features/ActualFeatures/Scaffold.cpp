@@ -25,12 +25,16 @@ void Scaffold::OnMoveCycle(DefaultMovementController* dmc, Vector3& offset) {
 		if (blockID == 0 || blockID == 1) {
 			feetPos.y -= 1;
 			int blockIDCrouched = mapModule->GetBlockID((int) feetPos.x, (int) feetPos.y, (int) feetPos.z, 0);
-			if (blockIDCrouched == 0 || blockIDCrouched == 1)
+			if (blockIDCrouched == 0 || blockIDCrouched == 1) {
+				mapModule->SetClientBlock(feetPos, localPlayer->PrimaryItem->BlockId);
 				ClientPlaceBlockPacket::Send(feetPos, localPlayer->PrimaryItem->BlockId);
+			}
 		}
 	} else {
-		if (blockID == 0 || blockID == 1)
+		if (blockID == 0 || blockID == 1) {
+			mapModule->SetClientBlock(feetPos, localPlayer->PrimaryItem->BlockId);
 			ClientPlaceBlockPacket::Send(feetPos, localPlayer->PrimaryItem->BlockId);
+		}
 	}
 }
 

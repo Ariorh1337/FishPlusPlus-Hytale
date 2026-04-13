@@ -9,6 +9,7 @@
 #include "ChunkColumn.h"
 #include "ClientBlockType.h"
 #include "Math/Color.h"
+#include "Util/SigManager.h"
 
 class GameInstance;
 class Texture;
@@ -100,6 +101,14 @@ public:
     void* _commitedBlockPositionsFromCamera;            // 0xF8 System.Numerics.Vector3[]
     char pad_100[0x20];                                 // 0x100 padding
     ConcurrentDictionary<int64_t, ChunkColumn*>* _chunkColumns;   // 0x120 ConcurrentDictionary<long, ChunkColumn> _chunkColumns = new ConcurrentDictionary<long, ChunkColumn>();
+
+	void SetClientBlock(Vector3 pos, int blockID) {
+        using SetClientBlock_m = void(*)(void*, int x, int y, int z, int id, int arg6, int arg7, bool notify);
+        static SetClientBlock_m SetBlock{ };
+        if (!SetBlock)
+            SetBlock = reinterpret_cast<SetClientBlock_m>(SM::SetClientBlockAddress);
+		SetBlock(this, (int)pos.x, (int)pos.y, (int)pos.z, blockID, 0, 0, false);
+    }
 
     int32_t IndexOfWorldBlockInChunk(int x, int y, int z) {
         return ((y & 0x1F) << 10) | ((z & 0x1F) << 5) | (x & 0x1F);

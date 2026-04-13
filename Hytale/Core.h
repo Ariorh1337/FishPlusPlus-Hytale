@@ -18,25 +18,7 @@ inline uint64_t dllBase;
 inline uint64_t dllBaseEnd;
 inline bool uninjecting = false;
 
-namespace SM { // Signature Methods
-	inline uint64_t SetCursorHiddenAddress = 0;
-	inline uint64_t UpdateInputStatesAddress = 0;
-	inline uint64_t SendPacketImmediateAddress = 0;
-	inline uint64_t GCToEEInterface_CreateThreadAddress = 0;
-	inline uint64_t Object_ToStringAddress = 0;
-	inline uint64_t ConcurrentDictionary_TryGetValueAddress = 0;
-
-	inline uint64_t beginGLContextAddress = 0;
-	inline uint64_t endGLContextAddress = 0;
-	inline uint64_t renderQueueFlushAddress = 0;
-	inline uint64_t submitDrawCommandsAddress = 0;
-	inline uint64_t g_UniformManagerAddress = 0;
-	inline uint64_t g_BufferManagerAddress = 0;
-	inline uint64_t g_GlobalStateTableAddress = 0;
-
-	inline uint64_t RhpNewFastAddress = 0;
-}
-
+#include "Util/SigManager.h"
 #include "sdk/Hytale/App.h"
 #include "sdk/Hytale/DefaultMovementController.h"
 #include "sdk/Hytale/OptionsHelper.h"
