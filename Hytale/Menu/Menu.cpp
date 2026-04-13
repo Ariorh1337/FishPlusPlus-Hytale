@@ -32,16 +32,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     return oWndProc(hWnd, msg, wParam, lParam);
 }
 
-Menu::Menu(HDC hdc) {
-    HWND hwnd = WindowFromDC(hdc);
-    g_hWnd = hwnd;
-
-    oWndProc = (WNDPROC)SetWindowLongPtr(
-        g_hWnd,
-        GWLP_WNDPROC,
-        (LONG_PTR)WndProc
-    );
-
+Menu::Menu() {
     mainComponent = std::make_unique<Component>();
     hudComponent = std::make_unique<Component>();
 }
@@ -92,11 +83,22 @@ void CallComponentFuncs(double deltaTime, Component* component) {
     component->Render(deltaTime);
 }
 
+void RenderDebugText() {
+    Fonts::Figtree->RenderText(std::format("App: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app)), 0.0f, 10.0f, 0.5f, Color::White());
+    Fonts::Figtree->RenderText(std::format("AppInGame: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app->appInGame)), 0.0f, 20.0f, 0.5f, Color::White());
+    Fonts::Figtree->RenderText(std::format("GameInstance: 0x{:x}", reinterpret_cast<uintptr_t>(Util::getGameInstance())), 0.0f, 30.0f, 0.5f, Color::White());
+    Fonts::Figtree->RenderText(std::format("LocalPlayer: 0x{:x}", reinterpret_cast<uintptr_t>(Util::getLocalPlayer())), 0.0f, 40.0f, 0.5f, Color::White());
+    Fonts::Figtree->RenderText(std::format("DMC: 0x{:x}", reinterpret_cast<uintptr_t>(Util::GetMovementController())), 0.0f, 50.0f, 0.5f, Color::White());
+    Fonts::Figtree->RenderText(std::format("OptionsHelper: 0x{:x}", reinterpret_cast<uintptr_t>(Globals::optionsHelper)), 0.0f, 60.0f, 0.5f, Color::White());
+
+    Fonts::Figtree->RenderText(std::format("Fish++ Hytale by LimitlessChicken aka milaq", reinterpret_cast<uintptr_t>(Util::app)), 500.0f, 10.0f, 0.5f, Color::White());
+}
+
 void Menu::Run(double deltaTime) {
     ListenOpenInput();
     ListenForKeybinds();
 
-    
+    RenderDebugText();
 
     bool lbuttonDown = GetAsyncKeyState(VK_LBUTTON);
     bool rbuttonDown = GetAsyncKeyState(VK_RBUTTON);

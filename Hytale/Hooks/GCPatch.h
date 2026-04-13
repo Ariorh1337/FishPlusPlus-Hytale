@@ -35,3 +35,7 @@ bool PatchGCStackWalkerKeepUnwinding();
  * @param hooks  Pairs of (trampoline_address, original_function_address)
  */
 void RegisterAllTrampolinePages(const std::vector<std::pair<void*, void*>>& hooks);
+
+
+void PatchGC();
+void RegisterTrampolines(std::vector<std::pair<void*, void*>> allHooks);

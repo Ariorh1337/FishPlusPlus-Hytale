@@ -24,39 +24,12 @@ std::uintptr_t name##Address = Util::RelativeVirtualAddress(Util::PatternScan(pa
 Util::log("Found %s sig at: 0x%llX - 0x%llX = 0x%lX\n", #name, name##Address, gameBase, (name##Address - gameBase));\
 CREATE_HOOK(name)
 
-/* --- Vectored Exception Handler REMOVED ---
- * The old VEH caught ALL access violations at ANY 'movzx eax, byte ptr [rcx+rax]'
- * (0F B6 04 01) inside the Hytale module. There are 78 such instructions in the binary,
- * including 17+ inside the Brotli decompression engine. During world loading, the VEH
- * intercepted legitimate AVs in Brotli, set RAX=2 and skipped the instruction, corrupting
- * the decompression state. This produced garbage data on the managed heap, causing
- * FailFast (0xC0000602) in RhpNewArray_Char during the next GC allocation.
- *
- * If the ClientMovement validation crash resurfaces (flags-as-pointer AV), fix it with
- * a targeted NOP patch at the specific validation instruction instead of a global VEH. */
-static PVOID s_vehHandle = nullptr;
 /*
 * Creates and registers all hooks
 */
 bool Hooks::CreateHooks() {
-    // ═══════════════════════════════════════════════════════════════════════
-    // CRITICAL: Patch the NativeAOT GC stack walker BEFORE creating any hooks.
-    // Without this patch, MinHook trampolines create stack frames with PCs
-    // inside our DLL. The GC can't find these in its method table and calls
-    // RaiseFailFastException (0xC0000602).
-    // ═══════════════════════════════════════════════════════════════════════
-    if (!PatchGCStackWalker()) {
-		Util::log("WARNING: GC patch #1 failed! Hooks on NativeAOT functions may crash due to GC FailFast.\n");
-    }
     
-    // GC-Patch2: Wrap the _1() (vtable[5] UnwindStackFrame) call in fn_KeepUnwinding
-    // with SafeUnwind1. When the NativeAOT unwinder crashes on our trampoline (because
-    // it uses stale method_info), SafeUnwind1 catches the AV and manually unwinds via
-    // RtlLookupFunctionEntry (which finds our RtlAddFunctionTable entries) + RtlVirtualUnwind.
-    // The FailFast code cave is a safety net in case SafeUnwind1 returns 0.
-    if (!PatchGCStackWalkerKeepUnwinding()) {
-		Util::log("WARNING: GC patch #2 failed! Store-Packets may crash due to unwinder AVs.\n");
-    }
+    PatchGC();
     
     std::vector<std::pair<void*, void*>> allHooks;
 
@@ -82,23 +55,7 @@ bool Hooks::CreateHooks() {
 
     MH_EnableHook(MH_ALL_HOOKS);
 
-    RegisterAllTrampolinePages(allHooks);
-
-    // ── Verify: check that RtlLookupFunctionEntry finds our registered trampolines ──
-    int verified = 0, failed = 0;
-    for (auto& [tramp, orig] : allHooks) {
-        if (!tramp) continue;
-        DWORD64 imgBase = 0;
-        PRUNTIME_FUNCTION pFunc = RtlLookupFunctionEntry((DWORD64) tramp, &imgBase, NULL);
-        if (pFunc) {
-            verified++;
-        } else {
-            failed++;
-			Util::log("WARNING: RtlLookupFunctionEntry failed for trampoline at 0x%llX\n", (uint64_t) tramp);
-        }
-    }
-    Util::log("[Hooks] UNWIND_INFO verification: %i OK, %i FAILED\n", verified, failed);
-
-	Util::log("Finished creating hooks (GC stack-walker patched).\n");
+    RegisterTrampolines(allHooks);
+    
     return true;
 }

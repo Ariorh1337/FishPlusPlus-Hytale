@@ -761,3 +761,34 @@ void RegisterAllTrampolinePages(const std::vector<std::pair<void*, void*>>& hook
         }
     }
 }
+
+void PatchGC() {
+    if (!PatchGCStackWalker()) {
+        Util::log("WARNING: GC patch #1 failed! Hooks on NativeAOT functions may crash due to GC FailFast.\n");
+    }
+
+    if (!PatchGCStackWalkerKeepUnwinding()) {
+        Util::log("WARNING: GC patch #2 failed! Store-Packets may crash due to unwinder AVs.\n");
+    }
+}
+
+void RegisterTrampolines(std::vector<std::pair<void*, void*>> allHooks) {
+    RegisterAllTrampolinePages(allHooks);
+
+    int verified = 0, failed = 0;
+    for (auto& [tramp, orig] : allHooks) {
+        if (!tramp) continue;
+        DWORD64 imgBase = 0;
+        PRUNTIME_FUNCTION pFunc = RtlLookupFunctionEntry((DWORD64)tramp, &imgBase, NULL);
+        if (pFunc) {
+            verified++;
+        }
+        else {
+            failed++;
+            Util::log("WARNING: RtlLookupFunctionEntry failed for trampoline at 0x%llX\n", (uint64_t)tramp);
+        }
+    }
+    Util::log("[Hooks] UNWIND_INFO verification: %i OK, %i FAILED\n", verified, failed);
+
+    Util::log("Finished creating hooks (GC stack-walker patched).\n");
+}

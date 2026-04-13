@@ -7,7 +7,7 @@
 #include "Component.h"
 class Menu {
 public:
-	Menu(HDC hdc);
+	Menu();
 
 	void Run(double deltaTime);
 	void ListenForKeybinds();

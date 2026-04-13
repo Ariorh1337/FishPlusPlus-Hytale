@@ -75,7 +75,7 @@ DWORD WINAPI startPoint(LPVOID lpParam) {
     while (!(FindWindowA(nullptr, "Hytale"))) {
         Sleep(100);
     }
-    
+
     if (!Hooks::CreateHooks()) {
 		Util::log("Failed to create hooks\n");
         Util::free_console();

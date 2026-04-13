@@ -32,27 +32,9 @@ BOOL WINAPI Hooks::hkWglSwapBuffers(HDC hdc) {
 			Util::log("Failed to initialize GLAD\n");
             return -1;
         }
-        Shaders::initShaders();
-        Fonts::initFonts();
 
-        Renderer2D::InitRenderer();
-
-        FrameBuffers::initFBOS();
-
-        menu = std::make_unique<Menu>(hdc);
-
-        FeatureHandler::Init();
-
+        ClientInitialize();
         
-        if (!ConfigHandler::FishDirectoryExists()) {
-            ConfigHandler::CreateFishDirectory();
-            ConfigHandler::SaveConfig("immediateConfig", false);
-        }
-        else {
-            ConfigHandler::LoadConfig("immediateConfig", false);
-        }
-        
-
         initialized = true;
     }
 
@@ -72,44 +54,30 @@ BOOL WINAPI Hooks::hkWglSwapBuffers(HDC hdc) {
     Util::cursorPosX = current.x;
     Util::cursorPosY = current.y;
 
-    if (Util::IsValidPtr(Util::app)) {
+    if (((oldWindowWidth != Util::app->Engine->Window->WindowWidth) || (oldWindowHeight != Util::app->Engine->Window->WindowHeight))) {
+        FrameBuffers::resizeAll(Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight);
+    }
+        
+    oldWindowWidth = Util::app->Engine->Window->WindowWidth;
+    oldWindowHeight = Util::app->Engine->Window->WindowHeight;
 
-        if (((oldWindowWidth != Util::app->Engine->Window->WindowWidth) || (oldWindowHeight != Util::app->Engine->Window->WindowHeight))) {
-            FrameBuffers::resizeAll(Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight);
-        }
-            
-        oldWindowWidth = Util::app->Engine->Window->WindowWidth;
-        oldWindowHeight = Util::app->Engine->Window->WindowHeight;
-
-        if (!Util::orthoProjMatInitialized) {
-            Util::orthoProjMat = Matrix4x4::Orthographic(0.0f, Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight, 0.0f, -1.0f, 1.0f);
-            Util::orthoProjMatInitialized = true;
-        }
-        if (!uninjecting)
-            uninjecting = InputSystem::IsKeyPressed(SDL_SCANCODE_END);
-
-        if (uninjecting) {
-            MH_DisableHook(MH_ALL_HOOKS);
-            Util::free_console();
-            return Hooks::oWglSwapBuffers(hdc);
-        }
-
-        Fonts::Figtree->RenderText(std::format("App: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app)), 0.0f, 10.0f, 0.5f, Color::White());
-        Fonts::Figtree->RenderText(std::format("AppInGame: 0x{:x}", reinterpret_cast<uintptr_t>(Util::app->appInGame)), 0.0f, 20.0f, 0.5f, Color::White());
-        Fonts::Figtree->RenderText(std::format("GameInstance: 0x{:x}", reinterpret_cast<uintptr_t>(Util::getGameInstance())), 0.0f, 30.0f, 0.5f, Color::White());
-        Fonts::Figtree->RenderText(std::format("LocalPlayer: 0x{:x}", reinterpret_cast<uintptr_t>(Util::getLocalPlayer())), 0.0f, 40.0f, 0.5f, Color::White());
-        Fonts::Figtree->RenderText(std::format("DMC: 0x{:x}", reinterpret_cast<uintptr_t>(Util::GetMovementController())), 0.0f, 50.0f, 0.5f, Color::White());
-        Fonts::Figtree->RenderText(std::format("OptionsHelper: 0x{:x}", reinterpret_cast<uintptr_t>(Globals::optionsHelper)), 0.0f, 60.0f, 0.5f, Color::White());
-
-        Fonts::Figtree->RenderText(std::format("Fish++ Hytale by LimitlessChicken aka milaq", reinterpret_cast<uintptr_t>(Util::app)), 500.0f, 10.0f, 0.5f, Color::White());
-
-        menu->Run(deltaTime);
+    if (!Util::orthoProjMatInitialized) {
+        Util::orthoProjMat = Matrix4x4::Orthographic(0.0f, Util::app->Engine->Window->WindowWidth, Util::app->Engine->Window->WindowHeight, 0.0f, -1.0f, 1.0f);
+        Util::orthoProjMatInitialized = true;
     }
 
-    InputSystem::inputMutex.lock();
-    InputSystem::keysPressed.clear();
-    InputSystem::keysDepressed.clear();
-    InputSystem::inputMutex.unlock();
+    if (!uninjecting)
+        uninjecting = InputSystem::IsKeyPressed(SDL_SCANCODE_END);
+
+    if (uninjecting) {
+        MH_DisableHook(MH_ALL_HOOKS);
+        Util::free_console();
+        return Hooks::oWglSwapBuffers(hdc);
+    }
+
+    menu->Run(deltaTime);
+
+    InputSystem::Reset();
 
 
     return Hooks::oWglSwapBuffers(hdc);

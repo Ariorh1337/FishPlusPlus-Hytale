@@ -158,6 +158,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="external\Fonts\figtreemedium.c" />
     <ClCompile Include="external\glad\src\glad.c" />
@@ -389,6 +390,7 @@
     <ClInclude Include="Renderer\SpecialRenderers\HueRenderer.h" />
     <ClInclude Include="Renderer\Vertex.h" />
     <ClInclude Include="Features\ActualFeatures\Scaffold.h" />
+    <ClInclude Include="sdk\BaseDataTypes\MethodTable.h" />
     <ClInclude Include="sdk\Hytale\App.h" />
     <ClInclude Include="sdk\Hytale\AppInGame.h" />
     <ClInclude Include="sdk\BaseDataTypes\Array.h" />

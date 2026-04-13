@@ -77,3 +77,6 @@ namespace Globals {
 #define ValidPtrBool(ptr) if (!Util::IsValidPtr(ptr)) return false;
 #define ValidPtrEmpty(ptr) if (!Util::IsValidPtr(ptr)) return {};
 #define ValidPtrLoop(ptr) if (!Util::IsValidPtr(ptr)) continue;
+
+
+void ClientInitialize(); //called from WglSwapBuffers to make sure glad is available

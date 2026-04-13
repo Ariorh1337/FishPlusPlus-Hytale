@@ -568,4 +568,11 @@ namespace InputSystem {
 		return keysHeld.count(key);
 	}
 
+    static void Reset() {
+        InputSystem::inputMutex.lock();
+        InputSystem::keysPressed.clear();
+        InputSystem::keysDepressed.clear();
+        InputSystem::inputMutex.unlock();
+    }
+
 }
