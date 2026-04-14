@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <algorithm>
 
+#include "Structs/Object.h"
+
 // Auto-generated packet definitions from dumper
 // Total packets found: 279
 
@@ -17,6 +19,7 @@ struct PacketEntry {
 };
 
 enum PacketIndex : size_t {
+	Unkown = -1,
 	ClientDisconnect_C2S = 0,                                  // ID: 1 [Server-Bound]
 	ServerDisconnect_S2C = 1,                                  // ID: 2 [Client-Bound]
 	Ping_S2C = 2,                                              // ID: 3 [Client-Bound]
@@ -602,4 +605,13 @@ inline T CreatePacket(PacketIndex index) {
 	using m_RhpNewFast = void* (*)(void*);
 	static m_RhpNewFast RhpNewFast = reinterpret_cast<m_RhpNewFast>(SM::RhpNewFastAddress);
 	return (T)RhpNewFast((void*) GetPacketMethodTable(index));
+}
+
+inline PacketIndex GetPacketIndex(Object* packet) {
+	for (int i = 0; i < sizeof(PACKET_REGISTRY) / sizeof(PacketEntry); i++) {
+		PacketEntry entry = PACKET_REGISTRY[i];
+		if ((uint64_t)packet->methodTable - gameBase == entry.methodTableOffset)
+			return (PacketIndex)i;
+	}
+	return Unkown;
 }

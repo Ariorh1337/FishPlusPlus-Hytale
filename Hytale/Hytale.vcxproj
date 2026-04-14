@@ -186,6 +186,7 @@
     <ClCompile Include="Hooks\HookedMethods\HandleScreenShotting.cpp" />
     <ClCompile Include="Hooks\HookedMethods\OnChat.cpp" />
     <ClCompile Include="Hooks\HookedMethods\OnUserInput.cpp" />
+    <ClCompile Include="Hooks\HookedMethods\ProcessPacket.cpp" />
     <ClCompile Include="Hooks\HookedMethods\RebuildChunk.cpp" />
     <ClCompile Include="Hooks\HookedMethods\WeatherUpdate.cpp" />
     <ClCompile Include="Hooks\HookedMethods\WglSwapBuffers.cpp" />

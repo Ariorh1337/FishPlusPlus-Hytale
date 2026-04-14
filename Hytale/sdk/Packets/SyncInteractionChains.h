@@ -4,6 +4,7 @@
 #include "sdk/BaseDataTypes/Dictionary.h"
 #include "Structs/IndependentStructs.h"
 #include "Structs/Enums.h"
+#include "core.h"
 
 struct SelectedHitEntity : Object {
 	Vector3f* hit_location;

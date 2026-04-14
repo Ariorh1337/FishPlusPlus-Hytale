@@ -1,4 +1,5 @@
 #include "Packet.h"
+#include "core.h"
 
 void Packets::SendPacketImmediate(void* packet) {
 	using m_SendPacketImmediate = void(*)(void*, void*);

@@ -89,5 +89,9 @@ namespace Hooks {
     inline temp otemp = nullptr;
     extern void __fastcall hktemp(void* instance, void* object);
 
+    typedef void(__fastcall* ProcessPacket)(void* instance, Object* packet);
+    inline ProcessPacket oProcessPacket = nullptr;
+    extern void __fastcall hkProcessPacket(void* instance, Object* packet);
+
 	bool CreateHooks();
 };    

@@ -23,6 +23,12 @@ concept HasRender3D = requires(T t, Renderer3D& renderer) {
 	t->OnRender3D(renderer);
 };
 
+template<typename T>
+concept HasPacketRecieve = requires(T t, Object* packet, PacketIndex& index, bool& cancel) {
+	t->OnPacketRecieve(packet, index, cancel);
+};
+
+
 class Feature {
 public:
 	Feature(std::string name);
@@ -55,6 +61,13 @@ public:
 			EventRegister::Render3DEvent.Subscribe([feature](Renderer3D& renderer) {
 				if (feature->IsActive() && feature->CanExecute())
 					feature->OnRender3D(renderer);
+				});
+		}
+
+		if constexpr (HasPacketRecieve<T>) {
+			EventRegister::PacketRecieveEvent.Subscribe([feature](Object* packet, PacketIndex& index, bool& cancel) {
+				if (feature->IsActive() && feature->CanExecute())
+					feature->OnPacketRecieved(packet, index, cancel);
 				});
 		}
 	}
