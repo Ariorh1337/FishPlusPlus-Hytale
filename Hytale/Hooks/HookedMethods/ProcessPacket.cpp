@@ -10,9 +10,6 @@ void __fastcall Hooks::hkProcessPacket(void* instance, Object* packet) {
 	PacketIndex index = GetPacketIndex(packet);
 	EventRegister::PacketRecieveEvent.Invoke(packet, index, cancel);
 
-	if (index == PacketIndex::UpdateWorldMap_S2C)
-		cancel = true;
-
 	if (!cancel)
 		Hooks::oProcessPacket(instance, packet);
 }
