@@ -201,6 +201,12 @@
     <ClCompile Include="Util\Packet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sdk\Packets\SyncInteractionChains.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\Packets\Structs\Object.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\minhook\hde\hde32.h">
@@ -833,10 +839,10 @@
     <ClInclude Include="sdk\Hytale\ItemLibraryModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Math\BlockPosition.h">
+    <ClInclude Include="sdk\Packets\Structs\Enums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Math\BlockRotation.h">
+    <ClInclude Include="sdk\Packets\Structs\IndependentStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Features\ActualFeatures\Scaffold.h">

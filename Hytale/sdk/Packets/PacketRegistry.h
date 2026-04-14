@@ -600,8 +600,6 @@ inline PacketDirection GetPacketDirection(PacketIndex index) {
 template<typename T>
 inline T CreatePacket(PacketIndex index) {
 	using m_RhpNewFast = void* (*)(void*);
-	static m_RhpNewFast RhpNewFast{ };
-	if (!RhpNewFast)
-		RhpNewFast = reinterpret_cast<m_RhpNewFast>(SM::RhpNewFastAddress);
+	static m_RhpNewFast RhpNewFast = reinterpret_cast<m_RhpNewFast>(SM::RhpNewFastAddress);
 	return (T)RhpNewFast((void*) GetPacketMethodTable(index));
 }

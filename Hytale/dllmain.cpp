@@ -53,7 +53,6 @@ bool InitSigs() {
     GetSig(RhpNewFast, "8B 15 ? ? ? ? 65 48 8B 04 25 ? ? ? ? ? ? ? ? BA");
     GetSig(SendPacketImmediate, "55 41 57 41 56 41 55 41 54 57 56 53 48 81 EC ? ? ? ? 48 8D AC 24 ? ? ? ? 0F 57 E4 0F 29 65 ? 0F 29 65 ? 0F 29 65 ? 0F 29 65 ? 33 C0 48 89 45 ? 48 89 4D ? 48 8B D9"); //48 8b d9 48 8b f2 48 8d 0d ? ? ? ? e8 ? ? ? ? 48 89 85 ? ? ? ? 48 8d 48 08 48 8b d3 e8 ? ? ? ? 48 85 f6
 
-
 	Util::log("Finished initializing signatures\n");
 	return true;
 }

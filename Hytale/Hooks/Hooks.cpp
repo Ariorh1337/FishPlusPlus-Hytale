@@ -4,6 +4,7 @@
 #include "Core.h"
 #include "Hooks.h"
 #include "GCPatch.h"
+#include "sdk/Packets/SyncInteractionChains.h"
 
 // Helper macros for creating hooks
 // These macros simplify the process of creating hooks by combining pattern scanning and hook creation into a single step. They also log the addresses found for easier debugging.
@@ -23,6 +24,16 @@ CREATE_HOOK(name)
 std::uintptr_t name##Address = Util::RelativeVirtualAddress(Util::PatternScan(pattern), 1, 5);\
 Util::log("Found %s sig at: 0x%llX - 0x%llX = 0x%lX\n", #name, name##Address, gameBase, (name##Address - gameBase));\
 CREATE_HOOK(name)
+
+void __fastcall Hooks::hktemp(void* instance, void* object) {
+	HytaleString* name = Util::ObjectToString(object);
+	std::string nameStr = name ? name->getString() : "nullptr";
+    if (nameStr == "Hytale.Protocol.Packets.Interaction.SyncInteractionChains") {
+		SyncInteractionChainsPacket* packet = (SyncInteractionChainsPacket*) object;
+        packet->DBGPrint();
+	}
+
+}
 
 /*
 * Creates and registers all hooks
@@ -52,6 +63,10 @@ bool Hooks::CreateHooks() {
     CREATE_SIG_HOOK_BY_REF(DrawEntityCharactersAndItems, "E8 ? ? ? ? 48 8B 4B ? 48 8B 49 ? BA ? ? ? ? 39 09 E8 ? ? ? ? 48 8B 85");
     CREATE_SIG_HOOK_BY_REF(DrawPostEffect, "E8 ? ? ? ? 80 7B ? ? 75 ? 48 89 5D");
     CREATE_SIG_HOOK_BY_REF(BuildGeometry, "E8 ? ? ? ? 48 89 7D ? ? ? ? 00 75");
+
+/*    if (MH_CreateHook((LPVOID) SM::SendPacketImmediateAddress, &hktemp, reinterpret_cast<LPVOID*>(&otemp)) != MH_OK) {
+        Util::log("Failed to hook %s\n", "temp"); return false;
+    } else allHooks.push_back(std::make_pair((void*) otemp, (void*) SM::SendPacketImmediateAddress));*/
 
     MH_EnableHook(MH_ALL_HOOKS);
 

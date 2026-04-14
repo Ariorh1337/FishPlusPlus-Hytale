@@ -211,6 +211,8 @@
     <ClCompile Include="Renderer\Renderer3D.cpp" />
     <ClCompile Include="Renderer\Shaders.cpp" />
     <ClCompile Include="Features\ActualFeatures\Scaffold.cpp" />
+    <ClCompile Include="sdk\Packets\Structs\Object.h" />
+    <ClCompile Include="sdk\Packets\SyncInteractionChains.h" />
     <ClCompile Include="sdk\SDK.cpp" />
     <ClCompile Include="sdk\Hytale\Time.h" />
     <ClCompile Include="Util\FileUtil.cpp" />
@@ -355,8 +357,8 @@
     <ClInclude Include="Features\ActualFeatures\Speed.h" />
     <ClInclude Include="Hooks\GCPatch.h" />
     <ClInclude Include="Hooks\Hooks.h" />
-    <ClInclude Include="Math\BlockPosition.h" />
-    <ClInclude Include="Math\BlockRotation.h" />
+    <ClInclude Include="sdk\Packets\Structs\Enums.h" />
+    <ClInclude Include="sdk\Packets\Structs\IndependentStructs.h" />
     <ClInclude Include="Math\BoundingBox.h" />
     <ClInclude Include="Math\Color.h" />
     <ClInclude Include="Math\Matrix4x4.h" />

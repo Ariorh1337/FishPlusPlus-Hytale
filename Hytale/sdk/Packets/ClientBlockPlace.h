@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Math/BlockPosition.h"
-#include "Math/BlockRotation.h"
+#include "Structs/Object.h"
+#include "Structs/IndependentStructs.h"
 
-struct ClientPlaceBlockPacket { // Struct from pEric
+struct ClientPlaceBlockPacket : Object { // Struct from pEric
 	void* mt;
 	BlockPosition* position;
 	BlockRotation* rotation;

@@ -4,6 +4,7 @@
 #include "Scaffold.h"
 #include "core.h"
 #include "sdk/Packets/ClientBlockPlace.h"
+#include "sdk/Packets/SyncInteractionChains.h"
 
 Scaffold::Scaffold() : Feature("Scaffold") {
 
