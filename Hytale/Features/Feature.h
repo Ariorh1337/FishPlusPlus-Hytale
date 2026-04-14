@@ -25,7 +25,7 @@ concept HasRender3D = requires(T t, Renderer3D& renderer) {
 
 template<typename T>
 concept HasPacketRecieve = requires(T t, Object* packet, PacketIndex& index, bool& cancel) {
-	t->OnPacketRecieve(packet, index, cancel);
+	t->OnPacketRecieved(packet, index, cancel);
 };
 
 

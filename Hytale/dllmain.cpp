@@ -52,6 +52,7 @@ bool InitSigs() {
     GetSig(Object_ToString, "48 83 EC ? E8 ? ? ? ? 48 8B 48 ? 48 85 C9 74 ? 48 8B 09 48 85 C9 75 ? 48 8B C8 E8 ? ? ? ? EB ? 48 8B C1 48 8B C8 48 8B 00 48 83 C4 ? 48 FF 60");
     GetSig(RhpNewFast, "8B 15 ? ? ? ? 65 48 8B 04 25 ? ? ? ? ? ? ? ? BA");
     GetSig(SendPacketImmediate, "55 41 57 41 56 41 55 41 54 57 56 53 48 81 EC ? ? ? ? 48 8D AC 24 ? ? ? ? 0F 57 E4 0F 29 65 ? 0F 29 65 ? 0F 29 65 ? 0F 29 65 ? 33 C0 48 89 45 ? 48 89 4D ? 48 8B D9"); //48 8b d9 48 8b f2 48 8d 0d ? ? ? ? e8 ? ? ? ? 48 89 85 ? ? ? ? 48 8d 48 08 48 8b d3 e8 ? ? ? ? 48 85 f6
+    GetSig(RhpNewArray_Generic, "48 81 FA ? ? ? ? 73 ? 67 8D 04 D5");
 
 	Util::log("Finished initializing signatures\n");
 	return true;

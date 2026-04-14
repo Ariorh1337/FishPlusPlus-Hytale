@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
 #include "FeatureHandler.h"
 
 #include "../Menu/Menu.h"
@@ -17,6 +20,7 @@
 void InitFeature(std::unique_ptr<Feature> feature, std::string tab) {
 	feature->setCategory(tab);
 	feature->CreateForcedKeybind();
+	feature->RegisterEvent(feature.get());
 	feature->Initialize();
 
 	FeatureHandler::features.push_back(std::move(feature));

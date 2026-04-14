@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
 #pragma once
 #include "sdk/BaseDataTypes/Array.h"
 #include "sdk/BaseDataTypes/HytaleString.h"

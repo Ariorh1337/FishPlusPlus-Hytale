@@ -1,8 +1,11 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
 #pragma once
 #include <cstdint>
 #include <algorithm>
 
-#include "Structs/Object.h"
+#include "sdk/BaseDataTypes/Object.h"
 
 // Auto-generated packet definitions from dumper
 // Total packets found: 279
@@ -286,7 +289,7 @@ enum PacketIndex : size_t {
 	BuilderToolHideAnchors_S2C = 263,                          // ID: 416 [Client-Bound]
 	PrefabUnselectPrefab_C2S = 264,                            // ID: 417 [Server-Bound]
 	BuilderToolsSetSoundSet_S2C = 265,                         // ID: 418 [Client-Bound]
-	BuilderToolLaserPointer_S2C = 266,                         // ID: 419 [Client-Bound]
+	BuilderToolLaserPointer_S2C = 266,                         // ID: 419 [Client-Bound] 
 	BuilderToolSetEntityScale_C2S = 267,                       // ID: 420 [Server-Bound]
 	BuilderToolSetEntityPickupEnabled_C2S = 268,               // ID: 421 [Server-Bound]
 	BuilderToolSetEntityLight_C2S = 269,                       // ID: 422 [Server-Bound]

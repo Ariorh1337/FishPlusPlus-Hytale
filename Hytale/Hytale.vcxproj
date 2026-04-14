@@ -188,6 +188,7 @@
     <ClCompile Include="Hooks\HookedMethods\OnUserInput.cpp" />
     <ClCompile Include="Hooks\HookedMethods\ProcessPacket.cpp" />
     <ClCompile Include="Hooks\HookedMethods\RebuildChunk.cpp" />
+    <ClCompile Include="Hooks\HookedMethods\TimeModuleNewFrame.cpp" />
     <ClCompile Include="Hooks\HookedMethods\WeatherUpdate.cpp" />
     <ClCompile Include="Hooks\HookedMethods\WglSwapBuffers.cpp" />
     <ClCompile Include="Hooks\Hooks.cpp" />
@@ -212,7 +213,6 @@
     <ClCompile Include="Renderer\Renderer3D.cpp" />
     <ClCompile Include="Renderer\Shaders.cpp" />
     <ClCompile Include="Features\ActualFeatures\Scaffold.cpp" />
-    <ClCompile Include="sdk\Packets\Structs\Object.h" />
     <ClCompile Include="sdk\Packets\SyncInteractionChains.h" />
     <ClCompile Include="sdk\SDK.cpp" />
     <ClCompile Include="sdk\Hytale\Time.h" />
@@ -358,6 +358,7 @@
     <ClInclude Include="Features\ActualFeatures\Speed.h" />
     <ClInclude Include="Hooks\GCPatch.h" />
     <ClInclude Include="Hooks\Hooks.h" />
+    <ClInclude Include="sdk\BaseDataTypes\Object.h" />
     <ClInclude Include="sdk\Packets\Structs\Enums.h" />
     <ClInclude Include="sdk\Packets\Structs\IndependentStructs.h" />
     <ClInclude Include="Math\BoundingBox.h" />
@@ -432,6 +433,8 @@
     <ClInclude Include="sdk\Hytale\SceneRenderer.h" />
     <ClInclude Include="sdk\Packets\ClientBlockPlace.h" />
     <ClInclude Include="sdk\Packets\PacketRegistry.h" />
+    <ClInclude Include="sdk\Packets\UpdateBlockDamage.h" />
+    <ClInclude Include="sdk\Packets\UpdateWorldMap.h" />
     <ClInclude Include="sdk\SDK.h" />
     <ClInclude Include="sdk\Hytale\Window.h" />
     <ClInclude Include="Events\EventSystem.h" />

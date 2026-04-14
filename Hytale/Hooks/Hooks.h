@@ -69,6 +69,11 @@ namespace Hooks {
 	inline WeatherUpdate oWeatherUpdate = nullptr;
 	extern void __fastcall hkWeatherUpdate(uint64_t instance, float deltaTime);
 
+    typedef void(__fastcall* TimeModuleNewFrame)(void* instance, float deltaTime);
+    inline TimeModuleNewFrame oTimeModuleNewFrame = nullptr;
+    extern void __fastcall hkTimeModuleNewFrame(void* instance, float deltaTime);
+
+
 	typedef void(__fastcall* OnChat)(uint64_t instance, HytaleString* chatString);
 	inline OnChat oOnChat = nullptr;
 	extern void __fastcall hkOnChat(uint64_t instance, HytaleString* chatString);

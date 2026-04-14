@@ -1,5 +1,5 @@
 #pragma once
-#include "Object.h"
+#include "sdk/BaseDataTypes/Object.h"
 #include "Enums.h"	
 
 struct BlockPosition : Object { // Struct from pEric
@@ -85,4 +85,11 @@ struct Direction : Object { // Struct from pEric
 		this->pitch = vec.y;
 		this->roll = vec.z;
 	}
+};
+
+struct MapChunk : Object {
+	int chunkX;
+	int chunkY;
+
+	void* image; //MapImage
 };

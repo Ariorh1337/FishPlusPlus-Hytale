@@ -1,9 +1,7 @@
-/*
- * Copyright (c) FishPlusPlus.
- */
 #pragma once
 #include "Util/Packet.h"
+#include "sdk/BaseDataTypes/MethodTable.h"
 
 struct Object {
-	void* methodTable;
+	MethodTable* methodTable;
 };
