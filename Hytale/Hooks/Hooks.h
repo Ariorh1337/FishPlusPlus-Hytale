@@ -73,7 +73,6 @@ namespace Hooks {
     inline TimeModuleNewFrame oTimeModuleNewFrame = nullptr;
     extern void __fastcall hkTimeModuleNewFrame(void* instance, float deltaTime);
 
-
 	typedef void(__fastcall* OnChat)(uint64_t instance, HytaleString* chatString);
 	inline OnChat oOnChat = nullptr;
 	extern void __fastcall hkOnChat(uint64_t instance, HytaleString* chatString);
@@ -97,6 +96,10 @@ namespace Hooks {
     typedef void(__fastcall* ProcessPacket)(void* instance, Object* packet);
     inline ProcessPacket oProcessPacket = nullptr;
     extern void __fastcall hkProcessPacket(void* instance, Object* packet);
+
+    typedef void*(__fastcall* SocketSend)(void* instance, void* error, void* byteArray, char socketFlags, void* param5);
+    inline SocketSend oSocketSend = nullptr;
+    extern void* __fastcall hkSocketSend(void* instance, void* error, void* byteArray, char socketFlags, void* param5);
 
 	bool CreateHooks();
 };    

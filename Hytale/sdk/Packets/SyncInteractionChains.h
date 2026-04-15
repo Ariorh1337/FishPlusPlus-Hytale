@@ -9,7 +9,7 @@
 #include "Structs/Enums.h"
 #include "core.h"
 
-struct SelectedHitEntity : Object {
+struct SelectedHitEntity : Object { // Struct from pEric
 	Vector3f* hit_location;
 	Position* position;
 	Direction* body_rotation;
@@ -25,7 +25,7 @@ struct SelectedHitEntity : Object {
 	}
 };
 
-struct ForkedChainId : Object {
+struct ForkedChainId : Object { // Struct from pEric
 	ForkedChainId* forked_id;
 	int entry_index;
 	int sub_index;
@@ -44,7 +44,7 @@ struct ForkedChainId : Object {
 	}
 };
 
-struct InteractionChainData : Object {
+struct InteractionChainData : Object { // Struct from pEric
 	Vector3f* hit_location;
 	HytaleString* hit_detail;
 	BlockPosition* block_position;
@@ -66,7 +66,7 @@ struct InteractionChainData : Object {
 	}
 };
 
-struct InteractionSyncData : Object {
+struct InteractionSyncData : Object { // Struct from pEric
 	BlockPosition* block_position;
 	BlockRotation* block_rotation;
 	Dictionary<InteractionType, int>* fork_counts;
@@ -130,7 +130,7 @@ struct InteractionSyncData : Object {
 	}
 };
 
-struct SyncInteractionChain : Object {
+struct SyncInteractionChain : Object { // Struct from pEric
 	HytaleString* item_in_hand_id;
 	HytaleString* utility_item_id;
 	HytaleString* tools_item_id;
@@ -200,7 +200,7 @@ struct SyncInteractionChain : Object {
 	}
 };
 
-struct SyncInteractionChainsPacket : Object {
+struct SyncInteractionChainsPacket : Object { // Struct from pEric
 	Array<SyncInteractionChain*>* updates;
 
 	static void Send(Vector3 pos, int placedBlockId = 0, bool quickReplace = false) {

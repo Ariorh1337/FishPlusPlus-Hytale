@@ -5,7 +5,7 @@ struct InteractionModule {
 	char pad_0[0x10];                                   //0x0
 	GameInstance* gameInstance;                         //0x10
 	uint64_t field_0x10;                                //0x18
-	BlockPlacementPreview* BlockPreview; 								//0x20 HytaleClient.InGame.Modules.Interaction.BlockPlacementPreview
+	BlockPlacementPreview* BlockPreview; 				//0x20 HytaleClient.InGame.Modules.Interaction.BlockPlacementPreview
 	void* EntityPreview; 								//0x28 HytaleClient.InGame.Modules.Interaction.EntityPreview
 	void* _blockOutlineRenderer; 						//0x30 HytaleClient.Graphics.Gizmos.BlockOutlineRenderer
 	void* _targetBlockRaycastOptions; 					//0x38 HytaleClient.InGame.HitDetection+RaycastOptions

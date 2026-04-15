@@ -6,8 +6,22 @@
 #include "sdk/BaseDataTypes/Object.h"
 #include "Structs/IndependentStructs.h"
 
+#pragma pack(push, 1)
+struct ClientPlaceBlockPacketBuffer {
+	byte flagOfSomeSort;
+	int posX;
+	int posY;
+	int posZ;
+	Rotation rotationYaw;
+	Rotation rotationPitch;
+	Rotation rotationRoll;
+	int placedBlockId;
+	bool quickReplace;
+};
+#pragma pack(pop)
+
+
 struct ClientPlaceBlockPacket : Object { // Struct from pEric
-	void* mt;
 	BlockPosition* position;
 	BlockRotation* rotation;
 	int placedBlockId;

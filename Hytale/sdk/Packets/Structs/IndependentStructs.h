@@ -87,9 +87,35 @@ struct Direction : Object { // Struct from pEric
 	}
 };
 
-struct MapChunk : Object {
+struct MapChunk : Object { // Struct from pEric
 	int chunkX;
 	int chunkY;
 
 	void* image; //MapImage
+};
+
+struct MovementStates : Object {
+	bool idle;
+	bool horizontal_idle;
+	bool jumping;
+	bool flying;
+	bool walking;
+	bool running;
+	bool sprinting;
+	bool crouching;
+	bool forced_crouching;
+	bool falling;
+	bool falling_far;
+	bool climbing;
+	bool in_fluid;
+	bool swimming;
+	bool swim_jumping;
+	bool on_ground;
+	bool mantling;
+	bool sliding;
+	bool mounting;
+	bool rolling;
+	bool sitting;
+	bool gliding;
+	bool sleeping;
 };
