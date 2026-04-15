@@ -180,6 +180,7 @@
     <ClCompile Include="Features\ActualFeatures\Nametags.cpp" />
     <ClCompile Include="Features\ActualFeatures\NoFall.cpp" />
     <ClCompile Include="Features\ActualFeatures\Gamemode.cpp" />
+    <ClCompile Include="Features\ActualFeatures\LookAtInfo.cpp" />
     <ClCompile Include="Features\ActualFeatures\Speed.cpp" />
     <ClCompile Include="Hooks\GCPatch.cpp" />
     <ClCompile Include="Hooks\HookedMethods\DoMoveCycle.cpp" />
@@ -203,6 +204,7 @@
     <ClCompile Include="Menu\Children\SliderButton.cpp" />
     <ClCompile Include="Menu\Children\ToggleButton.cpp" />
     <ClCompile Include="Menu\Component.cpp" />
+    <ClCompile Include="Menu\DebugOverlay.cpp" />
     <ClCompile Include="Menu\Menu.cpp" />
     <ClCompile Include="Menu\Children\Tab.cpp" />
     <ClCompile Include="Renderer\FontRenderer\FontLoader.cpp" />

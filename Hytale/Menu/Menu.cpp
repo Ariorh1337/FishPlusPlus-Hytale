@@ -2,6 +2,7 @@
  * Copyright (c) FishPlusPlus.
  */
 #include "Menu.h"
+#include "DebugOverlay.h"
 
 #include "../Util/Util.h"
 #include "../Util/InputSystem.h"
@@ -90,6 +91,8 @@ void RenderDebugText() {
     Fonts::Figtree->RenderText(std::format("LocalPlayer: 0x{:x}", reinterpret_cast<uintptr_t>(Util::getLocalPlayer())), 0.0f, 40.0f, 0.5f, Color::White());
     Fonts::Figtree->RenderText(std::format("DMC: 0x{:x}", reinterpret_cast<uintptr_t>(Util::GetMovementController())), 0.0f, 50.0f, 0.5f, Color::White());
     Fonts::Figtree->RenderText(std::format("OptionsHelper: 0x{:x}", reinterpret_cast<uintptr_t>(Globals::optionsHelper)), 0.0f, 60.0f, 0.5f, Color::White());
+
+    DebugOverlay::RenderLookAtInfo(0.0f, 80.0f, 0.65f, Color::White());
 
     Fonts::Figtree->RenderText(std::format("Fish++ Hytale by LimitlessChicken aka milaq", reinterpret_cast<uintptr_t>(Util::app)), 500.0f, 10.0f, 0.5f, Color::White());
 }
