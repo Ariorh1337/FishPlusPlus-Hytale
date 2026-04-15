@@ -38,5 +38,8 @@ Right now - no support for packets with 'ptr' data type in fields (example: no s
 !send-packet {"name":"ClientMovement","absolute_position":{"x":100,"y":64,"z":100}}
 !send-packet {"name":"ClientMovement","body_orientation":{"yaw":1.57,"pitch":0},"absolute_position":{"x":0,"y":100,"z":0}}
 
+!receive-packet {"name":"SetGameMode", "game_mode": 1}
+etc
+
 ## Discord
 [Discord Server](https://discord.gg/4uj596FZ9v)
