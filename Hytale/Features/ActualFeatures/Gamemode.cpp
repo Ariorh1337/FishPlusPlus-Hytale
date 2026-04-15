@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
 #include "Gamemode.h"
 #include "Core.h"
 
