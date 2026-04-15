@@ -16,6 +16,7 @@
 #include "ActualFeatures/BlockESP.h"
 #include "ActualFeatures/Tracers.h"
 #include "ActualFeatures/Scaffold.h"
+#include "ActualFeatures/HitBox.h"
 
 void InitFeature(std::unique_ptr<Feature> feature, std::string tab) {
 	feature->setCategory(tab);
@@ -27,6 +28,8 @@ void InitFeature(std::unique_ptr<Feature> feature, std::string tab) {
 }
 
 void FeatureHandler::Init() {
+	InitFeature(std::make_unique<HitBox>(), "Combat");
+
 	InitFeature(std::make_unique<Flight>(), "Movement");
 	InitFeature(std::make_unique<Speed>(), "Movement");
 	InitFeature(std::make_unique<NoFall>(), "Movement");
@@ -39,8 +42,9 @@ void FeatureHandler::Init() {
 	InitFeature(std::make_unique<BlockESP>(), "Visuals");
 	InitFeature(std::make_unique<Tracers>(), "Visuals");
 
-	Menu::mainComponent->AddChild(std::make_unique<Tab>("Movement", 200, 200));
-	Menu::mainComponent->AddChild(std::make_unique<Tab>("Visuals", 410, 200));
+	Menu::mainComponent->AddChild(std::make_unique<Tab>("Combat", 200, 200));
+	Menu::mainComponent->AddChild(std::make_unique<Tab>("Movement", 410, 200));
+	Menu::mainComponent->AddChild(std::make_unique<Tab>("Visuals", 620, 200));
 }
 
 bool FeatureHandler::FeaturesLoaded() {

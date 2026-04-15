@@ -204,7 +204,13 @@
     <ClCompile Include="sdk\Packets\SyncInteractionChains.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sdk\Packets\Structs\Object.h">
+    <ClCompile Include="Hooks\HookedMethods\ProcessPacket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hooks\HookedMethods\TimeModuleNewFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Features\ActualFeatures\HitBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -864,6 +870,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util\SigManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\BaseDataTypes\Object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\Packets\UpdateBlockDamage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\Packets\UpdateWorldMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Features\ActualFeatures\HitBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

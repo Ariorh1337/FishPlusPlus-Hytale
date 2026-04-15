@@ -2,6 +2,7 @@
  * Copyright (c) FishPlusPlus.
  */
 #include "../Hooks.h"
+#include "Events/EventRegister.h"
 
 #pragma optimize("", off)
 #pragma runtime_checks("", off)
@@ -13,6 +14,8 @@ void __fastcall Hooks::hkHandleScreenShotting(App* app) {
 
     Hooks::oHandleScreenShotting(app);
     SDK::Main();
+
+    EventRegister::FrameEvent.Invoke();
 }
 #pragma runtime_checks("", restore)
 #pragma optimize("", on)

@@ -28,6 +28,10 @@ concept HasPacketRecieve = requires(T t, Object* packet, PacketIndex& index, boo
 	t->OnPacketRecieved(packet, index, cancel);
 };
 
+template<typename T>
+concept HasFrame = requires(T t) {
+	t->OnFrame();
+};
 
 class Feature {
 public:
@@ -68,6 +72,13 @@ public:
 			EventRegister::PacketRecieveEvent.Subscribe([feature](Object* packet, PacketIndex& index, bool& cancel) {
 				if (feature->IsActive() && feature->CanExecute())
 					feature->OnPacketRecieved(packet, index, cancel);
+				});
+		}
+
+		if constexpr (HasFrame<T>) {
+			EventRegister::FrameEvent.Subscribe([feature]() {
+				if (feature->IsActive() && feature->CanExecute())
+					feature->OnFrame();
 				});
 		}
 	}
