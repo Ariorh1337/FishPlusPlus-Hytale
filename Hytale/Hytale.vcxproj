@@ -182,6 +182,7 @@
     <ClCompile Include="Features\ActualFeatures\Gamemode.cpp" />
     <ClCompile Include="Features\ActualFeatures\Speed.cpp" />
     <ClCompile Include="Features\ActualFeatures\PacketSender.cpp" />
+    <ClCompile Include="Features\ActualFeatures\SubTypeRegistry.cpp" />
     <ClCompile Include="Hooks\GCPatch.cpp" />
     <ClCompile Include="Hooks\HookedMethods\DoMoveCycle.cpp" />
     <ClCompile Include="Hooks\HookedMethods\DrawEntityCharactersAndItems.cpp" />

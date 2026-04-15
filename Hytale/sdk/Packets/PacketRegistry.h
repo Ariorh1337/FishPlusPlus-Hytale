@@ -6,6 +6,9 @@
 #include <algorithm>
 
 #include "sdk/BaseDataTypes/Object.h"
+#include "Util/SigManager.h"
+
+extern uint64_t gameBase;
 
 // Auto-generated packet definitions from dumper
 // Total packets found: 279

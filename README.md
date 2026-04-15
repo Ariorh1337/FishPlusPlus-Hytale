@@ -35,5 +35,8 @@ There is also a separate config that gets saved every 2 minutes. It will not ove
 Before using - place `packet_descriptors.json` next to HytaleClient.exe (AppData\Roaming\Hytale\install\release\package\game\latest\Client)
 Right now - no support for packets with 'ptr' data type in fields (example: no support for ClientPlaceBlock)
 
+!send-packet {"name":"ClientMovement","absolute_position":{"x":100,"y":64,"z":100}}
+!send-packet {"name":"ClientMovement","body_orientation":{"yaw":1.57,"pitch":0},"absolute_position":{"x":0,"y":100,"z":0}}
+
 ## Discord
 [Discord Server](https://discord.gg/4uj596FZ9v)

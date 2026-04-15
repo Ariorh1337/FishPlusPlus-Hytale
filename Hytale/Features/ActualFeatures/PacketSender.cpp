@@ -1,31 +1,66 @@
 /*
  * Copyright (c) FishPlusPlus.
+ *
+ * PacketSender — send any C2S packet from chat with full nested JSON support:
+ *
+ *   Simple:
+ *     !send-packet {"name":"ClientPlaceBlock","placed_block_id":5}
+ *
+ *   Nested (ptr fields):
+ *     !send-packet {"name":"ClientMovement","absolute_position":{"x":100,"y":64,"z":100}}
+ *     !send-packet {"name":"ClientMovement","body_orientation":{"yaw":1.5,"pitch":0}}
+ *
+ * Ptr fields are allocated via RhpNewFast using MethodTables cached by
+ * SubTypeRegistry (populated automatically from received packets).
  */
 #include "PacketSender.h"
+#include "PacketFieldTable.h"
+#include "SubTypeRegistry.h"
 #include "core.h"
 #include "Util/Packet.h"
 #include "sdk/Packets/PacketRegistry.h"
+#include "Hooks/Hooks.h"
 
-#include <fstream>
-#include <sstream>
+#include <string>
+#include <string_view>
 #include <unordered_map>
 #include <variant>
 #include <optional>
-#include <filesystem>
+#include <vector>
+
+using namespace PacketTable;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Minimal flat JSON parser — handles {"key": value, ...} where value is
-// a string, integer, float, or boolean. No nesting needed for chat commands.
+// JSON value type — supports nesting via recursive variant
 // ─────────────────────────────────────────────────────────────────────────────
 
-using JsonValue = std::variant<std::string, int64_t, double, bool>;
-using JsonObj   = std::unordered_map<std::string, JsonValue>;
+struct JsonVal;
+using JsonObj = std::unordered_map<std::string, JsonVal>;
+
+struct JsonVal {
+    enum class Kind { Str, Int, Float, Bool, Obj } kind;
+    std::string      s;
+    int64_t          i = 0;
+    double           f = 0.0;
+    bool             b = false;
+    JsonObj          obj;
+
+    static JsonVal fromStr  (std::string v)  { JsonVal r; r.kind=Kind::Str;   r.s=v;   return r; }
+    static JsonVal fromInt  (int64_t v)      { JsonVal r; r.kind=Kind::Int;   r.i=v;   return r; }
+    static JsonVal fromFloat(double v)       { JsonVal r; r.kind=Kind::Float; r.f=v;   return r; }
+    static JsonVal fromBool (bool v)         { JsonVal r; r.kind=Kind::Bool;  r.b=v;   return r; }
+    static JsonVal fromObj  (JsonObj v)      { JsonVal r; r.kind=Kind::Obj;   r.obj=v; return r; }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Recursive JSON parser
+// ─────────────────────────────────────────────────────────────────────────────
 
 static void skipWs(const std::string& s, size_t& i) {
-    while (i < s.size() && std::isspace((unsigned char)s[i])) ++i;
+    while (i < s.size() && (unsigned char)s[i] <= ' ') ++i;
 }
 
-static std::optional<std::string> parseString(const std::string& s, size_t& i) {
+static std::optional<std::string> parseStr(const std::string& s, size_t& i) {
     if (i >= s.size() || s[i] != '"') return {};
     ++i;
     std::string out;
@@ -34,261 +69,137 @@ static std::optional<std::string> parseString(const std::string& s, size_t& i) {
         else out += s[i];
         ++i;
     }
-    if (i < s.size()) ++i; // skip closing "
+    if (i < s.size()) ++i;
     return out;
 }
 
-static std::optional<JsonValue> parseValue(const std::string& s, size_t& i) {
+static std::optional<JsonObj> parseObj(const std::string& s, size_t& i);
+
+static std::optional<JsonVal> parseVal(const std::string& s, size_t& i) {
     skipWs(s, i);
     if (i >= s.size()) return {};
 
-    // String
-    if (s[i] == '"') {
-        auto str = parseString(s, i);
-        if (!str) return {};
-        return JsonValue{ *str };
+    if (s[i] == '{') {
+        auto obj = parseObj(s, i);
+        return obj ? std::optional<JsonVal>(JsonVal::fromObj(*obj)) : std::nullopt;
     }
+    if (s[i] == '"') {
+        auto str = parseStr(s, i);
+        return str ? std::optional<JsonVal>(JsonVal::fromStr(*str)) : std::nullopt;
+    }
+    if (s.substr(i,4) == "true")  { i+=4; return JsonVal::fromBool(true);  }
+    if (s.substr(i,5) == "false") { i+=5; return JsonVal::fromBool(false); }
+    if (s.substr(i,4) == "null")  { i+=4; return {};                       }
 
-    // Boolean / null
-    if (s.substr(i, 4) == "true")  { i += 4; return JsonValue{ true }; }
-    if (s.substr(i, 5) == "false") { i += 5; return JsonValue{ false }; }
-    if (s.substr(i, 4) == "null")  { i += 4; return {}; }  // skip nulls
-
-    // Number (int or float)
+    // Number
     size_t start = i;
-    bool isFloat = false;
+    bool isF = false;
     if (s[i] == '-') ++i;
     while (i < s.size() && std::isdigit((unsigned char)s[i])) ++i;
-    if (i < s.size() && s[i] == '.') { isFloat = true; ++i; }
+    if (i < s.size() && s[i] == '.') { isF = true; ++i; }
     while (i < s.size() && std::isdigit((unsigned char)s[i])) ++i;
-    if (i < s.size() && (s[i] == 'e' || s[i] == 'E')) {
-        isFloat = true; ++i;
-        if (i < s.size() && (s[i] == '+' || s[i] == '-')) ++i;
-        while (i < s.size() && std::isdigit((unsigned char)s[i])) ++i;
-    }
-
-    std::string numStr = s.substr(start, i - start);
-    if (numStr.empty()) return {};
-    if (isFloat) return JsonValue{ std::stod(numStr) };
-    return JsonValue{ (int64_t)std::stoll(numStr) };
+    std::string n = s.substr(start, i - start);
+    if (n.empty()) return {};
+    return isF ? JsonVal::fromFloat(std::stod(n))
+               : JsonVal::fromInt((int64_t)std::stoll(n));
 }
 
-static std::optional<JsonObj> parseJsonObject(const std::string& s) {
-    JsonObj out;
-    size_t i = 0;
+static std::optional<JsonObj> parseObj(const std::string& s, size_t& i) {
     skipWs(s, i);
     if (i >= s.size() || s[i] != '{') return {};
     ++i;
-
-    while (true) {
+    JsonObj out;
+    while (i < s.size()) {
         skipWs(s, i);
-        if (i >= s.size()) break;
-        if (s[i] == '}') break;
+        if (s[i] == '}') { ++i; break; }
         if (s[i] == ',') { ++i; continue; }
-
-        auto key = parseString(s, i);
-        if (!key) break;
-
-        skipWs(s, i);
-        if (i >= s.size() || s[i] != ':') break;
-        ++i;
-
-        auto val = parseValue(s, i);
-        if (val) out[*key] = *val;
+        auto k = parseStr(s, i); if (!k) break;
+        skipWs(s, i); if (i >= s.size() || s[i] != ':') break; ++i;
+        auto v = parseVal(s, i); if (v) out[*k] = *v;
     }
     return out;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Descriptor loading (from packet_descriptors.json)
-// ─────────────────────────────────────────────────────────────────────────────
-
-struct FieldDesc {
-    std::string name;
-    std::string type;   // int32, int64, float32, float64, bool, int16, int8, enum32
-    size_t      offset;
-    int         size;
-    bool        settable;
-};
-
-struct PacketDesc {
-    PacketIndex             index;
-    int                     id;
-    std::string             direction;
-    std::vector<FieldDesc>  fields;
-};
-
-static std::unordered_map<std::string, PacketDesc> g_descs;
-static bool g_loaded = false;
-
-// Tiny JSON parser for the descriptor file (only what we need)
-static std::string readJsonString(const std::string& s, size_t& i) {
-    auto v = parseString(s, i);
-    return v ? *v : "";
-}
-
-static int64_t readJsonInt(const std::string& s, size_t& i) {
-    auto v = parseValue(s, i);
-    if (!v) return 0;
-    if (auto* p = std::get_if<int64_t>(&*v)) return *p;
-    if (auto* p = std::get_if<double>(&*v))  return (int64_t)*p;
-    return 0;
-}
-
-// Parse the descriptor JSON into g_descs
-// Format: { "PacketName": { "index":N, "id":N, "direction":"C2S",
-//            "fields":[{"name":"f","type":"t","offset":N,"size":N,"settable":true},...] } }
-static void parseDescriptors(const std::string& src) {
-    // We'll do a simple line/token scan rather than a full recursive parser.
-    // The file is regular enough for this.
-
-    // Split into per-packet blocks by finding top-level keys
-    size_t i = 0;
-    skipWs(src, i);
-    if (i >= src.size() || src[i] != '{') return;
-    ++i;
-
-    while (i < src.size()) {
-        skipWs(src, i);
-        if (src[i] == '}') break;
-        if (src[i] == ',') { ++i; continue; }
-
-        // Packet name
-        auto pktName = parseString(src, i);
-        if (!pktName) break;
-        skipWs(src, i);
-        if (i >= src.size() || src[i] != ':') break;
-        ++i;
-        skipWs(src, i);
-        if (i >= src.size() || src[i] != '{') break;
-        ++i;
-
-        PacketDesc desc;
-
-        // Find end of this packet block (matching '}')
-        while (i < src.size()) {
-            skipWs(src, i);
-            if (src[i] == '}') { ++i; break; }
-            if (src[i] == ',') { ++i; continue; }
-
-            auto key = parseString(src, i);
-            if (!key) break;
-            skipWs(src, i);
-            if (i >= src.size() || src[i] != ':') break;
-            ++i;
-            skipWs(src, i);
-
-            if (*key == "index") {
-                desc.index = (PacketIndex)(int)readJsonInt(src, i);
-            } else if (*key == "id") {
-                desc.id = (int)readJsonInt(src, i);
-            } else if (*key == "direction") {
-                desc.direction = readJsonString(src, i);
-            } else if (*key == "fields") {
-                // Parse array of field objects
-                if (i < src.size() && src[i] == '[') {
-                    ++i;
-                    while (i < src.size()) {
-                        skipWs(src, i);
-                        if (src[i] == ']') { ++i; break; }
-                        if (src[i] == ',') { ++i; continue; }
-                        if (src[i] != '{') { ++i; continue; }
-                        ++i;
-
-                        FieldDesc fd;
-                        while (i < src.size()) {
-                            skipWs(src, i);
-                            if (src[i] == '}') { ++i; break; }
-                            if (src[i] == ',') { ++i; continue; }
-                            auto fkey = parseString(src, i);
-                            if (!fkey) break;
-                            skipWs(src, i);
-                            if (i >= src.size() || src[i] != ':') break;
-                            ++i;
-                            skipWs(src, i);
-
-                            if (*fkey == "name")     fd.name     = readJsonString(src, i);
-                            else if (*fkey == "type") fd.type    = readJsonString(src, i);
-                            else if (*fkey == "offset") fd.offset = (size_t)readJsonInt(src, i);
-                            else if (*fkey == "size") fd.size    = (int)readJsonInt(src, i);
-                            else if (*fkey == "settable") {
-                                auto v = parseValue(src, i);
-                                fd.settable = v && std::holds_alternative<bool>(*v) && std::get<bool>(*v);
-                            } else {
-                                parseValue(src, i); // skip unknown
-                            }
-                        }
-                        desc.fields.push_back(std::move(fd));
-                    }
-                }
-            } else {
-                parseValue(src, i); // skip unknown top-level fields
-            }
-        }
-
-        g_descs[*pktName] = std::move(desc);
-    }
-}
-
-static void LoadDescriptors() {
-    if (g_loaded) return;
-    g_loaded = true;
-
-    // Look for packet_descriptors.json next to the exe
-    char exePath[MAX_PATH];
-    GetModuleFileNameA(nullptr, exePath, MAX_PATH);
-    std::filesystem::path jsonPath = std::filesystem::path(exePath).parent_path() / "packet_descriptors.json";
-
-    std::ifstream f(jsonPath);
-    if (!f.is_open()) {
-        Util::log("[PacketSender] Could not open %s\n", jsonPath.string().c_str());
-        return;
-    }
-
-    std::ostringstream ss;
-    ss << f.rdbuf();
-    parseDescriptors(ss.str());
-
-    Util::log("[PacketSender] Loaded %zu packet descriptors from %s\n",
-        g_descs.size(), jsonPath.string().c_str());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Field writing
 // ─────────────────────────────────────────────────────────────────────────────
 
-static double toDouble(const JsonValue& v) {
-    if (auto* p = std::get_if<double>(&v))  return *p;
-    if (auto* p = std::get_if<int64_t>(&v)) return (double)*p;
-    if (auto* p = std::get_if<bool>(&v))    return *p ? 1.0 : 0.0;
+static int64_t toInt(const JsonVal& v) {
+    if (v.kind == JsonVal::Kind::Int)   return v.i;
+    if (v.kind == JsonVal::Kind::Float) return (int64_t)v.f;
+    if (v.kind == JsonVal::Kind::Bool)  return v.b ? 1 : 0;
+    return 0;
+}
+static double toDouble(const JsonVal& v) {
+    if (v.kind == JsonVal::Kind::Float) return v.f;
+    if (v.kind == JsonVal::Kind::Int)   return (double)v.i;
+    if (v.kind == JsonVal::Kind::Bool)  return v.b ? 1.0 : 0.0;
     return 0.0;
 }
 
-static int64_t toInt(const JsonValue& v) {
-    if (auto* p = std::get_if<int64_t>(&v)) return *p;
-    if (auto* p = std::get_if<double>(&v))  return (int64_t)*p;
-    if (auto* p = std::get_if<bool>(&v))    return *p ? 1 : 0;
-    return 0;
+// Forward declaration for recursion
+static void* buildSubObject(const char* type_name, const JsonObj& json);
+
+static bool writeField(void* base_ptr, const FieldDesc& fd, const JsonVal& val) {
+    auto* base = (uint8_t*)base_ptr + fd.offset;
+
+    if (fd.type == FType::Ptr) {
+        // Nested object
+        if (val.kind != JsonVal::Kind::Obj || !fd.ptr_type) {
+            Util::log("[PacketSender]   WARN: field '%s' needs a JSON object value\n", fd.name);
+            return false;
+        }
+        void* child = buildSubObject(fd.ptr_type, val.obj);
+        if (!child) {
+            Util::log("[PacketSender]   WARN: couldn't allocate sub-type '%s' "
+                      "(MethodTable not cached yet — wait for relevant S2C packet)\n", fd.ptr_type);
+            return false;
+        }
+        *(void**)base = child;
+        return true;
+    }
+
+    switch (fd.type) {
+        case FType::Int32:   *(int32_t*) base = (int32_t) toInt(val);    break;
+        case FType::Int64:   *(int64_t*) base =           toInt(val);    break;
+        case FType::Float32: *(float*)   base = (float)   toDouble(val); break;
+        case FType::Float64: *(double*)  base =           toDouble(val); break;
+        case FType::Bool:    *(bool*)    base = (bool)    toInt(val);    break;
+        case FType::Int16:   *(int16_t*) base = (int16_t) toInt(val);    break;
+        case FType::Int8:    *(int8_t*)  base = (int8_t)  toInt(val);    break;
+        default: break;
+    }
+    return true;
 }
 
-static bool toBool(const JsonValue& v) {
-    if (auto* p = std::get_if<bool>(&v))    return *p;
-    if (auto* p = std::get_if<int64_t>(&v)) return *p != 0;
-    if (auto* p = std::get_if<double>(&v))  return *p != 0.0;
-    return false;
-}
+// Allocate and fill a sub-type from a JSON object
+static void* buildSubObject(const char* type_name, const JsonObj& json) {
+    void* obj = SubTypeRegistry::Alloc(type_name);
+    if (!obj) return nullptr;
 
-static void writeField(void* packet, const FieldDesc& fd, const JsonValue& val) {
-    uint8_t* base = (uint8_t*)packet;
-    uint8_t* ptr  = base + fd.offset;
+    // Find the SubTypeDef
+    const SubTypeDef* def = nullptr;
+    for (int i = 0; i < SUB_TYPE_TABLE_SIZE; ++i) {
+        if (std::string_view(SUB_TYPE_TABLE[i].name) == type_name) {
+            def = &SUB_TYPE_TABLE[i]; break;
+        }
+    }
+    if (!def) return obj;  // no field info, return zeroed object
 
-    if      (fd.type == "int32"  || fd.type == "enum32") *(int32_t*) ptr = (int32_t)toInt(val);
-    else if (fd.type == "int64")                          *(int64_t*) ptr = toInt(val);
-    else if (fd.type == "float32")                        *(float*)   ptr = (float)toDouble(val);
-    else if (fd.type == "float64")                        *(double*)  ptr = toDouble(val);
-    else if (fd.type == "bool")                           *(bool*)    ptr = toBool(val);
-    else if (fd.type == "int16")                          *(int16_t*) ptr = (int16_t)toInt(val);
-    else if (fd.type == "int8")                           *(int8_t*)  ptr = (int8_t)toInt(val);
+    // Build a field lookup map
+    std::unordered_map<std::string_view, const FieldDesc*> fieldMap;
+    for (int i = 0; i < def->field_count; ++i)
+        fieldMap[def->fields[i].name] = &def->fields[i];
+
+    for (const auto& [key, val] : json) {
+        auto it = fieldMap.find(key);
+        if (it == fieldMap.end()) {
+            Util::log("[PacketSender]     WARN: '%s' has no field '%s'\n", type_name, key.c_str());
+            continue;
+        }
+        writeField(obj, *it->second, val);
+    }
+    return obj;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -296,85 +207,109 @@ static void writeField(void* packet, const FieldDesc& fd, const JsonValue& val) 
 // ─────────────────────────────────────────────────────────────────────────────
 
 bool PacketSender::TrySend(const std::string& json) {
-    LoadDescriptors();
-
-    auto obj = parseJsonObject(json);
-    if (!obj) {
-        Util::log("[PacketSender] Invalid JSON: %s\n", json.c_str());
+    size_t i = 0;
+    auto parsed = parseObj(json, i);
+    if (!parsed) {
+        Util::log("[PacketSender] Invalid JSON\n");
         return false;
     }
 
-    // Require "name" field
-    auto nameIt = obj->find("name");
-    if (nameIt == obj->end()) {
-        Util::log("[PacketSender] Missing \"name\" field\n");
+    auto nameIt = parsed->find("name");
+    if (nameIt == parsed->end() || nameIt->second.kind != JsonVal::Kind::Str) {
+        Util::log("[PacketSender] Missing \"name\" string\n");
         return false;
     }
-    auto* nameStr = std::get_if<std::string>(&nameIt->second);
-    if (!nameStr) {
-        Util::log("[PacketSender] \"name\" must be a string\n");
-        return false;
-    }
+    const std::string& name = nameIt->second.s;
 
-    // Look up descriptor
-    auto descIt = g_descs.find(*nameStr);
-    if (descIt == g_descs.end()) {
-        Util::log("[PacketSender] Unknown packet: %s\n", nameStr->c_str());
-        return false;
+    // Find packet definition
+    const PacketDef* def = nullptr;
+    for (int j = 0; j < PKT_TABLE_SIZE; ++j) {
+        if (name == PKT_TABLE[j].name) { def = &PKT_TABLE[j]; break; }
     }
-    const PacketDesc& desc = descIt->second;
-
-    // Allocate
-    Object* packet = CreatePacket<Object*>(desc.index);
-    if (!packet) {
-        Util::log("[PacketSender] CreatePacket failed for %s\n", nameStr->c_str());
+    if (!def) {
+        Util::log("[PacketSender] Unknown packet: %s\n", name.c_str());
         return false;
     }
 
-    // Build a field lookup map from the descriptor
-    std::unordered_map<std::string, const FieldDesc*> fieldMap;
-    for (const auto& fd : desc.fields)
-        fieldMap[fd.name] = &fd;
+    void* pkt = CreatePacket<void*>(def->index);
+    if (!pkt) { Util::log("[PacketSender] CreatePacket failed\n"); return false; }
 
-    // Write each provided field
+    // Build field lookup
+    std::unordered_map<std::string_view, const FieldDesc*> fieldMap;
+    for (int j = 0; j < def->field_count; ++j)
+        fieldMap[def->fields[j].name] = &def->fields[j];
+
     int written = 0;
-    for (const auto& [key, val] : *obj) {
+    for (const auto& [key, val] : *parsed) {
         if (key == "name") continue;
-
         auto it = fieldMap.find(key);
         if (it == fieldMap.end()) {
-            Util::log("[PacketSender]   WARN: unknown field '%s' on %s\n", key.c_str(), nameStr->c_str());
+            Util::log("[PacketSender] Unknown field '%s' on %s\n", key.c_str(), name.c_str());
             continue;
         }
-        const FieldDesc& fd = *it->second;
-        if (!fd.settable) {
-            Util::log("[PacketSender]   WARN: field '%s' is not settable (type=%s)\n",
-                key.c_str(), fd.type.c_str());
-            continue;
-        }
-
-        writeField(packet, fd, val);
-        Util::log("[PacketSender]   %s = ... (offset=0x%zX type=%s)\n",
-            key.c_str(), fd.offset, fd.type.c_str());
-        ++written;
+        if (writeField(pkt, *it->second, val)) ++written;
     }
 
-    Packets::SendPacketImmediate(packet);
-    Util::log("[PacketSender] Sent %s (index=%d id=%d fields_set=%d)\n",
-        nameStr->c_str(), (int)desc.index, desc.id, written);
-
+    Packets::SendPacketImmediate(pkt);
+    Util::log("[PacketSender] Sent %s  fields_set=%d  sub_types_cached=%d\n",
+              name.c_str(), written, SubTypeRegistry::CachedCount());
     return true;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Feature boilerplate
-// ─────────────────────────────────────────────────────────────────────────────
+bool PacketSender::TryReceive(const std::string& json) {
+    size_t i = 0;
+    auto parsed = parseObj(json, i);
+    if (!parsed) {
+        Util::log("[PacketReceiver] Invalid JSON\n");
+        return false;
+    }
 
-bool PacketSender::CanExecute() {
-    return Util::isFullyInitialized();
+    auto nameIt = parsed->find("name");
+    if (nameIt == parsed->end() || nameIt->second.kind != JsonVal::Kind::Str) {
+        Util::log("[PacketReceiver] Missing \"name\" string\n");
+        return false;
+    }
+    const std::string& name = nameIt->second.s;
+
+    const PacketDef* def = nullptr;
+    for (int j = 0; j < PKT_TABLE_SIZE; ++j) {
+        if (name == PKT_TABLE[j].name) { def = &PKT_TABLE[j]; break; }
+    }
+    if (!def) {
+        Util::log("[PacketReceiver] Unknown packet: %s\n", name.c_str());
+        return false;
+    }
+
+    void* pkt = CreatePacket<void*>(def->index);
+    if (!pkt) { Util::log("[PacketReceiver] CreatePacket failed\n"); return false; }
+
+    std::unordered_map<std::string_view, const FieldDesc*> fieldMap;
+    for (int j = 0; j < def->field_count; ++j)
+        fieldMap[def->fields[j].name] = &def->fields[j];
+
+    int written = 0;
+    for (const auto& [key, val] : *parsed) {
+        if (key == "name") continue;
+        auto it = fieldMap.find(key);
+        if (it == fieldMap.end()) {
+            Util::log("[PacketReceiver] Unknown field '%s' on %s\n", key.c_str(), name.c_str());
+            continue;
+        }
+        if (writeField(pkt, *it->second, val)) ++written;
+    }
+
+    if (!Hooks::g_LastProcessPacketInstance) {
+        Util::log("[PacketReceiver] Cannot receive %s: g_LastProcessPacketInstance is null. Wait for at least one natural incoming packet first.\n", name.c_str());
+        return false;
+    }
+
+    Hooks::hkProcessPacket(Hooks::g_LastProcessPacketInstance, (Object*)pkt);
+    Util::log("[PacketReceiver] Received %s  fields_set=%d\n", name.c_str(), written);
+    return true;
 }
 
+bool PacketSender::CanExecute() { return Util::isFullyInitialized(); }
 void PacketSender::Initialize() {
-    LoadDescriptors();
+    SubTypeRegistry::Initialize();
     Util::log("[PacketSender] Initialized\n");
 }

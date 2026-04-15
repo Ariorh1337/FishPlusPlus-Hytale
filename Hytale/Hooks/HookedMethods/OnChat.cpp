@@ -51,6 +51,9 @@ void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
 
     if (command.starts_with("send-packet "))
         PacketSender::TrySend(command.substr(12));
+
+    if (command.starts_with("receive-packet "))
+        PacketSender::TryReceive(command.substr(15));
 }
 #pragma runtime_checks("", restore)
 #pragma optimize("", on)

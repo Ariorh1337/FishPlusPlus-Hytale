@@ -47,6 +47,7 @@ void Util::log(const char* fmt, ...) {
 	va_start(args, fmt);
 	vprintf(fmt, args);
 	va_end(args);
+	fflush(stdout);
 }
 
 bool Util::IsValidPtr(void* ptr) {
