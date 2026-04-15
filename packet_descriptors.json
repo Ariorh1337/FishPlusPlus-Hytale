@@ -1,0 +1,2251 @@
+{
+  "AssetEditorActivateButton": {
+    "index": 223,
+    "id": 335,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "buttonId",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "AssetEditorCreateAsset": {
+    "index": 215,
+    "id": 327,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "data",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "rebuildCaches",
+        "type": "ptr",
+        "offset": 24,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "buttonId",
+        "type": "ptr",
+        "offset": 32,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 40,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorCreateAssetPack": {
+    "index": 205,
+    "id": 316,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "manifest",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "targetDirectoryIndex",
+        "type": "int32",
+        "offset": 20,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorCreateDirectory": {
+    "index": 196,
+    "id": 307,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorDeleteAsset": {
+    "index": 217,
+    "id": 329,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorDeleteDirectory": {
+    "index": 197,
+    "id": 308,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorDiscardChanges": {
+    "index": 218,
+    "id": 330,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "assets",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "AssetEditorExportAssets": {
+    "index": 230,
+    "id": 342,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "paths",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "AssetEditorFetchAsset": {
+    "index": 199,
+    "id": 310,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "isFromOpenedTab",
+        "type": "bool",
+        "offset": 20,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorFetchAutoCompleteData": {
+    "index": 219,
+    "id": 331,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "dataset",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "query",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorFetchJsonAssetWithParents": {
+    "index": 200,
+    "id": 311,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "isFromOpenedTab",
+        "type": "bool",
+        "offset": 20,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorFetchLastModifiedAssets": {
+    "index": 226,
+    "id": 338,
+    "direction": "C2S",
+    "fields": []
+  },
+  "AssetEditorInitialize": {
+    "index": 191,
+    "id": 302,
+    "direction": "C2S",
+    "fields": []
+  },
+  "AssetEditorRedoChanges": {
+    "index": 237,
+    "id": 350,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorRenameAsset": {
+    "index": 216,
+    "id": 328,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "newPath",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorRenameDirectory": {
+    "index": 198,
+    "id": 309,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "newPath",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorRequestChildrenList": {
+    "index": 209,
+    "id": 321,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "AssetEditorRequestDataset": {
+    "index": 221,
+    "id": 333,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "name",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "AssetEditorSelectAsset": {
+    "index": 224,
+    "id": 336,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "AssetEditorSetGameTime": {
+    "index": 239,
+    "id": 352,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "gameTime",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "paused",
+        "type": "bool",
+        "offset": 16,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorSubscribeModifiedAssetsChanges": {
+    "index": 229,
+    "id": 341,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "subscribe",
+        "type": "bool",
+        "offset": 8,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorUndoChanges": {
+    "index": 236,
+    "id": 349,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorUpdateAsset": {
+    "index": 212,
+    "id": 324,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "assetType",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "data",
+        "type": "ptr",
+        "offset": 24,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 32,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "assetIndex",
+        "type": "int32",
+        "offset": 36,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorUpdateJsonAsset": {
+    "index": 211,
+    "id": 323,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "assetType",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "path",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "commands",
+        "type": "ptr",
+        "offset": 24,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 32,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "assetIndex",
+        "type": "int32",
+        "offset": 36,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "AssetEditorUpdateWeatherPreviewLock": {
+    "index": 241,
+    "id": 354,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "locked",
+        "type": "bool",
+        "offset": 8,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "AuthToken": {
+    "index": 5,
+    "id": 12,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "accessToken",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "serverAuthorizationGrant",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "PasswordResponse": {
+    "index": 8,
+    "id": 15,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "hash",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "BuilderToolArgUpdate": {
+    "index": 247,
+    "id": 400,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "id",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "value",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "token",
+        "type": "int32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "section",
+        "type": "int32",
+        "offset": 28,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "slot",
+        "type": "int32",
+        "offset": 32,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolEntityAction": {
+    "index": 248,
+    "id": 401,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "entityId",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "action",
+        "type": "enum32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolExtrudeAction": {
+    "index": 250,
+    "id": 403,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "x",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "y",
+        "type": "int32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "z",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "xNormal",
+        "type": "int32",
+        "offset": 20,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "yNormal",
+        "type": "int32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "zNormal",
+        "type": "int32",
+        "offset": 28,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolGeneralAction": {
+    "index": 259,
+    "id": 412,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "action",
+        "type": "enum32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolLineAction": {
+    "index": 261,
+    "id": 414,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "xStart",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "yStart",
+        "type": "int32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "zStart",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "xEnd",
+        "type": "int32",
+        "offset": 20,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "yEnd",
+        "type": "int32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "zEnd",
+        "type": "int32",
+        "offset": 28,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolOnUseInteraction": {
+    "index": 260,
+    "id": 413,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "type",
+        "type": "enum32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "x",
+        "type": "int32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "y",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "z",
+        "type": "int32",
+        "offset": 20,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "offsetForPaintModeX",
+        "type": "int32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "offsetForPaintModeY",
+        "type": "int32",
+        "offset": 28,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "offsetForPaintModeZ",
+        "type": "int32",
+        "offset": 32,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "isAltPlaySculptBrushModDown",
+        "type": "bool",
+        "offset": 36,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "isHoldDownInteraction",
+        "type": "bool",
+        "offset": 37,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "isDoServerRaytraceForPosition",
+        "type": "bool",
+        "offset": 38,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "isShowEditNotifications",
+        "type": "bool",
+        "offset": 39,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "maxLengthToolIgnoreHistory",
+        "type": "int32",
+        "offset": 40,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "raycastOriginX",
+        "type": "float32",
+        "offset": 44,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "raycastOriginY",
+        "type": "float32",
+        "offset": 48,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "raycastOriginZ",
+        "type": "float32",
+        "offset": 52,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "raycastDirectionX",
+        "type": "float32",
+        "offset": 56,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "raycastDirectionY",
+        "type": "float32",
+        "offset": 60,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "raycastDirectionZ",
+        "type": "float32",
+        "offset": 64,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "undoGroupSize",
+        "type": "int32",
+        "offset": 68,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolPasteClipboard": {
+    "index": 254,
+    "id": 407,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "x",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "y",
+        "type": "int32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "z",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolResetClipboardRotation": {
+    "index": 273,
+    "id": 427,
+    "direction": "C2S",
+    "fields": []
+  },
+  "BuilderToolRotateClipboard": {
+    "index": 253,
+    "id": 406,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "angle",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "axis",
+        "type": "enum32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolSelectionToolAskForClipboard": {
+    "index": 257,
+    "id": 410,
+    "direction": "C2S",
+    "fields": []
+  },
+  "BuilderToolSelectionTransform": {
+    "index": 252,
+    "id": 405,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "rotation",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "translationOffset",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "initialSelectionMin",
+        "type": "ptr",
+        "offset": 24,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "initialSelectionMax",
+        "type": "ptr",
+        "offset": 32,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "initialRotationOrigin",
+        "type": "ptr",
+        "offset": 40,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "initialPastePointForClipboardPaste",
+        "type": "ptr",
+        "offset": 48,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "cutOriginal",
+        "type": "bool",
+        "offset": 56,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "applyTransformationToSelectionMinMax",
+        "type": "bool",
+        "offset": 57,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "isExitingTransformMode",
+        "type": "bool",
+        "offset": 58,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolSelectionUpdate": {
+    "index": 256,
+    "id": 409,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "xMin",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "yMin",
+        "type": "int32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "zMin",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "xMax",
+        "type": "int32",
+        "offset": 20,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "yMax",
+        "type": "int32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "zMax",
+        "type": "int32",
+        "offset": 28,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolSetEntityCollision": {
+    "index": 271,
+    "id": 425,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "collisionType",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "entityId",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolSetEntityLight": {
+    "index": 269,
+    "id": 422,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "light",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "entityId",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolSetEntityPickupEnabled": {
+    "index": 268,
+    "id": 421,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "entityId",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "enabled",
+        "type": "bool",
+        "offset": 12,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolSetEntityScale": {
+    "index": 267,
+    "id": 420,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "entityId",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "scale",
+        "type": "float32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolSetEntityTransform": {
+    "index": 249,
+    "id": 402,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "modelTransform",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "entityId",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolSetNPCDebug": {
+    "index": 270,
+    "id": 423,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "entityId",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "enabled",
+        "type": "bool",
+        "offset": 12,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolSetTransformationModeState": {
+    "index": 255,
+    "id": 408,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "enabled",
+        "type": "bool",
+        "offset": 8,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "BuilderToolStackArea": {
+    "index": 251,
+    "id": 404,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "selectionMin",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "selectionMax",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "xNormal",
+        "type": "int32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "yNormal",
+        "type": "int32",
+        "offset": 28,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "zNormal",
+        "type": "int32",
+        "offset": 32,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "numStacks",
+        "type": "int32",
+        "offset": 36,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "PrefabSetAnchor": {
+    "index": 272,
+    "id": 426,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "x",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "y",
+        "type": "int32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "z",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "PrefabUnselectPrefab": {
+    "index": 264,
+    "id": 417,
+    "direction": "C2S",
+    "fields": []
+  },
+  "RequestFlyCameraMode": {
+    "index": 182,
+    "id": 282,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "entering",
+        "type": "bool",
+        "offset": 8,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "ClientDisconnect": {
+    "index": 0,
+    "id": 1,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "reason",
+        "type": "enum32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "type",
+        "type": "enum32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "Pong": {
+    "index": 3,
+    "id": 4,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "time",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "id",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "type",
+        "type": "enum32",
+        "offset": 20,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "packetQueueSize",
+        "type": "int16",
+        "offset": 24,
+        "size": 2,
+        "settable": true
+      }
+    ]
+  },
+  "MountMovement": {
+    "index": 126,
+    "id": 166,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "absolutePosition",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "bodyOrientation",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "movementStates",
+        "type": "ptr",
+        "offset": 24,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "PlayEmote": {
+    "index": 127,
+    "id": 167,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "emoteId",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "ChatMessage": {
+    "index": 144,
+    "id": 211,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "message",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "CustomPageEvent": {
+    "index": 152,
+    "id": 219,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "data",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "type",
+        "type": "enum32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "UpdateLanguage": {
+    "index": 163,
+    "id": 232,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "language",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "DropCreativeItem": {
+    "index": 130,
+    "id": 172,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "item",
+        "type": "struct5",
+        "offset": 8,
+        "size": 5,
+        "settable": false
+      }
+    ]
+  },
+  "DropItemStack": {
+    "index": 132,
+    "id": 174,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "inventorySectionId",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "slotId",
+        "type": "int32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "quantity",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "InventoryAction": {
+    "index": 137,
+    "id": 179,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "inventorySectionId",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "inventoryActionType",
+        "type": "enum32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "actionData",
+        "type": "int8",
+        "offset": 16,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "MoveItemStack": {
+    "index": 133,
+    "id": 175,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "fromSectionId",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "fromSlotId",
+        "type": "int32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "quantity",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "toSectionId",
+        "type": "int32",
+        "offset": 20,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "toSlotId",
+        "type": "int32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "SetCreativeItem": {
+    "index": 129,
+    "id": 171,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "inventorySectionId",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "slotId",
+        "type": "int32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "item",
+        "type": "struct5",
+        "offset": 16,
+        "size": 5,
+        "settable": false
+      },
+      {
+        "name": "override",
+        "type": "bool",
+        "offset": 21,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "SmartGiveCreativeItem": {
+    "index": 131,
+    "id": 173,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "item",
+        "type": "struct5",
+        "offset": 8,
+        "size": 5,
+        "settable": false
+      },
+      {
+        "name": "moveType",
+        "type": "enum32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "SwitchHotbarBlockSet": {
+    "index": 136,
+    "id": 178,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "itemId",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "RequestMachinimaActorModel": {
+    "index": 177,
+    "id": 260,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "modelId",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "sceneName",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "actorName",
+        "type": "ptr",
+        "offset": 24,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "ClientMovement": {
+    "index": 82,
+    "id": 108,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "movementStates",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "relativePosition",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "absolutePosition",
+        "type": "ptr",
+        "offset": 24,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "bodyOrientation",
+        "type": "ptr",
+        "offset": 32,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "lookOrientation",
+        "type": "ptr",
+        "offset": 40,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "teleportAck",
+        "type": "ptr",
+        "offset": 48,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "wishMovement",
+        "type": "ptr",
+        "offset": 56,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "velocity",
+        "type": "ptr",
+        "offset": 64,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "riderMovementStates",
+        "type": "ptr",
+        "offset": 72,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "mountedTo",
+        "type": "int32",
+        "offset": 80,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "ClientPlaceBlock": {
+    "index": 91,
+    "id": 117,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "position",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "rotation",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "placedBlockId",
+        "type": "int32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "quickReplace",
+        "type": "bool",
+        "offset": 28,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "ClientReady": {
+    "index": 79,
+    "id": 105,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "readyForChunks",
+        "type": "bool",
+        "offset": 8,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "readyForGameplay",
+        "type": "bool",
+        "offset": 9,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "LoadHotbar": {
+    "index": 80,
+    "id": 106,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "inventoryRow",
+        "type": "int8",
+        "offset": 8,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "MouseInteraction": {
+    "index": 85,
+    "id": 111,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "itemInHandId",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "screenPoint",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "mouseButton",
+        "type": "ptr",
+        "offset": 24,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "mouseMotion",
+        "type": "ptr",
+        "offset": 32,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "worldInteraction",
+        "type": "ptr",
+        "offset": 40,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "clientTimestamp",
+        "type": "int64",
+        "offset": 48,
+        "size": 8,
+        "settable": true
+      },
+      {
+        "name": "activeSlot",
+        "type": "int32",
+        "offset": 56,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "RemoveMapMarker": {
+    "index": 93,
+    "id": 119,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "markerId",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "SaveHotbar": {
+    "index": 81,
+    "id": 107,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "inventoryRow",
+        "type": "int8",
+        "offset": 8,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "SyncPlayerPreferences": {
+    "index": 90,
+    "id": 116,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "showEntityMarkers",
+        "type": "bool",
+        "offset": 8,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "armorItemsPreferredPickupLocation",
+        "type": "enum32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "weaponAndToolItemsPreferredPickupLocation",
+        "type": "enum32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "usableItemsItemsPreferredPickupLocation",
+        "type": "enum32",
+        "offset": 20,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "solidBlockItemsPreferredPickupLocation",
+        "type": "enum32",
+        "offset": 24,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "miscItemsPreferredPickupLocation",
+        "type": "enum32",
+        "offset": 28,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "allowNPCDetection",
+        "type": "bool",
+        "offset": 32,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "respondToHit",
+        "type": "bool",
+        "offset": 33,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "hideHelmet",
+        "type": "bool",
+        "offset": 34,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "hideCuirass",
+        "type": "bool",
+        "offset": 35,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "hideGauntlets",
+        "type": "bool",
+        "offset": 36,
+        "size": 1,
+        "settable": true
+      },
+      {
+        "name": "hidePants",
+        "type": "bool",
+        "offset": 37,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "SetServerAccess": {
+    "index": 176,
+    "id": 252,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "password",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "access",
+        "type": "enum32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "UpdateServerAccess": {
+    "index": 175,
+    "id": 251,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "hosts",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "access",
+        "type": "enum32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "PlayerOptions": {
+    "index": 25,
+    "id": 33,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "skin",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "RequestAssets": {
+    "index": 15,
+    "id": 23,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "assets",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "StreamOpen": {
+    "index": 277,
+    "id": 460,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "type",
+        "type": "enum32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "VoiceData": {
+    "index": 274,
+    "id": 450,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "sequenceNumber",
+        "type": "int16",
+        "offset": 8,
+        "size": 2,
+        "settable": true
+      },
+      {
+        "name": "timestamp",
+        "type": "int32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "opusData",
+        "type": "int8",
+        "offset": 16,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "ClientOpenWindow": {
+    "index": 142,
+    "id": 204,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "type",
+        "type": "enum32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "SendWindowAction": {
+    "index": 141,
+    "id": 203,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "action",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "id",
+        "type": "int32",
+        "offset": 16,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "SetPaused": {
+    "index": 118,
+    "id": 158,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "paused",
+        "type": "bool",
+        "offset": 8,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "CreateUserMarker": {
+    "index": 173,
+    "id": 246,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "name",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "markerImage",
+        "type": "ptr",
+        "offset": 16,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "tintColor",
+        "type": "ptr",
+        "offset": 24,
+        "size": 8,
+        "settable": false
+      },
+      {
+        "name": "x",
+        "type": "float32",
+        "offset": 32,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "z",
+        "type": "float32",
+        "offset": 36,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "shared",
+        "type": "bool",
+        "offset": 40,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  },
+  "TeleportToWorldMapMarker": {
+    "index": 171,
+    "id": 244,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "id",
+        "type": "ptr",
+        "offset": 8,
+        "size": 8,
+        "settable": false
+      }
+    ]
+  },
+  "TeleportToWorldMapPosition": {
+    "index": 172,
+    "id": 245,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "x",
+        "type": "int32",
+        "offset": 8,
+        "size": 4,
+        "settable": true
+      },
+      {
+        "name": "y",
+        "type": "int32",
+        "offset": 12,
+        "size": 4,
+        "settable": true
+      }
+    ]
+  },
+  "UpdateWorldMapVisible": {
+    "index": 170,
+    "id": 243,
+    "direction": "C2S",
+    "fields": [
+      {
+        "name": "visible",
+        "type": "bool",
+        "offset": 8,
+        "size": 1,
+        "settable": true
+      }
+    ]
+  }
+}

@@ -18,6 +18,7 @@
 #include "ActualFeatures/Scaffold.h"
 #include "ActualFeatures/HitBox.h"
 #include "ActualFeatures/Gamemode.h"
+#include "ActualFeatures/PacketSender.h"
 
 void InitFeature(std::unique_ptr<Feature> feature, std::string tab) {
 	feature->setCategory(tab);
@@ -43,6 +44,8 @@ void FeatureHandler::Init() {
 	InitFeature(std::make_unique<Outline>(), "Visuals");
 	InitFeature(std::make_unique<BlockESP>(), "Visuals");
 	InitFeature(std::make_unique<Tracers>(), "Visuals");
+
+	InitFeature(std::make_unique<PacketSender>(), "Debug");
 
 	Menu::mainComponent->AddChild(std::make_unique<Tab>("Combat", 200, 200));
 	Menu::mainComponent->AddChild(std::make_unique<Tab>("Movement", 410, 200));

@@ -31,5 +31,9 @@ Configs are stored in your Hytale game folder usually in
 
 There is also a separate config that gets saved every 2 minutes. It will not overwrite the ones you manually save
 
+!send-packet {"name":"TeleportToWorldMapPosition","x":1000,"y":1000}
+Before using - place `packet_descriptors.json` next to HytaleClient.exe (AppData\Roaming\Hytale\install\release\package\game\latest\Client)
+Right now - no support for packets with 'ptr' data type in fields (example: no support for ClientPlaceBlock)
+
 ## Discord
 [Discord Server](https://discord.gg/4uj596FZ9v)

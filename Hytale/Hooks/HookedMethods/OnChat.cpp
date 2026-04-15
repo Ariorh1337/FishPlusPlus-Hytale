@@ -4,6 +4,7 @@
 #include "../Hooks.h"
 
 #include "Features/ConfigHandler.h"
+#include "Features/ActualFeatures/PacketSender.h"
 
 #pragma optimize("", off)
 #pragma runtime_checks("", off)
@@ -46,7 +47,10 @@ void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
         tpCommand(command.substr(3));
 
 	if (command.starts_with("config "))
-        configCommand(command.substr(7));        
+        configCommand(command.substr(7));
+
+    if (command.starts_with("send-packet "))
+        PacketSender::TrySend(command.substr(12));
 }
 #pragma runtime_checks("", restore)
 #pragma optimize("", on)
