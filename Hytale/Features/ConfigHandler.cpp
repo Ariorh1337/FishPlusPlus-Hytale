@@ -128,7 +128,8 @@ void ConfigHandler::LoadConfig(std::string name, bool inConfigDirectory) {
 				Util::log("Warning: Feature '%s' found in config but not registered in cheat. Skipping.\n", featureName.c_str());
 				continue;
 			}
-			feature->setActive(featureData.value("enabled", false));
+			if (!feature->AlwaysStartsDisabled())
+				feature->setActive(featureData.value("enabled", false));
 			feature->SetKeybind(featureData.value("keybind", SDL_SCANCODE_UNKNOWN));
 			KeybindSetting* keybindSetting = static_cast<KeybindSetting*>(feature->GetSettingFromName("Keybind"));
 			if (keybindSetting)

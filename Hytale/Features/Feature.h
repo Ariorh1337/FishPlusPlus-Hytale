@@ -41,6 +41,7 @@ public:
 	virtual void OnActivate();
 	virtual void OnDeactivate();
 	virtual void Initialize();
+	virtual bool AlwaysStartsDisabled() const { return false; }
 	
 	void CreateForcedKeybind();
 	
