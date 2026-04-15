@@ -15,8 +15,14 @@ void HitBox::OnFrame() {
 
 		if (data.isLocalPlayer)
 			continue;
+
+		if (data.entityType != Entity::Character)
+			continue;
 		
 		Entity* entity = data.entityPtr;
+
+		if (!entity)
+			continue;
 
 		bool isPlayer = entity->IsAPlayer();
 		bool shouldAffect = (isPlayer && this->players->GetValue()) || (!isPlayer && this->mobs->GetValue());
@@ -33,10 +39,13 @@ void HitBox::OnFrame() {
 			box.min = offset - Vector3(0.1, 0, 0.1);
 			box.max = offset + Vector3(0.1, 1, 0.1);
 
-			entity->DefaultHitbox = box;
+			entity->Hitbox = box;
 		}
 		else {
-			entity->DefaultHitbox = entityHotboxSave[entity];
+			if (entity) {
+				entity->Hitbox = entityHotboxSave[entity];
+				entity->DefaultHitbox = entityHotboxSave[entity];
+			}
 		}
 	}
 }
@@ -46,7 +55,7 @@ void HitBox::OnDeactivate() {
 		return;
 
 	for (auto& [entity, box] : entityHotboxSave) {
-		if (entity)
+		if (Util::IsValidPtr(entity))
 			entity->DefaultHitbox = box;
 	}
 

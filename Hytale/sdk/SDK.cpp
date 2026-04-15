@@ -38,18 +38,18 @@ std::vector<EntityData> getEntities(Entity* localPlayer) {
 		ValidPtrLoop(entity);
 
 		EntityAssetStruct* assetStruct = entity->AssetNameStruct;
-		ValidPtrLoop(assetStruct);
-
-		HytaleString* entityString = assetStruct->entityString;
-		ValidPtrLoop(assetStruct);
 
 		EntityData data;
 		data.entityPtr = entity;
 		data.player = entity->IsAPlayer();
 		if (data.player)
 			data.name = entity->Name->getString();
-		else
+		else if (Util::IsValidPtr(assetStruct)) {
+			HytaleString* entityString = assetStruct->entityString;
 			data.name = entityString->getString();
+		} else
+			data.name = "Unknown";
+
 		data.entityType = entity->entityType;
 		data.networkID = entity->networkId;
 		data.position = entity->Position;

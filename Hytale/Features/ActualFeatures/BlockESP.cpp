@@ -6,6 +6,9 @@
 #include "core.h"
 
 BlockESP::BlockESP() : Feature("BlockESP") {
+
+	this->blockSetting = this->RegisterSetting<BlockSetting>("BlockSetting");
+
 	this->radius   = this->RegisterSetting<SliderSetting>("Radius", 50.f, 5.f, 500.f);
 	this->showName = this->RegisterSetting<ToggleSetting>("Show Name", false);
 	this->showChests = this->RegisterSetting<ToggleSetting>("Show Chests", true);

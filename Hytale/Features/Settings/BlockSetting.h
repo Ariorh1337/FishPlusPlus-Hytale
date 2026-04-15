@@ -7,6 +7,7 @@
 
 #include "../../Features/Feature.h"
 #include "Menu/Children/BlockSelectionButton.h"
+#include <sdk/Hytale/ClientBlockType.h>
 
 class BlockSetting : public Setting<std::vector<ClientBlockType*>> {
 public:

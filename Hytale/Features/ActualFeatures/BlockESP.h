@@ -6,6 +6,7 @@
 
 #include "Features/Settings/SliderSetting.h"
 #include "Features/Settings/ToggleSetting.h"
+#include "Features/Settings/BlockSetting.h"
 
 class BlockESP : public Feature {
 public:
@@ -15,6 +16,8 @@ public:
 	void Initialize() override;
 
 	bool IsBlockImportant(int settingID);
+
+	BlockSetting* blockSetting;
 
 	SliderSetting* radius;
 	ToggleSetting* showName;

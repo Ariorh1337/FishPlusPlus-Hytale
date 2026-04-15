@@ -15,8 +15,13 @@ public:
 	static bool isMenuOpen();
 	static void HandleMouse();
 
+	static void SetMainComponent(Component* component);
+
 	static inline std::unique_ptr<Component> mainComponent;
 	static inline std::unique_ptr<Component> hudComponent;
+
+	static inline Component* currentComponent ;
+	static inline Component* prevComponent;
 
 	inline static bool m_justOpened = true;
 	inline static bool m_justClosed = false;

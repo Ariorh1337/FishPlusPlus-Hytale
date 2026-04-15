@@ -1,5 +1,7 @@
 #pragma once
 
+#include "sdk/BaseDataTypes/HytaleString.h"
+
 struct ClientBlockType {
 	char pad_0000[8]; //0x0000
 	HytaleString* Name; //0x0008

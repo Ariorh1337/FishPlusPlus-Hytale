@@ -168,6 +168,7 @@
     <ClCompile Include="external\minhook\hook.c" />
     <ClCompile Include="external\minhook\trampoline.c" />
     <ClCompile Include="Features\ActualFeatures\HitBox.cpp" />
+    <ClCompile Include="Features\ActualFeatures\ItemMagnet.cpp" />
     <ClCompile Include="Features\ActualFeatures\Outline.cpp" />
     <ClCompile Include="Features\ActualFeatures\Tracers.cpp" />
     <ClCompile Include="Features\ActualFeatures\WorldModulate.cpp" />
@@ -194,6 +195,7 @@
     <ClCompile Include="Hooks\HookedMethods\WglSwapBuffers.cpp" />
     <ClCompile Include="Hooks\Hooks.cpp" />
     <ClCompile Include="Math\Vector4.h" />
+    <ClCompile Include="Menu\Children\BlockSelectionbutton.cpp" />
     <ClCompile Include="Menu\Children\ColorButton.cpp" />
     <ClCompile Include="Menu\Children\FeatureButton.cpp" />
     <ClCompile Include="Menu\Children\KeybindButton.cpp" />
@@ -339,12 +341,14 @@
     <ClInclude Include="external\nhollman\json.hpp" />
     <ClInclude Include="external\nlohman\json.hpp" />
     <ClInclude Include="Features\ActualFeatures\HitBox.h" />
+    <ClInclude Include="Features\ActualFeatures\ItemMagnet.h" />
     <ClInclude Include="Features\ActualFeatures\Outline.h" />
     <ClInclude Include="Features\ActualFeatures\Tracers.h" />
     <ClInclude Include="Features\ActualFeatures\WorldModulate.h" />
     <ClInclude Include="Features\ConfigHandler.h" />
     <ClInclude Include="Features\Feature.h" />
     <ClInclude Include="Features\Setting.h" />
+    <ClInclude Include="Features\Settings\BlockSetting.h" />
     <ClInclude Include="Features\Settings\ColorSetting.h" />
     <ClInclude Include="Features\Settings\KeybindSetting.h" />
     <ClInclude Include="Features\Settings\MultiSetting.h" />
@@ -360,6 +364,7 @@
     <ClInclude Include="Features\ActualFeatures\Speed.h" />
     <ClInclude Include="Hooks\GCPatch.h" />
     <ClInclude Include="Hooks\Hooks.h" />
+    <ClInclude Include="Menu\Children\BlockSelectionButton.h" />
     <ClInclude Include="sdk\BaseDataTypes\Object.h" />
     <ClInclude Include="sdk\Packets\Structs\Enums.h" />
     <ClInclude Include="sdk\Packets\Structs\IndependentStructs.h" />
