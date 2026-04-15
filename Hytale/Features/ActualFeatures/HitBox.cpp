@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) FishPlusPlus.
+ */
 #include "HitBox.h"
 
 HitBox::HitBox() : Feature("Hitbox") {
