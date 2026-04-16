@@ -53,6 +53,10 @@ etc
 TODO: 
 -- array of packets?
 
+For freaking interactions ID:
+If this part got broken try to use !dump-interactions and check how it works
+
+
 ---
 
 ## Discord
