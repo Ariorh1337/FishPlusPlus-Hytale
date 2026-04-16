@@ -7,6 +7,7 @@
 #include "sdk/Packets/SyncInteractionChains.h"
 #include "sdk/Packets/ClientBlockPlace.h"
 #include "Features/ActualFeatures/SubTypeRegistry.h"
+#include "Features/ActualFeatures/PacketSender.h"
 
 // Helper macros for creating hooks
 // These macros simplify the process of creating hooks by combining pattern scanning and hook creation into a single step. They also log the addresses found for easier debugging.
@@ -85,17 +86,19 @@ void* __fastcall Hooks::hkSocketSend(void* instance, void* error, void* byteArra
 }
 
 void __fastcall Hooks::hktemp(void* instance, void* object, void* r8, void* r9) {
-	static int callCount = 0;
 	PacketIndex index = GetPacketIndex((Object*)object);
 
-	if (index == 290) { // SyncInteractionChains
-		Util::log("[HexDump] Capturing Legitimate SyncInteractionChains (290)\n");
-		Util::HexDump(object, 256);
+	if (PacketSender::TracePackets) {
+		if (index != Pong_C2S) {
+			std::string json = PacketSender::PacketToJson((Object*)object, index);
+			if (!json.empty() && json != "{}")
+				Util::log("[C2S] %s\n", json.c_str());
+			else
+				Util::log("[C2S] Unknown (%d)\n", (int)index);
+		}
 	}
 
-	if (++callCount <= 5)
-		Util::log("[hktemp] called #%d  object=%p (index=%d)\n", callCount, object, (int)index);
-
+	// RUNTIME LEARNING: discovers unknown MethodTable offsets by scanning sent packets.
 	SubTypeRegistry::ScanPacket((Object*)object, index);
 	Hooks::otemp(instance, object, r8, r9);
 }

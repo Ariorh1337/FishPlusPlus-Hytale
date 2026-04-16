@@ -39,8 +39,6 @@ public:
 	static void        OpenPacketLabUI();
 	static const char* GetPacketName(int index);
 
-	// Serialise a packet to JSON for !trace / copy-paste into Packet Lab.
-	// TODO: implement field reader (inverse of writeField).
 	static std::string PacketToJson(Object* pkt, PacketIndex index);
 
 	static inline bool TracePackets = false;

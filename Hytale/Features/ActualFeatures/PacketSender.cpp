@@ -451,14 +451,132 @@ const char* PacketSender::GetPacketName(int index) {
 	return nullptr;
 }
 
-// TODO: implement field reader (inverse of writeField) to populate each JSON field.
+// ── Packet → JSON (read path) ─────────────────────────────────────────
+
+static std::string readSubObj(const char* type_name, void* obj, int depth);
+static std::string PacketToJsonUnsafe(Object* pkt, PacketIndex index);
+
+static std::string readFieldVal(void* base_obj, const FieldDesc& fd, int depth) {
+	auto* base = (uint8_t*)base_obj + fd.offset;
+	char buf[64];
+
+	switch (fd.type) {
+	case FType::Int8:    snprintf(buf, sizeof(buf), "%d",   (int)*(int8_t*) base); return buf;
+	case FType::Int16:   snprintf(buf, sizeof(buf), "%d",   (int)*(int16_t*)base); return buf;
+	case FType::Int32:   snprintf(buf, sizeof(buf), "%d",   *(int32_t*)base);      return buf;
+	case FType::Int64:   snprintf(buf, sizeof(buf), "%lld", *(int64_t*)base);      return buf;
+	case FType::Float32: snprintf(buf, sizeof(buf), "%g",   *(float*)base);        return buf;
+	case FType::Float64: snprintf(buf, sizeof(buf), "%g",   *(double*)base);       return buf;
+	case FType::Bool:    return *(bool*)base ? "true" : "false";
+
+	case FType::Ptr: {
+		void* ptr = *(void**)base;
+		if (!ptr || !Util::IsValidPtr(ptr)) return "null";
+		std::string_view p = fd.ptr_type ? fd.ptr_type : "";
+
+		if (p == "String" || p == "HytaleString") {
+			std::string text = ((HytaleString*)ptr)->getString();
+			std::string out = "\"";
+			for (char c : text) { if (c == '"') out += "\\\""; else if (c == '\\') out += "\\\\"; else out += c; }
+			return out + "\"";
+		}
+
+		if (p.starts_with("Array<")) {
+			int cnt = *(int*)((uint8_t*)ptr + 0x08);
+			if (cnt <= 0 || cnt > 100000) return "[]";
+			std::string inner = std::string(p.substr(6, p.size() - 7));
+			bool is_ptr = inner.ends_with("*");
+			if (is_ptr) inner.pop_back();
+			if (inner == "Byte") { snprintf(buf, sizeof(buf), "\"<%d bytes>\"", cnt); return buf; }
+			if (!is_ptr || depth >= 5) { snprintf(buf, sizeof(buf), "\"<%d elems>\"", cnt); return buf; }
+			auto* arr = (Array<uint64_t>*)ptr;
+			int show = cnt < 64 ? cnt : 64;
+			std::string out = "[";
+			for (int k = 0; k < show; ++k) {
+				if (k > 0) out += ",";
+				out += readSubObj(inner.c_str(), (void*)arr->list[k], depth + 1);
+			}
+			if (cnt > show) out += ",\"...\"";
+			return out + "]";
+		}
+
+		return readSubObj(fd.ptr_type, ptr, depth + 1);
+	}
+
+	case FType::Obj: {
+		if (!fd.ptr_type) return "{}";
+		const SubTypeDef* def = findSubTypeDef(fd.ptr_type);
+		if (!def) return "{}";
+		std::string out = "{";
+		for (int i = 0; i < def->field_count; ++i) {
+			if (i > 0) out += ",";
+			out += "\""; out += def->fields[i].name; out += "\":";
+			out += readFieldVal(base, def->fields[i], depth + 1);
+		}
+		return out + "}";
+	}
+
+	default: return "null";
+	}
+}
+
+static std::string readSubObj(const char* type_name, void* obj, int depth) {
+	if (!obj || !Util::IsValidPtr(obj)) return "null";
+	if (depth > 5) return "\"...\"";
+	const SubTypeDef* def = findSubTypeDef(type_name);
+	if (!def) return "{}";
+	std::string out = "{";
+	for (int i = 0; i < def->field_count; ++i) {
+		if (i > 0) out += ",";
+		out += "\""; out += def->fields[i].name; out += "\":";
+		out += readFieldVal(obj, def->fields[i], depth);
+	}
+	return out + "}";
+}
+
+static std::string g_trace_scratch;
+
+__declspec(noinline)
+static void FillPacketJson(Object* pkt, PacketIndex index) {
+	g_trace_scratch = PacketToJsonUnsafe(pkt, index);
+}
+
+// No C++ locals → __try allowed without C2712.
+#pragma optimize("", off)
+static bool TryFillPacketJson(Object* pkt, PacketIndex index) {
+	__try {
+		FillPacketJson(pkt, index);
+	} __except (GetExceptionCode() == EXCEPTION_ACCESS_VIOLATION
+	            ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH) {
+		return false;
+	}
+	return true;
+}
+#pragma optimize("", on)
+
 std::string PacketSender::PacketToJson(Object* pkt, PacketIndex index) {
+	g_trace_scratch.clear();
+	if (!TryFillPacketJson(pkt, index)) {
+		const char* n = GetPacketName((int)index);
+		g_trace_scratch = "{\"name\":\"";
+		g_trace_scratch += n ? n : "?";
+		g_trace_scratch += "\",\"_trace_error\":\"AV\"}";
+	}
+	return g_trace_scratch;
+}
+
+static std::string PacketToJsonUnsafe(Object* pkt, PacketIndex index) {
 	const PacketDef* def = nullptr;
 	for (int j = 0; j < PKT_TABLE_SIZE; ++j) {
 		if (PKT_TABLE[j].index == index) { def = &PKT_TABLE[j]; break; }
 	}
 	if (!def || !pkt) return "{}";
-	return std::string("{\"name\":\"") + def->name + "\"}";
+	std::string out = "{\"name\":\""; out += def->name; out += "\"";
+	for (int i = 0; i < def->field_count; ++i) {
+		out += ",\""; out += def->fields[i].name; out += "\":";
+		out += readFieldVal((void*)pkt, def->fields[i], 0);
+	}
+	return out + "}";
 }
 
 bool PacketSender::CanExecute() { return Util::isFullyInitialized(); }

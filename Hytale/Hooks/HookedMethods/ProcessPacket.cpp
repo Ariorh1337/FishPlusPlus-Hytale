@@ -18,10 +18,13 @@ void __fastcall Hooks::hkProcessPacket(void* instance, Object* packet) {
 	PacketIndex index = GetPacketIndex(packet);
 	
 	if (PacketSender::TracePackets) {
-		const char* name = PacketSender::GetPacketName(index);
-		// TODO: replace with PacketSender::PacketToJson once field reader is implemented
-		if (name) Util::log("[S2C] %s (%d)\n", name, (int)index);
-		else       Util::log("[S2C] Unknown (%d)\n", (int)index);
+		if (index != Ping_S2C && index != UpdateTime_S2C && index != SetEntitySeed_S2C && index != EntityUpdates_S2C) {
+			std::string json = PacketSender::PacketToJson(packet, index);
+			if (!json.empty() && json != "{}")
+				Util::log("[S2C] %s\n", json.c_str());
+			else
+				Util::log("[S2C] Unknown (%d)\n", (int)index);
+		}
 	}
 
 	// RUNTIME LEARNING: discovers unknown MethodTable offsets by scanning received packets.

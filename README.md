@@ -67,54 +67,7 @@ Special values:
 
 Paste any of these into the Packet Lab editor and press the appropriate button.
 
-**C2S — teleport**
-```json
-{"name":"TeleportToWorldMapPosition","x":1000,"y":64,"z":1000}
-```
-
-**C2S — movement with nested position**
-```json
-{"name":"ClientMovement","absolute_position":{"x":100,"y":64,"z":100},"body_orientation":{"yaw":1.57,"pitch":0}}
-```
-
-**S2C — inject a game mode change into the local client**
-```json
-{"name":"SetGameMode","game_mode":1}
-```
-
-**C2S — SyncInteractionChains (open container)**
-Example that opens a container at block (118, 128, 26):
-
-```json
-{
-  "name": "SyncInteractionChains",
-  "dump": false,
-  "updates": [
-    {
-      "active_hotbar_slot": "AUTO~HOTBAR_SLOT",
-      "active_utility_slot": -1,
-      "active_tools_slot": -1,
-      "initial": true,
-      "desync": false,
-      "override_root_interaction": "AUTO~HOTBAR_SLOT",
-      "interaction_type": 5,
-      "equip_slot": "AUTO~HOTBAR_SLOT",
-      "chain_id": "AUTO~CHAIN_ID",
-      "data": {
-        "entity_id": -1,
-        "target_slot": "AUTO~HOTBAR_SLOT",
-        "block_position": {"x": 118, "y": 128, "z": 26}
-      },
-      "interaction_data": [
-        { "operation_counter": 0, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": "AUTO~HOTBAR_SLOT", "placed_block_id": "AUTO~HOTBAR_SLOT", "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
-        { "operation_counter": 1, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": "AUTO~HOTBAR_SLOT", "placed_block_id": "AUTO~HOTBAR_SLOT", "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
-        { "operation_counter": 0, "root_interaction": "INTERACTION~Open_Container",           "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": "AUTO~HOTBAR_SLOT", "placed_block_id": "AUTO~HOTBAR_SLOT", "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
-        { "operation_counter": 2, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": "AUTO~HOTBAR_SLOT", "placed_block_id": "AUTO~HOTBAR_SLOT", "charge_value": -1, "chaining_index": -1, "flag_index": -1 }
-      ]
-    }
-  ]
-}
-```
+Check ./Packet-Lab.md for packet examples
 
 Notes on `SyncInteractionChains`:
 - `chain_id` — use `AUTO~CHAIN_ID`, it stays in sync with what the server has seen
