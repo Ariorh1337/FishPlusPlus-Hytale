@@ -57,9 +57,19 @@ void HitBox::OnDeactivate() {
 	if (Util::app->Stage != AppStage::InGame)
 		return;
 
-	for (auto& [entity, box] : entityHotboxSave) {
-		if (Util::IsValidPtr(entity))
+	for (EntityData& data : SDK::entities) {
+		if (!data.entityPtr)
+			continue;
+
+		auto it = entityHotboxSave.find(data.entityPtr);
+
+		if (it != entityHotboxSave.end()) {
+			auto& box= it->second;
+			Entity* entity = it->first;
+			if (!entity)
+				continue;
 			entity->DefaultHitbox = box;
+		}
 	}
 
 	entityHotboxSave.clear();
