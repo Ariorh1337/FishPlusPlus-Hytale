@@ -1,26 +1,47 @@
 /*
  * Copyright (c) FishPlusPlus.
  *
- * PacketSender — send any C2S packet from chat with full nested JSON support.
+ * PacketSender — build and dispatch any packet from a JSON description.
+ *
+ * JSON schema:
+ *   { "name": "<PacketName>", "<field>": <value>, ... }
+ *
+ * Special values:
+ *   "INTERACTION~<Name>"  — resolved to the matching interaction ID at send time
+ *   "dump": true          — hex-dump the constructed packet before sending
+ *
+ * Chat commands:
+ *   !packet-lab           — open the Packet Lab window
+ *   !dump-interactions    — write all interaction IDs to a file
  */
 #pragma once
 #include "Features/Feature.h"
+#include "sdk/BaseDataTypes/Object.h"
+#include "sdk/Packets/PacketRegistry.h"
 #include <string>
+
+struct JsonVal;
 
 class PacketSender : public Feature {
 public:
-    PacketSender() : Feature("PacketSender") {};
+	PacketSender() : Feature("PacketSender") {}
 
-    bool CanExecute() override;
-    void Initialize() override;
+	bool CanExecute() override;
+	void Initialize() override;
 
-    static bool TrySend(const std::string& json);
-    static bool TryReceive(const std::string& json);
-    static void DumpInteractions();
-    static int  ResolveInteractionId(const std::string& name);
-    static void ResolveNamesInJson(struct JsonVal& val);
-    static void OpenPacketLabUI();
+	static bool TrySend(const std::string& json);
+	static bool TryReceive(const std::string& json);
+	static void DumpInteractions();
 
-    static const char* GetPacketName(int index);
-    static inline bool TracePackets = false;
+	static int  ResolveInteractionId(const std::string& name);
+	static void ResolveNamesInJson(JsonVal& val);
+
+	static void        OpenPacketLabUI();
+	static const char* GetPacketName(int index);
+
+	// Serialise a packet to JSON for !trace / copy-paste into Packet Lab.
+	// TODO: implement field reader (inverse of writeField).
+	static std::string PacketToJson(Object* pkt, PacketIndex index);
+
+	static inline bool TracePackets = false;
 };

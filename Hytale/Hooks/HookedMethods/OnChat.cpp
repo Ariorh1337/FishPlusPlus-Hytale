@@ -49,22 +49,11 @@ void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
 	if (command.starts_with("config "))
         configCommand(command.substr(7));
 
-    if (command.starts_with("send-packet "))
-        PacketSender::TrySend(command.substr(12));
-
-    if (command.starts_with("receive-packet "))
-        PacketSender::TryReceive(command.substr(15));
-    
     if (command == "dump-interactions")
         PacketSender::DumpInteractions();
 
     if (command == "packet-lab")
         PacketSender::OpenPacketLabUI();
-
-    if (command == "trace") {
-        PacketSender::TracePackets = !PacketSender::TracePackets;
-        Util::log("[PacketLab] Packet tracing is now %s\n", PacketSender::TracePackets ? "ENABLED" : "DISABLED");
-    }
 }
 #pragma runtime_checks("", restore)
 #pragma optimize("", on)

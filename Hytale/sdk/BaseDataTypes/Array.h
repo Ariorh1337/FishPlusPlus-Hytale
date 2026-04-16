@@ -3,6 +3,7 @@
  */
 #pragma once
 #include <stdint.h>
+#include "Util/SigManager.h"
 
 template<typename T>
 struct Array {
@@ -21,19 +22,12 @@ struct Array {
         return list[index];
     }
 
-    // Allocate a new array via the engine's allocation primitive
+    // Allocate a new managed array via RhpNewArray.
+    // methodTable must be a valid NativeAOT MethodTable* for the desired array type.
+    // Returns nullptr if SM::RhpNewArray_GenericAddress is not yet resolved.
     static Array<T>* createArray(int length, void* methodTable) {
-        if (!methodTable) return nullptr;
-        // RhpNewArray signature: void*(void* mt, int length)
+        if (!methodTable || !SM::RhpNewArray_GenericAddress) return nullptr;
         using RhpNewArrayFn = void*(*)(void*, int);
-        
-        uint64_t addr = 0; // We must provide it
-        // We can't easily include SigManager.h here due to cyclic includes sometimes,
-        // so we'll just require the caller to pass it or we use extern.
-        extern uint64_t g_RhpNewArrayAddress;
-        if (!g_RhpNewArrayAddress) return nullptr;
-        
-        RhpNewArrayFn RhpNewArray = reinterpret_cast<RhpNewArrayFn>(g_RhpNewArrayAddress);
-        return (Array<T>*)RhpNewArray(methodTable, length);
-	}
+        return (Array<T>*)reinterpret_cast<RhpNewArrayFn>(SM::RhpNewArray_GenericAddress)(methodTable, length);
+    }
 };

@@ -2,15 +2,14 @@
  * Copyright (c) FishPlusPlus.
  *
  * SubTypeRegistry — caches MethodTable pointers for managed sub-types
- * (Position, Direction, BlockPosition, etc.) by scanning received packets.
+ * (Position, Direction, BlockPosition, etc.) so they can be allocated
+ * with RhpNewFast / RhpNewArray when building outgoing packets.
  *
- * Usage:
- *   // In hkProcessPacket, after GetPacketIndex:
- *   SubTypeRegistry::ScanPacket(packet, index);
- *
- *   // In PacketSender, before allocating a sub-object:
- *   void* mt = SubTypeRegistry::GetMethodTable("Position");
- *   if (mt) { auto* pos = (Position*)RhpNewFast(mt); ... }
+ * Two sources fill the cache:
+ *   - Initialize()  — statically seeded from known offsets at startup.
+ *   - ScanPacket()  — learns from incoming packets at runtime.
+ *     Once all offsets are confirmed in Initialize(), ScanPacket and the
+ *     corresponding call in ProcessPacket.cpp can be removed entirely.
  */
 #pragma once
 #include "PacketFieldTable.h"
@@ -18,20 +17,21 @@
 
 namespace SubTypeRegistry {
 
-    void Initialize();
+	void Initialize();
 
-    // Scan a received packet's pointer fields and cache any new MethodTables.
-    // Call this from hkProcessPacket for every incoming packet.
-    void ScanPacket(Object* packet, PacketIndex index);
+	// Scan a received packet and cache any previously unknown MethodTables.
+	// REMOVABLE: delete once all offsets are confirmed in Initialize().
+	void ScanPacket(Object* packet, PacketIndex index);
 
-    // Returns the cached MethodTable for a type name, or nullptr if not seen yet.
-    void* GetMethodTable(const char* type_name);
+	void* GetMethodTable(const char* type_name);
 
-    // Allocate a new zeroed instance of a sub-type.
-    // Returns nullptr if the MethodTable is not cached yet.
-    void* Alloc(const char* type_name);
+	// Allocate a new managed object via RhpNewFast.
+	void* Alloc(const char* type_name);
 
-    // How many types have been cached so far (for debug logging).
-    int CachedCount();
+	// Allocate a new managed array via RhpNewArray.
+	// Pass the full array type name, e.g. "Array<SyncInteractionChain*>".
+	void* AllocArray(const char* type_name, int count);
 
-}  // namespace SubTypeRegistry
+	int CachedCount();
+
+}

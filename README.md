@@ -33,32 +33,57 @@ There is also a separate config that gets saved every 2 minutes. It will not ove
 
 ---
 
-Packets block:
-Some packets may not work due to the unknown structure of some fields.
-Before using that packets - may sure you 'collect' them from send\received original packets. Once you will have something similar to this:
-[01:41:32] [SubTypeReg] Learned 'ItemWithAllMetadata'  offset=0x1B164D0  (add to static table)
-[01:43:19] [PacketReceiver] Received ApplyKnockback  fields_set=3
-you are able to send that packets with the same name and fields.
+## Packet Lab
 
-check Hytale\Features\ActualFeatures\SubTypeRegistry.cpp for known structures
+The Packet Lab lets you build and send (or inject) any game packet from a JSON description.
 
-!send-packet {"name":"TeleportToWorldMapPosition","x":1000,"y":1000}
-!send-packet {"name":"ClientMovement","absolute_position":{"x":100,"y":64,"z":100}}
-!send-packet {"name":"ClientMovement","body_orientation":{"yaw":1.57,"pitch":0},"absolute_position":{"x":0,"y":100,"z":0}}
+### Commands
 
-!receive-packet {"name":"SetGameMode", "game_mode": 1}
+| Command | Description |
+|---|---|
+| `!packet-lab` | Open the Packet Lab window |
+| `!dump-interactions` | Dump all interaction IDs to a file in the game folder |
 
-etc
+The Packet Lab window has three buttons: **Send C2S**, **Receive S2C**, **Trace: OFF/ON**.
 
-For freaking interactions ID:
-If this part got broken try to use !dump-interactions and check how it works
+### JSON schema
 
-Open Chect Packet.
-override_root_interaction - feels like same as target_slot
-chain_id - this is increasing number from 0 ++
-root_interaction - is string with name of interaction, can be found all by !dump-interactions - use INTERACTION~ to resolve it for id
-!packet-lab to open packet send window (chat has symbol limits)
+```json
+{
+  "name": "PacketStructName",
+  "field_name": value,
+  "nested_ptr_field": { "sub_field": value },
+  "array_field": [ { "elem_field": value } ]
+}
+```
 
+Special values:
+- `"INTERACTION~InteractionName"` — resolved to the matching integer interaction ID at send time
+- `"dump": true` — hex-dump the constructed packet bytes before sending (useful for debugging)
+
+### Examples
+
+Paste any of these into the Packet Lab editor and press the appropriate button.
+
+**C2S — teleport**
+```json
+{"name":"TeleportToWorldMapPosition","x":1000,"y":64,"z":1000}
+```
+
+**C2S — movement with nested position**
+```json
+{"name":"ClientMovement","absolute_position":{"x":100,"y":64,"z":100},"body_orientation":{"yaw":1.57,"pitch":0}}
+```
+
+**S2C — inject a game mode change into the local client**
+```json
+{"name":"SetGameMode","game_mode":1}
+```
+
+**C2S — SyncInteractionChains (open container)**
+Example that opens a container at block (118, 128, 26):
+
+```json
 {
   "name": "SyncInteractionChains",
   "dump": true,
@@ -76,22 +101,42 @@ root_interaction - is string with name of interaction, can be found all by !dump
       "data": {
         "entity_id": -1,
         "target_slot": -2147483648,
-        "block_position": {"x": 118, "y": 128, "z": 26},
-        "proxy_id": {"a":0, "b":0, "c":0, "d":0, "e":0, "f":0, "g":0, "h":0, "i":0, "j":0, "k":0}
+        "block_position": {"x": 118, "y": 128, "z": 26}
       },
       "interaction_data": [
-        { "operation_counter": 0, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1, "generated_u_u_i_d": {"a":0, "b":0, "c":0} },
-        { "operation_counter": 1, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1, "generated_u_u_i_d": {"a":0, "b":0, "c":0} },
-        { "operation_counter": 0, "root_interaction": "INTERACTION~Open_Container", "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1, "generated_u_u_i_d": {"a":0, "b":0, "c":0} },
-        { "operation_counter": 2, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1, "generated_u_u_i_d": {"a":0, "b":0, "c":0} }
+        { "operation_counter": 0, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
+        { "operation_counter": 1, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
+        { "operation_counter": 0, "root_interaction": "INTERACTION~Open_Container",           "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
+        { "operation_counter": 2, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1 }
       ]
     }
   ]
 }
+```
 
--- ToDO
-- clean this ai slop mess?
-- offsets for target_slot and chain_id
+Notes on `SyncInteractionChains`:
+- `chain_id` — monotonically increasing integer, start from last seen + 1
+- `root_interaction` — interaction name string; use `INTERACTION~Name` and it resolves automatically. Run `!dump-interactions` if you need the exact name.
+- `override_root_interaction` / `target_slot` — set to `INT_MIN` (-2147483648) when unused
+
+### Discovering unknown field structures
+
+Some packet fields reference types whose MethodTable offsets are not yet confirmed.
+When a field can't be built you'll see:
+
+```
+[PacketSender] MISSING MethodTable for 'TypeName' — not in SubTypeRegistry::Initialize()
+```
+
+Enable `!trace` and play normally to let the runtime scanner learn them:
+
+```
+[SubTypeReg] Learned 'TypeName'  offset=0x1BXXXXX  (add to static table)
+```
+
+Copy the offset into `SubTypeRegistry::Initialize()` in
+`Hytale/Features/ActualFeatures/SubTypeRegistry.cpp`.
+Known offsets are listed there with verification notes.
 
 
 ---
