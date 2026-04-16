@@ -6,6 +6,8 @@
 #include "GCPatch.h"
 #include "sdk/Packets/SyncInteractionChains.h"
 #include "sdk/Packets/ClientBlockPlace.h"
+#include "Features/ActualFeatures/SubTypeRegistry.h"
+#include "Features/ActualFeatures/PacketSender.h"
 
 // Helper macros for creating hooks
 // These macros simplify the process of creating hooks by combining pattern scanning and hook creation into a single step. They also log the addresses found for easier debugging.
@@ -83,13 +85,22 @@ void* __fastcall Hooks::hkSocketSend(void* instance, void* error, void* byteArra
 	return Hooks::oSocketSend(instance, error, byteArray, socketFlags, param5);
 }
 
-void __fastcall Hooks::hktemp(void* instance, void* object) {
-	HytaleString* name = Util::ObjectToString(object);
-	std::string nameStr = name ? name->getString() : "nullptr";
-    if (nameStr == "Hytale.Protocol.Packets.Interaction.SyncInteractionChains") {
-		SyncInteractionChainsPacket* packet = (SyncInteractionChainsPacket*) object;
-        packet->DBGPrint();
+void __fastcall Hooks::hktemp(void* instance, void* object, void* r8, void* r9) {
+	PacketIndex index = GetPacketIndex((Object*)object);
+
+	if (PacketSender::TracePackets) {
+		if (index != Pong_C2S) {
+			std::string json = PacketSender::PacketToJson((Object*)object, index);
+			if (!json.empty() && json != "{}")
+				Util::log("[C2S] %s\n", json.c_str());
+			else
+				Util::log("[C2S] Unknown (%d)\n", (int)index);
+		}
 	}
+
+	// RUNTIME LEARNING: discovers unknown MethodTable offsets by scanning sent packets.
+	SubTypeRegistry::ScanPacket((Object*)object, index);
+	Hooks::otemp(instance, object, r8, r9);
 }
 
 /*
@@ -124,9 +135,9 @@ bool Hooks::CreateHooks() {
     CREATE_SIG_HOOK_BY_REF(ProcessPacket, "E8 ? ? ? ? 90 48 83 C4 ? 5B 5E C3 48 8D 4C 24");
     CREATE_SIG_HOOK_BY_REF(SocketSend, "E8 ? ? ? ? 0F 10 45 ? 0F 11 45 ? EB ? 48 89 85");
 
-/*    if (MH_CreateHook((LPVOID) SM::SendPacketImmediateAddress, &hktemp, reinterpret_cast<LPVOID*>(&otemp)) != MH_OK) {
-        Util::log("Failed to hook %s\n", "temp"); return false;
-    } else allHooks.push_back(std::make_pair((void*) otemp, (void*) SM::SendPacketImmediateAddress));*/
+    if (MH_CreateHook((LPVOID) SM::SendPacketImmediateAddress, &hktemp, reinterpret_cast<LPVOID*>(&otemp)) != MH_OK) {
+        Util::log("Failed to hook SendPacketImmediate\n"); return false;
+    } else allHooks.push_back(std::make_pair((void*) otemp, (void*) SM::SendPacketImmediateAddress));
 
     MH_EnableHook(MH_ALL_HOOKS);
 

@@ -58,6 +58,7 @@ namespace Util {
     void free_console();
     void log(const char* fmt, ...);
     std::string string_format(const std::string fmt, ...);
+    void HexDump(void* ptr, int size);
 
     HytaleString* ObjectToString(void* object);
 }

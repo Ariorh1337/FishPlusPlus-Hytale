@@ -15,6 +15,7 @@
 
 __declspec(safebuffers) __declspec(noinline)
 void __fastcall Hooks::hkDrawPostEffect(GameInstance* instance) {
+    g_LastGameInstance = instance;
 	Hooks::oDrawPostEffect(instance);
 	if (!initialized)
 		return;

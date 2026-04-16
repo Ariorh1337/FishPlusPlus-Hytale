@@ -26,6 +26,7 @@ namespace HookData {
     
 	inline void* PlaceBlockInteraction = nullptr;
     inline void* Context = nullptr;
+    inline void* g_LastGameInstance = nullptr;
 
     inline std::vector<LookupEntry> lookupTable;
     inline std::vector<int> allTargetBlockIds;
@@ -89,13 +90,15 @@ namespace Hooks {
 	inline BuildGeometry oBuildGeometry = nullptr;
 	extern void __fastcall hkBuildGeometry(void* instance, ChunkColumn* a2, int chunkX, int chunkY, int chunkZ, int64_t a6, int64_t a7, int64_t a8, int64_t a9, int64_t a10, int64_t a11, int64_t a12, int a13, int a14, int64_t* a15);
 
-    typedef void(__fastcall* temp)(void* instance, void* object);
+    typedef void(__fastcall* temp)(void* instance, void* object, void* r8, void* r9);
     inline temp otemp = nullptr;
-    extern void __fastcall hktemp(void* instance, void* object);
+    extern void __fastcall hktemp(void* instance, void* object, void* r8, void* r9);
 
     typedef void(__fastcall* ProcessPacket)(void* instance, Object* packet);
     inline ProcessPacket oProcessPacket = nullptr;
     extern void __fastcall hkProcessPacket(void* instance, Object* packet);
+
+    extern void* g_LastProcessPacketInstance;
 
     typedef void*(__fastcall* SocketSend)(void* instance, void* error, void* byteArray, char socketFlags, void* param5);
     inline SocketSend oSocketSend = nullptr;

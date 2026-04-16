@@ -31,5 +31,71 @@ Configs are stored in your Hytale game folder usually in
 
 There is also a separate config that gets saved every 2 minutes. It will not overwrite the ones you manually save
 
+---
+
+## Packet Lab
+
+The Packet Lab lets you build and send (or inject) any game packet from a JSON description.
+
+### Commands
+
+| Command | Description |
+|---|---|
+| `!packet-lab` | Open the Packet Lab window |
+| `!dump-interactions` | Dump all interaction IDs to a file in the game folder |
+
+The Packet Lab window has three buttons: **Send C2S**, **Receive S2C**, **Trace: OFF/ON**.
+
+### JSON schema
+
+```json
+{
+  "name": "PacketStructName",
+  "field_name": value,
+  "nested_ptr_field": { "sub_field": value },
+  "array_field": [ { "elem_field": value } ]
+}
+```
+
+Special values:
+- `"INTERACTION~<Name>"` — resolved to the matching integer interaction ID at send time
+- `"AUTO~CHAIN_ID"` — resolved to the next valid chain_id (auto-tracked from incoming packets)
+- `"AUTO~HOTBAR_SLOT"` — resolved to the currently active hotbar slot index
+- `"dump": true` — hex-dump the constructed packet bytes before sending
+
+### Examples
+
+Paste any of these into the Packet Lab editor and press the appropriate button.
+
+Check ./Packet-Lab.md for packet examples
+
+Notes on `SyncInteractionChains`:
+- `chain_id` — use `AUTO~CHAIN_ID`, it stays in sync with what the server has seen
+- `active_hotbar_slot` / `equip_slot` — use `AUTO~HOTBAR_SLOT` for the active slot
+- `root_interaction` — use `INTERACTION~Name`; run `!dump-interactions` for the exact name
+- `override_root_interaction` / `target_slot` — `-2147483648` (INT_MIN) when unused
+
+### Discovering unknown field structures
+
+Some packet fields reference types whose MethodTable offsets are not yet confirmed.
+When a field can't be built you'll see:
+
+```
+[PacketSender] MISSING MethodTable for 'TypeName' — not in SubTypeRegistry::Initialize()
+```
+
+Enable `!trace` and play normally to let the runtime scanner learn them:
+
+```
+[SubTypeReg] Learned 'TypeName'  offset=0x1BXXXXX  (add to static table)
+```
+
+Copy the offset into `SubTypeRegistry::Initialize()` in
+`Hytale/Features/ActualFeatures/SubTypeRegistry.cpp`.
+Known offsets are listed there with verification notes.
+
+
+---
+
 ## Discord
 [Discord Server](https://discord.gg/4uj596FZ9v)
