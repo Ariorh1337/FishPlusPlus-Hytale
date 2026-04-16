@@ -54,6 +54,7 @@ void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
 
     if (command == "packet-lab")
         PacketSender::OpenPacketLabUI();
+
 }
 #pragma runtime_checks("", restore)
 #pragma optimize("", on)

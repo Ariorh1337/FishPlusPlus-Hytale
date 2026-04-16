@@ -310,14 +310,38 @@ int PacketSender::ResolveInteractionId(const std::string& name) {
 void PacketSender::ResolveNamesInJson(JsonVal& val) {
 	if (val.kind == JsonVal::Kind::Obj) {
 		for (auto& [key, v] : val.obj) {
-			if (v.kind == JsonVal::Kind::Str && v.s.starts_with("INTERACTION~")) {
-				std::string iname = v.s.substr(12);
-				int id = ResolveInteractionId(iname);
-				if (id != -1) {
-					v = JsonVal::fromInt(id);
-					Util::log("[PacketLab] Resolved '%s' -> %d\n", iname.c_str(), id);
-				} else {
-					Util::log("[PacketLab] FAILED to resolve '%s' — use !dump-interactions\n", iname.c_str());
+			if (v.kind == JsonVal::Kind::Str) {
+				if (v.s.starts_with("INTERACTION~")) {
+					std::string iname = v.s.substr(12);
+					int id = ResolveInteractionId(iname);
+					if (id != -1) {
+						v = JsonVal::fromInt(id);
+						Util::log("[PacketLab] INTERACTION~%s -> %d\n", iname.c_str(), id);
+					} else {
+						Util::log("[PacketLab] FAILED to resolve INTERACTION~%s — use !dump-interactions\n", iname.c_str());
+					}
+				} else if (v.s.starts_with("AUTO~")) {
+					std::string token = v.s.substr(5);
+					if (token == "CHAIN_ID") {
+						int next = 0;
+						if (g_LastGameInstance) {
+							void* mod = *(void**)((uint8_t*)g_LastGameInstance + 0x150);
+							if (Util::IsValidPtr(mod)) {
+								int* ctr = (int*)((uint8_t*)mod + PacketSender::ChainCounterOffset);
+								next = ++(*ctr);
+							}
+						}
+						v = JsonVal::fromInt(next);
+						Util::log("[PacketLab] AUTO~CHAIN_ID -> %d\n", next);
+					} else if (token == "HOTBAR_SLOT") {
+						int slot = 0;
+						if (Util::isFullyInitialized())
+							slot = Util::getGameInstance()->InventoryModule->HotbarActiveSlot;
+						v = JsonVal::fromInt(slot);
+						Util::log("[PacketLab] AUTO~HOTBAR_SLOT -> %d\n", slot);
+					} else {
+						Util::log("[PacketLab] Unknown AUTO token: '%s'\n", token.c_str());
+					}
 				}
 			}
 			ResolveNamesInJson(v);

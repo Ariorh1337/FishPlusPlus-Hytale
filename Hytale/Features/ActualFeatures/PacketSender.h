@@ -44,4 +44,8 @@ public:
 	static std::string PacketToJson(Object* pkt, PacketIndex index);
 
 	static inline bool TracePackets = false;
+
+	// chain_id counter offset within InteractionModule (GameInstance + 0x150).
+	// AUTO~CHAIN_ID increments this directly. Verified on Hytale 0.5.x.
+	static inline int ChainCounterOffset = 0xE8;
 };

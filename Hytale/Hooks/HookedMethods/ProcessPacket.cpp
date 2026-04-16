@@ -29,6 +29,7 @@ void __fastcall Hooks::hkProcessPacket(void* instance, Object* packet) {
 	// Once all needed offsets are confirmed in SubTypeRegistry::Initialize(), remove this call
 	// and the corresponding runtime-learning functions in SubTypeRegistry.cpp.
 	SubTypeRegistry::ScanPacket(packet, index);
+
 	EventRegister::PacketRecieveEvent.Invoke(packet, index, cancel);
 
 	if (!cancel)

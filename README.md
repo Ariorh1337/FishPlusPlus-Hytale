@@ -58,8 +58,10 @@ The Packet Lab window has three buttons: **Send C2S**, **Receive S2C**, **Trace:
 ```
 
 Special values:
-- `"INTERACTION~InteractionName"` — resolved to the matching integer interaction ID at send time
-- `"dump": true` — hex-dump the constructed packet bytes before sending (useful for debugging)
+- `"INTERACTION~<Name>"` — resolved to the matching integer interaction ID at send time
+- `"AUTO~CHAIN_ID"` — resolved to the next valid chain_id (auto-tracked from incoming packets)
+- `"AUTO~HOTBAR_SLOT"` — resolved to the currently active hotbar slot index
+- `"dump": true` — hex-dump the constructed packet bytes before sending
 
 ### Examples
 
@@ -86,28 +88,28 @@ Example that opens a container at block (118, 128, 26):
 ```json
 {
   "name": "SyncInteractionChains",
-  "dump": true,
+  "dump": false,
   "updates": [
     {
-      "active_hotbar_slot": 8,
+      "active_hotbar_slot": "AUTO~HOTBAR_SLOT",
       "active_utility_slot": -1,
       "active_tools_slot": -1,
       "initial": true,
       "desync": false,
-      "override_root_interaction": -2147483648,
+      "override_root_interaction": "AUTO~HOTBAR_SLOT",
       "interaction_type": 5,
-      "equip_slot": 8,
-      "chain_id": 17,
+      "equip_slot": "AUTO~HOTBAR_SLOT",
+      "chain_id": "AUTO~CHAIN_ID",
       "data": {
         "entity_id": -1,
-        "target_slot": -2147483648,
+        "target_slot": "AUTO~HOTBAR_SLOT",
         "block_position": {"x": 118, "y": 128, "z": 26}
       },
       "interaction_data": [
-        { "operation_counter": 0, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
-        { "operation_counter": 1, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
-        { "operation_counter": 0, "root_interaction": "INTERACTION~Open_Container",           "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
-        { "operation_counter": 2, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1 }
+        { "operation_counter": 0, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": "AUTO~HOTBAR_SLOT", "placed_block_id": "AUTO~HOTBAR_SLOT", "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
+        { "operation_counter": 1, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": "AUTO~HOTBAR_SLOT", "placed_block_id": "AUTO~HOTBAR_SLOT", "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
+        { "operation_counter": 0, "root_interaction": "INTERACTION~Open_Container",           "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": "AUTO~HOTBAR_SLOT", "placed_block_id": "AUTO~HOTBAR_SLOT", "charge_value": -1, "chaining_index": -1, "flag_index": -1 },
+        { "operation_counter": 2, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": "AUTO~HOTBAR_SLOT", "placed_block_id": "AUTO~HOTBAR_SLOT", "charge_value": -1, "chaining_index": -1, "flag_index": -1 }
       ]
     }
   ]
@@ -115,9 +117,10 @@ Example that opens a container at block (118, 128, 26):
 ```
 
 Notes on `SyncInteractionChains`:
-- `chain_id` — monotonically increasing integer, start from last seen + 1
-- `root_interaction` — interaction name string; use `INTERACTION~Name` and it resolves automatically. Run `!dump-interactions` if you need the exact name.
-- `override_root_interaction` / `target_slot` — set to `INT_MIN` (-2147483648) when unused
+- `chain_id` — use `AUTO~CHAIN_ID`, it stays in sync with what the server has seen
+- `active_hotbar_slot` / `equip_slot` — use `AUTO~HOTBAR_SLOT` for the active slot
+- `root_interaction` — use `INTERACTION~Name`; run `!dump-interactions` for the exact name
+- `override_root_interaction` / `target_slot` — `-2147483648` (INT_MIN) when unused
 
 ### Discovering unknown field structures
 
