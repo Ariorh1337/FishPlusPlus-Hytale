@@ -86,16 +86,17 @@ void* __fastcall Hooks::hkSocketSend(void* instance, void* error, void* byteArra
 
 void __fastcall Hooks::hktemp(void* instance, void* object, void* r8, void* r9) {
 	static int callCount = 0;
-	if (++callCount <= 5)
-		Util::log("[hktemp] called #%d  object=%p\n", callCount, object);
-
 	PacketIndex index = GetPacketIndex((Object*)object);
 
-	if (callCount <= 5)
-		Util::log("[hktemp] PacketIndex=%d\n", (int)index);
+	if (index == 290) { // SyncInteractionChains
+		Util::log("[HexDump] Capturing Legitimate SyncInteractionChains (290)\n");
+		Util::HexDump(object, 256);
+	}
+
+	if (++callCount <= 5)
+		Util::log("[hktemp] called #%d  object=%p (index=%d)\n", callCount, object, (int)index);
 
 	SubTypeRegistry::ScanPacket((Object*)object, index);
-
 	Hooks::otemp(instance, object, r8, r9);
 }
 

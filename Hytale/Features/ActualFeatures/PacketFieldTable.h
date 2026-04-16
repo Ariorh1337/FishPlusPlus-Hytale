@@ -8,14 +8,15 @@ namespace PacketTable {
 
 enum class FType : uint8_t {
     Int8, Int16, Int32, Int64, Float32, Float64, Bool,
-    Ptr  // pointer to a managed heap object; ptr_type gives its struct name
+    Ptr, // pointer to a managed heap object; ptr_type gives its struct name
+    Obj  // embedded object (struct); ptr_type gives its struct name
 };
 
 struct FieldDesc {
     const char* name;
     size_t      offset;
     FType       type;
-    const char* ptr_type;  // non-null only for FType::Ptr
+    const char* ptr_type;  // non-null for FType::Ptr and FType::Obj
 };
 
 // ── C2S packet table ─────────────────────────────────────────────────
@@ -1596,7 +1597,15 @@ inline const SubTypeDef SUB_TYPE_TABLE[] = {
         { "a", 0x08, FType::Int32, nullptr },
         { "b", 0x0C, FType::Int16, nullptr },
         { "c", 0x0E, FType::Int16, nullptr },
-    }, 3 },
+        { "d", 0x10, FType::Int8, nullptr },
+        { "e", 0x11, FType::Int8, nullptr },
+        { "f", 0x12, FType::Int8, nullptr },
+        { "g", 0x13, FType::Int8, nullptr },
+        { "h", 0x14, FType::Int8, nullptr },
+        { "i", 0x15, FType::Int8, nullptr },
+        { "j", 0x16, FType::Int8, nullptr },
+        { "k", 0x17, FType::Int8, nullptr },
+    }, 11 },
     { "HalfFloatPosition", {
         { "x", 0x08, FType::Int16, nullptr },
         { "y", 0x0A, FType::Int16, nullptr },
@@ -1627,19 +1636,19 @@ inline const SubTypeDef SUB_TYPE_TABLE[] = {
         { "hit_detail", 0x10, FType::Ptr, "String" },
         { "block_position", 0x18, FType::Ptr, "BlockPosition" },
         { "hit_normal", 0x20, FType::Ptr, "Vector3f" },
-        { "proxy_id", 0x28, FType::Ptr, "Guuid" },
-        { "entity_id", 0x30, FType::Int32, nullptr },
-        { "target_slot", 0x34, FType::Int32, nullptr },
+        { "entity_id", 0x28, FType::Int32, nullptr },
+        { "target_slot", 0x2C, FType::Int32, nullptr },
+        { "proxy_id", 0x30, FType::Obj, "Guuid" },
     }, 7 },
     { "InteractionSyncData", {
         { "block_position", 0x08, FType::Ptr, "BlockPosition" },
         { "block_rotation", 0x10, FType::Ptr, "BlockRotation" },
-        { "hit_entities", 0x18, FType::Ptr, "Array<SelectedHitEntity*>" },
-        { "attacker_pos", 0x20, FType::Ptr, "Position" },
-        { "attacker_rot", 0x28, FType::Ptr, "Direction" },
-        { "raycast_hit", 0x30, FType::Ptr, "Position" },
-        { "raycast_normal", 0x38, FType::Ptr, "Vector3f" },
-        { "generated_u_u_i_d", 0x40, FType::Ptr, "Guuid" },
+        { "fork_counts", 0x18, FType::Ptr, "Dictionary<InteractionType, int>" },
+        { "hit_entities", 0x20, FType::Ptr, "Array<SelectedHitEntity*>" },
+        { "attacker_pos", 0x28, FType::Ptr, "Position" },
+        { "attacker_rot", 0x30, FType::Ptr, "Direction" },
+        { "raycast_hit", 0x38, FType::Ptr, "Position" },
+        { "raycast_normal", 0x40, FType::Ptr, "Vector3f" },
         { "progress", 0x48, FType::Float32, nullptr },
         { "operation_counter", 0x4C, FType::Int32, nullptr },
         { "root_interaction", 0x50, FType::Int32, nullptr },
@@ -1656,7 +1665,8 @@ inline const SubTypeDef SUB_TYPE_TABLE[] = {
         { "block_face", 0x79, FType::Int8, nullptr },
         { "movement_direction", 0x7A, FType::Int8, nullptr },
         { "apply_force_state", 0x7B, FType::Int8, nullptr },
-    }, 24 },
+        { "generated_u_u_i_d", 0x7C, FType::Obj, "Guuid" },
+    }, 25 },
     { "InventorySection", {
         { "capacity", 0x08, FType::Int16, nullptr },
     }, 1 },

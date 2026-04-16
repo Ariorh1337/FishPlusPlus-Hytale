@@ -57,6 +57,14 @@ void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
     
     if (command == "dump-interactions")
         PacketSender::DumpInteractions();
+
+    if (command == "packet-lab")
+        PacketSender::OpenPacketLabUI();
+
+    if (command == "trace") {
+        PacketSender::TracePackets = !PacketSender::TracePackets;
+        Util::log("[PacketLab] Packet tracing is now %s\n", PacketSender::TracePackets ? "ENABLED" : "DISABLED");
+    }
 }
 #pragma runtime_checks("", restore)
 #pragma optimize("", on)

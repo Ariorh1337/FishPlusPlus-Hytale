@@ -203,3 +203,29 @@ HytaleString* Util::ObjectToString(void* object) {
 
 	return Object_ToString(object);
 }
+
+void Util::HexDump(void* ptr, int size) {
+    if (!ptr || !IsValidPtr(ptr)) {
+        log("[HexDump] Invalid pointer: %p\n", ptr);
+        return;
+    }
+
+    uint8_t* data = (uint8_t*)ptr;
+    log("[HexDump] Dumping %d bytes starting at %p\n", size, ptr);
+
+    for (int i = 0; i < size; i += 16) {
+        char hex[64] = {0};
+        char ascii[32] = {0};
+        
+        for (int j = 0; j < 16; ++j) {
+            if (i + j < size) {
+                sprintf_s(hex + (j * 3), 4, "%02X ", data[i + j]);
+                ascii[j] = (data[i + j] >= 32 && data[i + j] <= 126) ? data[i + j] : '.';
+            } else {
+                strcat_s(hex, "   ");
+                ascii[j] = ' ';
+            }
+        }
+        log("  %04X | %s | %s\n", i, hex, ascii);
+    }
+}

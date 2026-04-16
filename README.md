@@ -50,11 +50,48 @@ check Hytale\Features\ActualFeatures\SubTypeRegistry.cpp for known structures
 
 etc
 
-TODO: 
--- array of packets?
-
 For freaking interactions ID:
 If this part got broken try to use !dump-interactions and check how it works
+
+Open Chect Packet.
+override_root_interaction - feels like same as target_slot
+chain_id - this is increasing number from 0 ++
+root_interaction - is string with name of interaction, can be found all by !dump-interactions - use INTERACTION~ to resolve it for id
+!packet-lab to open packet send window (chat has symbol limits)
+
+{
+  "name": "SyncInteractionChains",
+  "dump": true,
+  "updates": [
+    {
+      "active_hotbar_slot": 8,
+      "active_utility_slot": -1,
+      "active_tools_slot": -1,
+      "initial": true,
+      "desync": false,
+      "override_root_interaction": -2147483648,
+      "interaction_type": 5,
+      "equip_slot": 8,
+      "chain_id": 17,
+      "data": {
+        "entity_id": -1,
+        "target_slot": -2147483648,
+        "block_position": {"x": 118, "y": 128, "z": 26},
+        "proxy_id": {"a":0, "b":0, "c":0, "d":0, "e":0, "f":0, "g":0, "h":0, "i":0, "j":0, "k":0}
+      },
+      "interaction_data": [
+        { "operation_counter": 0, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1, "generated_u_u_i_d": {"a":0, "b":0, "c":0} },
+        { "operation_counter": 1, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1, "generated_u_u_i_d": {"a":0, "b":0, "c":0} },
+        { "operation_counter": 0, "root_interaction": "INTERACTION~Open_Container", "state": 0, "block_face": 5, "entity_id": 0, "block_position": {"x": 118, "y": 128, "z": 26}, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1, "generated_u_u_i_d": {"a":0, "b":0, "c":0} },
+        { "operation_counter": 2, "root_interaction": "INTERACTION~*Empty_Interactions_Use", "state": 0, "block_face": 0, "entity_id": 0, "entered_root_interaction": -2147483648, "placed_block_id": -2147483648, "charge_value": -1, "chaining_index": -1, "flag_index": -1, "generated_u_u_i_d": {"a":0, "b":0, "c":0} }
+      ]
+    }
+  ]
+}
+
+-- ToDO
+- clean this ai slop mess?
+- offsets for target_slot and chain_id
 
 
 ---
