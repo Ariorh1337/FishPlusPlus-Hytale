@@ -54,6 +54,15 @@ bool InitSigs() {
     GetSig(SendPacketImmediate, "55 41 57 41 56 41 55 41 54 57 56 53 48 81 EC ? ? ? ? 48 8D AC 24 ? ? ? ? 0F 57 E4 0F 29 65 ? 0F 29 65 ? 0F 29 65 ? 0F 29 65 ? 33 C0 48 89 45 ? 48 89 4D ? 48 8B D9"); //48 8b d9 48 8b f2 48 8d 0d ? ? ? ? e8 ? ? ? ? 48 89 85 ? ? ? ? 48 8d 48 08 48 8b d3 e8 ? ? ? ? 48 85 f6
     GetSig(RhpNewArray_Generic, "48 81 FA ? ? ? ? 73 ? 67 8D 04 D5");
 
+    GetGlobalSigByRef(g_GlobalStateTable, "48 8D 05 ? ? ? ? 48 83 78 ? ? 0F 85 ? ? ? ? 48 8B 0D ? ? ? ? 48 8B 49 ? 45 8B 07");
+
+    GetGlobalSigByRef(Array_SyncInteractionChain_MT, "48 8D 0D ? ? ? ? E8 ? ? ? ? 4C 8B F0 45 33 ED 48 8B 53");
+    GetGlobalSigByRef(SyncInteractionChain_MT, "48 8D 0D ? ? ? ? E8 ? ? ? ? 4C 8B F8 41 C7 47 ? ? ? ? ? 8B 8B");
+    GetGlobalSigByRef(InteractionChainData_MT, "48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8B F0 48 BA"); // or 48 8D 0D ? ? ? ? E8 ? ? ? ? 4C 8B F8 48 B9 // 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8B CB 48 BA
+    GetGlobalSigByRef(BlockPosition_MT, "48 8D 0D ? ? ? ? E8 ? ? ? ? 8B 0B 89 48 ? 8B 4B"); // or 48 8D 0D ? ? ? ? E8 ? ? ? ? 8B 4B ? 8B D6
+    GetGlobalSigByRef(Array_InteractionSyncData_MT, "48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8B F0 45 33 FF"); 
+    GetGlobalSigByRef(InteractionSyncData_MT, "48 8D 0D ? ? ? ? E8 ? ? ? ? C7 40 ? ? ? ? ? 48 B9");
+
 	Util::log("Finished initializing signatures\n");
 	return true;
 }

@@ -213,6 +213,20 @@ struct SyncInteractionChainsPacket : Object { // Struct from pEric
 		delete updates;
 	}
 
+	int getLastestChainID() {
+		if (!updates || updates->count == 0) {
+			return -1; 
+		}
+		int maxChainID = 0;
+		for (int i = 0; i < updates->count; i++) {
+			SyncInteractionChain* chain = updates->get(i);
+			if (chain && chain->chain_id > maxChainID)
+				maxChainID = chain->chain_id;
+		}
+
+		return maxChainID;
+	}
+
 	void DBGPrint() {
 		Util::log("SyncInteractionChainsPacket:\n");
 		Util::log("  updates: %s\n", updates ? ("[Array Count: " + std::to_string(updates->count) + "]").c_str() : "nullptr");

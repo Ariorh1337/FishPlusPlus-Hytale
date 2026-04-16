@@ -448,6 +448,7 @@
     <ClInclude Include="sdk\Hytale\Window.h" />
     <ClInclude Include="Events\EventSystem.h" />
     <ClInclude Include="Util\InputSystem.h" />
+    <ClInclude Include="Util\NativeAOTAPI.h" />
     <ClInclude Include="Util\Packet.h" />
     <ClInclude Include="Util\SigManager.h" />
     <ClInclude Include="Util\TimeUtil.h" />
