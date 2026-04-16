@@ -31,15 +31,29 @@ Configs are stored in your Hytale game folder usually in
 
 There is also a separate config that gets saved every 2 minutes. It will not overwrite the ones you manually save
 
-!send-packet {"name":"TeleportToWorldMapPosition","x":1000,"y":1000}
-Before using - place `packet_descriptors.json` next to HytaleClient.exe (AppData\Roaming\Hytale\install\release\package\game\latest\Client)
-Right now - no support for packets with 'ptr' data type in fields (example: no support for ClientPlaceBlock)
+---
 
+Packets block:
+Some packets may not work due to the unknown structure of some fields.
+Before using that packets - may sure you 'collect' them from send\received original packets. Once you will have something similar to this:
+[01:41:32] [SubTypeReg] Learned 'ItemWithAllMetadata'  offset=0x1B164D0  (add to static table)
+[01:43:19] [PacketReceiver] Received ApplyKnockback  fields_set=3
+you are able to send that packets with the same name and fields.
+
+check Hytale\Features\ActualFeatures\SubTypeRegistry.cpp for known structures
+
+!send-packet {"name":"TeleportToWorldMapPosition","x":1000,"y":1000}
 !send-packet {"name":"ClientMovement","absolute_position":{"x":100,"y":64,"z":100}}
 !send-packet {"name":"ClientMovement","body_orientation":{"yaw":1.57,"pitch":0},"absolute_position":{"x":0,"y":100,"z":0}}
 
 !receive-packet {"name":"SetGameMode", "game_mode": 1}
+
 etc
+
+TODO: 
+-- array of packets?
+
+---
 
 ## Discord
 [Discord Server](https://discord.gg/4uj596FZ9v)
