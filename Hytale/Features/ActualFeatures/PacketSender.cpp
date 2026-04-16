@@ -406,80 +406,16 @@ static void DeepSearchCount(void* base, int maxOff, int target, const char* pref
     } __except (EXCEPTION_EXECUTE_HANDLER) {}
 }
 
-static bool FindInteractionArraySafely(void* g_LastGameInstance, void** outModule, void** outArray, int* outCount) {
-    // Start with a deep search to debug where the count is
-    DeepSearchCount(g_LastGameInstance, 0x2000, 5498, "GI");
-
-    __try {
-        for (int off = 0x10; off < 0x2000; off += 8) {
-            void* potentialModule = *(void**)((uint8_t*)g_LastGameInstance + off);
-            if (!Util::IsValidPtr(potentialModule)) continue;
-
-            // Deep search inside module
-            // DeepSearchCount(potentialModule, 0x500, 5498, "MOD");
-
-            for (int off2 = 0x0; off2 < 0x800; off2 += 8) {
-                void* potentialArray = *(void**)((uint8_t*)potentialModule + off2);
-                if (!Util::IsValidPtr(potentialArray)) continue;
-
-                // Check various possible count offsets (0x8, 0x10, 0x18)
-                for (int cOff : {0x08, 0x10, 0x18}) {
-                    int count = *(int*)((uint8_t*)potentialArray + cOff);
-                    if (count == 5498) {
-                        *outModule = potentialModule;
-                        *outArray = potentialArray;
-                        *outCount = count;
-                        return true;
-                    }
-                }
-            }
-        }
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-        return false;
-    }
-    return false;
-}
-
-// Static helper to read a single entry safely
-static bool GetEntrySafely(void* entry, int* outIndex, HytaleString** outNameStr) {
+static bool GetEntrySafely(void* entry, HytaleString** outNameStr) {
     __try {
         if (!Util::IsValidPtr(entry)) return false;
-
-        // Names are at 0x08 (verified by user output)
+        // The name identifier is confirmed at offset 0x08
         *outNameStr = *(HytaleString**)((uint8_t*)entry + 0x08);
-
-        // Find a unique ID. 335 was likely a constant field.
-        // Let's try to look into the RootInteraction object at 0x18
-        void* rootObj = *(void**)((uint8_t*)entry + 0x18);
-        if (Util::IsValidPtr(rootObj)) {
-            // In RootInteraction class, Index is usually at 0x10 or 0x18
-            int id10 = *(int*)((uint8_t*)rootObj + 0x10);
-            int id18 = *(int*)((uint8_t*)rootObj + 0x18);
-            
-            if (id10 > 0 && id10 < 10000 && id10 != 335) {
-                *outIndex = id10;
-            } else if (id18 > 0 && id18 < 10000) {
-                *outIndex = id18;
-            }
-        }
-
-        // If still not found or stuck on 335, fallback to scanning entry itself but skip the 335 field
-        if (*outIndex <= 0 || *outIndex == 335) {
-            for (int off = 0x10; off < 0x50; off += 4) {
-                int val = *(int*)((uint8_t*)entry + off);
-                if (val > 0 && val < 50000 && val != 335) {
-                    *outIndex = val;
-                    break;
-                }
-            }
-        }
-
         return true;
     } __except (EXCEPTION_EXECUTE_HANDLER) {
         return false;
     }
 }
-
 
 void PacketSender::DumpInteractions() {
     if (!g_LastGameInstance) {
@@ -487,23 +423,53 @@ void PacketSender::DumpInteractions() {
         return;
     }
 
-    // Verified offsets from our audit
-    // GameInstance + 0x150 -> InteractionModule
-    // InteractionModule + 0x40 -> RootInteractions Array
+    // InteractionModule is at GI+0x150, RootInteractions array is at Mod+0x40
     void* module = *(void**)((uint8_t*)g_LastGameInstance + 0x150);
     if (!Util::IsValidPtr(module)) {
-        Util::log("[DumpInt] Error: InteractionModule not found at GI+0x150\n");
+        Util::log("[DumpInt] Error: InteractionModule not found.\n");
         return;
     }
 
     void* arrayPtr = *(void**)((uint8_t*)module + 0x40);
     if (!Util::IsValidPtr(arrayPtr)) {
-        Util::log("[DumpInt] Error: RootInteractions array not found at Mod+0x40\n");
+        Util::log("[DumpInt] Error: RootInteractions array not found.\n");
         return;
     }
 
     int count = *(int*)((uint8_t*)arrayPtr + 0x08);
-    Util::log("[DumpInt] Found %d root interactions. Starting dump...\n", count);
+    Util::log("[DumpInt] Processing %d root interactions...\n", count);
+
+    std::string path = "interactions_dump.txt";
+    if (Globals::paths && Util::IsValidPtr(Globals::paths->ClientGameDirectory)) {
+        path = Globals::paths->ClientGameDirectory->getString() + "\\interactions_dump.txt";
+    }
+
+    std::ofstream file(path);
+    if (!file.is_open()) {
+        Util::log("[DumpInt] ERROR: Could not open file for writing!\n");
+        return;
+    }
+
+    file << "ID | InternalName\n";
+    file << "-----------------\n";
+
+    auto* arr = (Array<void*>*)arrayPtr;
+    int dumpedCount = 0;
+
+    for (int i = 0; i < count; ++i) {
+        HytaleString* nameStr = nullptr;
+        if (GetEntrySafely(arr->list[i], &nameStr)) {
+            if (Util::IsValidPtr(nameStr)) {
+                file << i << " | " << nameStr->getString() << "\n";
+                dumpedCount++;
+            }
+        }
+    }
+
+    file.close();
+    Util::log("[DumpInt] Success! Saved %d entries to: %s\n", dumpedCount, path.c_str());
+}
+ng dump...\n", count);
 
     // Prepare path
     std::string path = "interactions_dump.txt";
