@@ -54,6 +54,9 @@ void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
 
     if (command.starts_with("receive-packet "))
         PacketSender::TryReceive(command.substr(15));
+    
+    if (command == "dump-interactions")
+        PacketSender::DumpInteractions();
 }
 #pragma runtime_checks("", restore)
 #pragma optimize("", on)

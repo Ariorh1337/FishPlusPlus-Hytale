@@ -20,4 +20,5 @@ public:
     // Called from OnChat with the raw JSON string (everything after "!send-packet ")
     static bool TrySend(const std::string& json);
     static bool TryReceive(const std::string& json);
+    static void DumpInteractions();
 };

@@ -20,6 +20,9 @@
 #include "Util/Packet.h"
 #include "sdk/Packets/PacketRegistry.h"
 #include "Hooks/Hooks.h"
+#include "sdk/BaseDataTypes/Array.h"
+#include "sdk/BaseDataTypes/HytaleString.h"
+#include <fstream>
 
 #include <string>
 #include <string_view>
@@ -27,6 +30,8 @@
 #include <variant>
 #include <optional>
 #include <vector>
+
+uint64_t g_RhpNewArrayAddress = 0;
 
 using namespace PacketTable;
 
@@ -36,20 +41,23 @@ using namespace PacketTable;
 
 struct JsonVal;
 using JsonObj = std::unordered_map<std::string, JsonVal>;
+using JsonArr = std::vector<JsonVal>;
 
 struct JsonVal {
-    enum class Kind { Str, Int, Float, Bool, Obj } kind;
+    enum class Kind { Str, Int, Float, Bool, Obj, Arr } kind;
     std::string      s;
     int64_t          i = 0;
     double           f = 0.0;
     bool             b = false;
     JsonObj          obj;
+    JsonArr          arr;
 
     static JsonVal fromStr  (std::string v)  { JsonVal r; r.kind=Kind::Str;   r.s=v;   return r; }
     static JsonVal fromInt  (int64_t v)      { JsonVal r; r.kind=Kind::Int;   r.i=v;   return r; }
     static JsonVal fromFloat(double v)       { JsonVal r; r.kind=Kind::Float; r.f=v;   return r; }
     static JsonVal fromBool (bool v)         { JsonVal r; r.kind=Kind::Bool;  r.b=v;   return r; }
     static JsonVal fromObj  (JsonObj v)      { JsonVal r; r.kind=Kind::Obj;   r.obj=v; return r; }
+    static JsonVal fromArr  (JsonArr v)      { JsonVal r; r.kind=Kind::Arr;   r.arr=v; return r; }
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -74,6 +82,7 @@ static std::optional<std::string> parseStr(const std::string& s, size_t& i) {
 }
 
 static std::optional<JsonObj> parseObj(const std::string& s, size_t& i);
+static std::optional<JsonArr> parseArr(const std::string& s, size_t& i);
 
 static std::optional<JsonVal> parseVal(const std::string& s, size_t& i) {
     skipWs(s, i);
@@ -82,6 +91,10 @@ static std::optional<JsonVal> parseVal(const std::string& s, size_t& i) {
     if (s[i] == '{') {
         auto obj = parseObj(s, i);
         return obj ? std::optional<JsonVal>(JsonVal::fromObj(*obj)) : std::nullopt;
+    }
+    if (s[i] == '[') {
+        auto arr = parseArr(s, i);
+        return arr ? std::optional<JsonVal>(JsonVal::fromArr(*arr)) : std::nullopt;
     }
     if (s[i] == '"') {
         auto str = parseStr(s, i);
@@ -120,6 +133,22 @@ static std::optional<JsonObj> parseObj(const std::string& s, size_t& i) {
     return out;
 }
 
+static std::optional<JsonArr> parseArr(const std::string& s, size_t& i) {
+    skipWs(s, i);
+    if (i >= s.size() || s[i] != '[') return {};
+    ++i;
+    JsonArr out;
+    while (i < s.size()) {
+        skipWs(s, i);
+        if (s[i] == ']') { ++i; break; }
+        if (s[i] == ',') { ++i; continue; }
+        auto v = parseVal(s, i); 
+        if (v) out.push_back(*v);
+        else break;
+    }
+    return out;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Field writing
 // ─────────────────────────────────────────────────────────────────────────────
@@ -144,6 +173,40 @@ static bool writeField(void* base_ptr, const FieldDesc& fd, const JsonVal& val) 
     auto* base = (uint8_t*)base_ptr + fd.offset;
 
     if (fd.type == FType::Ptr) {
+        std::string_view p_type = fd.ptr_type ? fd.ptr_type : "";
+        if (p_type.starts_with("Array<")) {
+            if (val.kind != JsonVal::Kind::Arr) {
+                Util::log("[PacketSender]   WARN: field '%s' needs an array value\n", fd.name);
+                return false;
+            }
+            std::string inner_type = std::string(p_type.substr(6, p_type.size() - 7));
+            bool is_ptr = inner_type.ends_with("*");
+            if (is_ptr) inner_type.pop_back();
+
+            void* mt = SubTypeRegistry::GetMethodTable(fd.ptr_type);
+            if (!mt) mt = SubTypeRegistry::GetMethodTable("Array<int>"); // Fallback
+            
+            auto* arr = Array<uint64_t>::createArray((int)val.arr.size(), mt);
+            if (!arr) return false;
+
+            for (size_t k = 0; k < val.arr.size(); ++k) {
+                if (is_ptr && val.arr[k].kind == JsonVal::Kind::Obj) {
+                    void* child = buildSubObject(inner_type.c_str(), val.arr[k].obj);
+                    if (!child) {
+                        Util::log("[PacketSender]   WARN: couldn't allocate sub-type '%s' for array element\n", inner_type.c_str());
+                        return false;
+                    }
+                    arr->list[k] = (uint64_t)child;
+                } else if (is_ptr && val.arr[k].kind == JsonVal::Kind::Str) {
+                    arr->list[k] = 0;
+                } else {
+                    arr->list[k] = (uint64_t)toInt(val.arr[k]);
+                }
+            }
+            *(void**)base = arr;
+            return true;
+        }
+
         // Nested object
         if (val.kind != JsonVal::Kind::Obj || !fd.ptr_type) {
             Util::log("[PacketSender]   WARN: field '%s' needs a JSON object value\n", fd.name);
@@ -220,6 +283,7 @@ bool PacketSender::TrySend(const std::string& json) {
         return false;
     }
     const std::string& name = nameIt->second.s;
+
 
     // Find packet definition
     const PacketDef* def = nullptr;
@@ -310,6 +374,170 @@ bool PacketSender::TryReceive(const std::string& json) {
 
 bool PacketSender::CanExecute() { return Util::isFullyInitialized(); }
 void PacketSender::Initialize() {
+    g_RhpNewArrayAddress = SM::RhpNewArray_GenericAddress;
     SubTypeRegistry::Initialize();
     Util::log("[PacketSender] Initialized\n");
+}
+
+
+// Static helper to find any field equal to 5498
+static void DeepSearchCount(void* base, int maxOff, int target, const char* prefix) {
+    __try {
+        for (int off = 0; off < maxOff; off += 4) {
+            int val = *(int*)((uint8_t*)base + off);
+            if (val == target) {
+                Util::log("[DumpInt] Value %d found at %s+0x%X\n", target, prefix, off);
+            }
+            
+            // If it's a pointer, maybe look inside? (only every 8 bytes)
+            if (off % 8 == 0) {
+                void* ptr = *(void**)((uint8_t*)base + off);
+                if (Util::IsValidPtr(ptr) && ptr != base) {
+                    // Check if it's an array header (count at some offset)
+                    for (int headerOff = 0x8; headerOff <= 0x18; headerOff += 8) {
+                        int count = *(int*)((uint8_t*)ptr + headerOff);
+                        if (count == target) {
+                            Util::log("[DumpInt] Array of size %d found via %s+0x%X -> Ptr+0x%X\n", target, prefix, off, headerOff);
+                        }
+                    }
+                }
+            }
+        }
+    } __except (EXCEPTION_EXECUTE_HANDLER) {}
+}
+
+static bool FindInteractionArraySafely(void* g_LastGameInstance, void** outModule, void** outArray, int* outCount) {
+    // Start with a deep search to debug where the count is
+    DeepSearchCount(g_LastGameInstance, 0x2000, 5498, "GI");
+
+    __try {
+        for (int off = 0x10; off < 0x2000; off += 8) {
+            void* potentialModule = *(void**)((uint8_t*)g_LastGameInstance + off);
+            if (!Util::IsValidPtr(potentialModule)) continue;
+
+            // Deep search inside module
+            // DeepSearchCount(potentialModule, 0x500, 5498, "MOD");
+
+            for (int off2 = 0x0; off2 < 0x800; off2 += 8) {
+                void* potentialArray = *(void**)((uint8_t*)potentialModule + off2);
+                if (!Util::IsValidPtr(potentialArray)) continue;
+
+                // Check various possible count offsets (0x8, 0x10, 0x18)
+                for (int cOff : {0x08, 0x10, 0x18}) {
+                    int count = *(int*)((uint8_t*)potentialArray + cOff);
+                    if (count == 5498) {
+                        *outModule = potentialModule;
+                        *outArray = potentialArray;
+                        *outCount = count;
+                        return true;
+                    }
+                }
+            }
+        }
+    } __except (EXCEPTION_EXECUTE_HANDLER) {
+        return false;
+    }
+    return false;
+}
+
+// Static helper to read a single entry safely
+static bool GetEntrySafely(void* entry, int* outIndex, HytaleString** outNameStr) {
+    __try {
+        if (!Util::IsValidPtr(entry)) return false;
+
+        // Names are at 0x08 (verified by user output)
+        *outNameStr = *(HytaleString**)((uint8_t*)entry + 0x08);
+
+        // Find a unique ID. 335 was likely a constant field.
+        // Let's try to look into the RootInteraction object at 0x18
+        void* rootObj = *(void**)((uint8_t*)entry + 0x18);
+        if (Util::IsValidPtr(rootObj)) {
+            // In RootInteraction class, Index is usually at 0x10 or 0x18
+            int id10 = *(int*)((uint8_t*)rootObj + 0x10);
+            int id18 = *(int*)((uint8_t*)rootObj + 0x18);
+            
+            if (id10 > 0 && id10 < 10000 && id10 != 335) {
+                *outIndex = id10;
+            } else if (id18 > 0 && id18 < 10000) {
+                *outIndex = id18;
+            }
+        }
+
+        // If still not found or stuck on 335, fallback to scanning entry itself but skip the 335 field
+        if (*outIndex <= 0 || *outIndex == 335) {
+            for (int off = 0x10; off < 0x50; off += 4) {
+                int val = *(int*)((uint8_t*)entry + off);
+                if (val > 0 && val < 50000 && val != 335) {
+                    *outIndex = val;
+                    break;
+                }
+            }
+        }
+
+        return true;
+    } __except (EXCEPTION_EXECUTE_HANDLER) {
+        return false;
+    }
+}
+
+
+void PacketSender::DumpInteractions() {
+    if (!g_LastGameInstance) {
+        Util::log("[DumpInt] Fail: No GameInstance pointer. Join a world!\n");
+        return;
+    }
+
+    // Verified offsets from our audit
+    // GameInstance + 0x150 -> InteractionModule
+    // InteractionModule + 0x40 -> RootInteractions Array
+    void* module = *(void**)((uint8_t*)g_LastGameInstance + 0x150);
+    if (!Util::IsValidPtr(module)) {
+        Util::log("[DumpInt] Error: InteractionModule not found at GI+0x150\n");
+        return;
+    }
+
+    void* arrayPtr = *(void**)((uint8_t*)module + 0x40);
+    if (!Util::IsValidPtr(arrayPtr)) {
+        Util::log("[DumpInt] Error: RootInteractions array not found at Mod+0x40\n");
+        return;
+    }
+
+    int count = *(int*)((uint8_t*)arrayPtr + 0x08);
+    Util::log("[DumpInt] Found %d root interactions. Starting dump...\n", count);
+
+    // Prepare path
+    std::string path = "interactions_dump.txt";
+    if (Globals::paths && Util::IsValidPtr(Globals::paths->ClientGameDirectory)) {
+        path = Globals::paths->ClientGameDirectory->getString() + "\\interactions_dump.txt";
+    }
+    Util::log("[DumpInt] Saving to: %s\n", path.c_str());
+
+    std::ofstream file(path);
+    if (!file.is_open()) {
+        Util::log("[DumpInt] ERROR: Could not open file for writing!\n");
+        return;
+    }
+
+    file << "Index | RootID | InternalName\n";
+    file << "------------------------------\n";
+
+    auto* arr = (Array<void*>*)arrayPtr;
+    int dumpedCount = 0;
+
+    for (int i = 0; i < count; ++i) {
+        int rootId = 0;
+        HytaleString* nameStr = nullptr;
+
+        // Use our safe helper to read entry via SEH
+        if (GetEntrySafely(arr->list[i], &rootId, &nameStr)) {
+            if (Util::IsValidPtr(nameStr)) {
+                std::string name = nameStr->getString();
+                file << i << " | " << rootId << " | " << name << "\n";
+                dumpedCount++;
+            }
+        }
+    }
+
+    file.close();
+    Util::log("[DumpInt] Successfully dumped %d entries.\n", dumpedCount);
 }

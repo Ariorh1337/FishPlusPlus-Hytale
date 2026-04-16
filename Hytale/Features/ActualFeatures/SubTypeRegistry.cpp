@@ -40,6 +40,29 @@ void SubTypeRegistry::Initialize() {
     add("Array<HudComponent>", 0x21FD2A0);
     add("Array<Byte>", 0x2220FF8);
     add("ItemWithAllMetadata", 0x1B164D0);
+    add("BlockPosition", 0x1B14610);
+    add("Array<ItemCategory*>", 0x21F8AC8);
+    add("Array<String*>", 0x1E7C4C0);
+    add("Array<ServerPlayerListPlayer*>", 0x21FD698);
+    add("Array<ServerPlayerListUpdate*>", 0x21FD750);
+    add("Array<EntityUpdate*>", 0x21FBD08);
+    add("Array<CustomUICommand*>", 0x21FD3B8);
+    add("Array<CustomUIEventBinding*>", 0x21FD470);
+    add("InstantData", 0x1B19DE8);
+    add("Array<MapMarker*>", 0x21FCE90);
+    add("Array<MapChunk*>", 0x21FCD20);
+    add("Array<SyncInteractionChain*>", 0x21FD808);
+    add("Array<SetBlockCmd*>", 0x21FCBB0);
+    add("ExtraResources", 0x1B165B0);
+    add("Array<ItemQuantity*>", 0x21FB8B8);
+    add("Array<ModelParticle*>", 0x21F7E00);
+    add("EntityUpdate", 0x1B17410);
+    add("Array<ComponentUpdate*>", 0x21FBC50);
+    add("ComponentUpdate", 0x1B16CF0);
+    add("SyncInteractionChain", 0x1B1EB18);
+    add("InteractionChainData", 0x1B199D8);
+    add("Array<InteractionSyncData*>", 0x21FC7D0);
+    add("InteractionSyncData", 0x1B19AB8);
 }
 
 // Learn a MethodTable under a known name (taken directly from fd.ptr_type).
@@ -57,9 +80,43 @@ static void tryLearn(const char* type_name, void* obj_ptr) {
               type_name, offset);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Public API
-// ─────────────────────────────────────────────────────────────────────────────
+static void ScanObject(const char* type_name, void* obj, int depth = 0) {
+    if (!obj || !Util::IsValidPtr(obj) || depth > 5) return;
+    tryLearn(type_name, obj);
+
+    std::string_view p_type = type_name;
+    if (p_type.starts_with("Array<")) {
+        std::string inner_type = std::string(p_type.substr(6, p_type.size() - 7));
+        bool is_ptr = inner_type.ends_with("*");
+        if (is_ptr) {
+            inner_type.pop_back();
+            int count = *(int*)((uint8_t*)obj + 0x08);
+            if (count > 0 && count < 1000) {
+                uint64_t* list = (uint64_t*)((uint8_t*)obj + 0x10);
+                for (int k = 0; k < count; ++k) {
+                    if (list[k]) ScanObject(inner_type.c_str(), (void*)list[k], depth + 1);
+                }
+            }
+        }
+        return;
+    }
+
+    const SubTypeDef* def = nullptr;
+    for (int j = 0; j < SUB_TYPE_TABLE_SIZE; ++j) {
+        if (std::string_view(SUB_TYPE_TABLE[j].name) == type_name) {
+            def = &SUB_TYPE_TABLE[j]; break;
+        }
+    }
+    if (!def) return;
+
+    auto* base = (uint8_t*)obj;
+    for (int j = 0; j < def->field_count; ++j) {
+        const FieldDesc& fd = def->fields[j];
+        if (fd.type != FType::Ptr || !fd.ptr_type) continue;
+        void* child = *(void**)(base + fd.offset);
+        if (child) ScanObject(fd.ptr_type, child, depth + 1);
+    }
+}
 
 void SubTypeRegistry::ScanPacket(Object* packet, PacketIndex index) {
     const PacketDef* def = nullptr;
@@ -69,32 +126,11 @@ void SubTypeRegistry::ScanPacket(Object* packet, PacketIndex index) {
     if (!def) return;
 
     auto* base = (uint8_t*)packet;
-
     for (int i = 0; i < def->field_count; ++i) {
         const FieldDesc& fd = def->fields[i];
         if (fd.type != FType::Ptr || !fd.ptr_type) continue;
-
         void* child = *(void**)(base + fd.offset);
-        if (!child) continue;
-
-        tryLearn(fd.ptr_type, child);
-
-        // One level deeper
-        const SubTypeDef* childDef = nullptr;
-        for (int j = 0; j < SUB_TYPE_TABLE_SIZE; ++j) {
-            if (std::string_view(SUB_TYPE_TABLE[j].name) == fd.ptr_type) {
-                childDef = &SUB_TYPE_TABLE[j]; break;
-            }
-        }
-        if (!childDef) continue;
-
-        auto* childBase = (uint8_t*)child;
-        for (int j = 0; j < childDef->field_count; ++j) {
-            const FieldDesc& cfd = childDef->fields[j];
-            if (cfd.type != FType::Ptr || !cfd.ptr_type) continue;
-            void* grandChild = *(void**)(childBase + cfd.offset);
-            if (grandChild) tryLearn(cfd.ptr_type, grandChild);
-        }
+        if (child) ScanObject(fd.ptr_type, child, 0);
     }
 }
 

@@ -88,7 +88,7 @@ def parse_fields(body: str, enum_types: dict) -> list:
     fields = []
     field_re = re.compile(
         r'^\s*(?:(?:const|volatile|unsigned|signed)\s+)*'
-        r'([\w:<>]+)(\s*\*)?'
+        r'([\w:<>\*\s]+?)\s*(\*)?'
         r'\s+(\w+)\s*(?:\[[\w\s+*]*\])?\s*;',
         re.MULTILINE
     )
@@ -189,12 +189,19 @@ def main():
     def collect_refs(fields, visited=None):
         if visited is None: visited = set()
         for f in fields:
-            if f["is_ptr"] and f["ptr_type"] and f["ptr_type"] not in visited:
+            if f["is_ptr"] and f["ptr_type"]:
                 t = f["ptr_type"]
-                if t in all_structs and t not in packet_struct_names:
-                    visited.add(t)
-                    referenced_types.add(t)
-                    collect_refs(all_structs[t], visited)
+                # Strip Array< > and trailing *
+                if t.startswith("Array<") and t.endswith(">"):
+                    t = t[6:-1]
+                    if t.endswith("*"):
+                        t = t[:-1]
+                
+                if t not in visited:
+                    if t in all_structs and t not in packet_struct_names:
+                        visited.add(t)
+                        referenced_types.add(t)
+                        collect_refs(all_structs[t], visited)
 
     for pkt in packets:
         collect_refs(pkt["fields"])

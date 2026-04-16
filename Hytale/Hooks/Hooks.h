@@ -26,6 +26,7 @@ namespace HookData {
     
 	inline void* PlaceBlockInteraction = nullptr;
     inline void* Context = nullptr;
+    inline void* g_LastGameInstance = nullptr;
 
     inline std::vector<LookupEntry> lookupTable;
     inline std::vector<int> allTargetBlockIds;
