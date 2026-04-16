@@ -11,6 +11,7 @@
 #include "ActualFeatures/NameTags.h"
 #include "ActualFeatures/ESP.h"
 #include "ActualFeatures/NoFall.h"
+#include "ActualFeatures/AntiDeath.h"
 #include "ActualFeatures/WorldModulate.h"
 #include "ActualFeatures/Outline.h"
 #include "ActualFeatures/BlockESP.h"
@@ -35,6 +36,7 @@ void FeatureHandler::Init() {
 	InitFeature(std::make_unique<Flight>(), "Movement");
 	InitFeature(std::make_unique<Speed>(), "Movement");
 	InitFeature(std::make_unique<NoFall>(), "Movement");
+	InitFeature(std::make_unique<AntiDeath>(), "Movement");
 	InitFeature(std::make_unique<Scaffold>(), "Movement");
 	InitFeature(std::make_unique<Gamemode>(), "Movement");
 
